@@ -8,7 +8,7 @@
   <title>京房納甲裝卦</title>
   <link rel="apple-touch-icon" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
   <link rel="icon" type="image/png" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
-  <link rel="stylesheet" href="styles.css?v=20260815-8">
+  <link rel="stylesheet" href="styles.css?v=20260815-9">
 </head>
 <body>
   <main class="shell">
@@ -29,6 +29,18 @@
     </nav>
 
     <section class="card controls" aria-labelledby="cast-settings">
+      <div class="trigram-toolbar">
+        <label class="trigram-display-option">
+          <input type="checkbox" id="showTrigramSymbols">
+          <span data-i18n="showTrigramSymbols">顯示卦象</span>
+        </label>
+        <div class="trigram-size-switch" role="group" aria-label="卦名文字大小">
+          <button type="button" data-trigram-size="normal" aria-label="一般卦名字體">A</button>
+          <button type="button" data-trigram-size="large" aria-label="放大卦名字體">A+</button>
+        </div>
+        <button class="trigram-number-toggle" id="trigramNumberToggle" type="button" aria-pressed="false" data-i18n-aria-label="numberMode">123</button>
+      </div>
+
       <label class="matter-field">
         <span data-i18n="matterLabel">占事（這次要問的事）</span>
         <input type="text" id="castMatter" maxlength="120" placeholder="例如：問工作、投資、健康或某件事情的發展" data-i18n-placeholder="matterPlaceholder">
@@ -40,18 +52,6 @@
           <h2 id="cast-settings" data-i18n="settings">設定卦象</h2>
         </div>
         <p data-i18n="lineHint">由下往上選爻，初爻為第一爻。</p>
-      </div>
-
-      <div class="trigram-toolbar">
-        <label class="trigram-display-option">
-          <input type="checkbox" id="showTrigramSymbols">
-          <span data-i18n="showTrigramSymbols">顯示卦象</span>
-        </label>
-        <div class="trigram-size-switch" role="group" aria-label="卦名文字大小">
-          <button type="button" data-trigram-size="normal" aria-label="一般卦名字體">A</button>
-          <button type="button" data-trigram-size="large" aria-label="放大卦名字體">A+</button>
-        </div>
-        <button class="trigram-number-toggle" id="trigramNumberToggle" type="button" aria-pressed="false" data-i18n-aria-label="numberMode">123</button>
       </div>
 
       <div class="selectors">

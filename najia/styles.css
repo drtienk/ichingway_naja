@@ -210,7 +210,8 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .language-switch { gap:2px; margin-left:auto; padding:2px; border-radius:6px; }
   .language-switch button { min-height:27px; padding:2px 5px; border-radius:4px; font-size:10px; }
   .app-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:3px; margin-bottom:5px; }
-  .app-tab { min-width:0; min-height:30px; padding:4px 1px; border-radius:6px; font-size:11px; line-height:1.2; }
+  .app-tab { display:flex; align-items:center; justify-content:center; min-width:0; min-height:44px; padding:3px 1px; border-radius:6px; font-size:18px; line-height:1; letter-spacing:-.04em; }
+  html[data-lang="en"] .app-tab,html[data-lang="bi"] .app-tab { min-height:36px; font-size:12px; line-height:1.15; letter-spacing:0; }
   html[data-lang="en"] .app-tabs,html[data-lang="bi"] .app-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .card { padding:8px; border-radius:9px; }
   .card.controls { display:flex; flex-direction:column; margin:5px 0; }
@@ -239,7 +240,7 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .moving-grid { gap:3px; }
   .moving-option { padding:3px 5px; font-size:11px; }
   .date-field input { min-height:34px; padding:4px 7px; font-size:12px; }
-  .trigram-toolbar { order:3; gap:4px; margin:5px 0; }
+  .trigram-toolbar { order:-2; gap:4px; margin:0 0 4px; }
   .trigram-display-option { gap:4px; padding:3px 6px; font-size:11px; }
   .trigram-size-switch { padding:2px; }
   .trigram-size-switch button { min-width:35px; min-height:27px; padding:1px 5px; font-size:11px; }
