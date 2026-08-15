@@ -66,6 +66,8 @@ h1 { margin:0; font-size:clamp(28px,5vw,44px); line-height:1.2; letter-spacing:.
 .trigram-size-switch { display:flex; gap:3px; padding:3px; background:#e9e3d6; border-radius:8px; }
 .trigram-size-switch button { min-width:42px; min-height:32px; padding:3px 8px; color:var(--ink); background:transparent; border:0; border-radius:6px; cursor:pointer; font-weight:900; }
 .trigram-size-switch button.active { color:#fff; background:var(--ink); }
+.trigram-number-toggle { min-height:38px; padding:4px 10px; color:var(--ink); background:#e9e3d6; border:0; border-radius:8px; cursor:pointer; font-weight:900; }
+.trigram-number-toggle[aria-pressed="true"] { color:#fff; background:var(--ink); }
 
 .matter-field { display:flex; flex-direction:column; gap:6px; margin-bottom:20px; font-size:14px; font-weight:800; }
 .matter-field input { width:100%; min-height:44px; padding:9px 11px; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:8px; }
@@ -90,6 +92,7 @@ legend { margin-bottom:8px; font-weight:800; font-size:14px; }
 .trigram-button[aria-pressed="true"] { color:#fff; border-color:var(--ink); background:var(--ink); }
 .trigram-symbol { display:block; font-size:27px; line-height:1.05; }
 .trigram-name { display:block; max-width:100%; overflow:hidden; font-size:clamp(28px,3.2vw,36px); font-weight:900; line-height:1.05; white-space:nowrap; text-overflow:clip; }
+.trigram-name.number-name { font-variant-numeric:tabular-nums; }
 html[data-lang="en"] .trigram-name { font-size:clamp(15px,2vw,22px); }
 html[data-lang="bi"] .trigram-name { font-size:clamp(12px,1.55vw,17px); }
 html[data-trigram-size="large"] .trigram-button { min-height:96px; }
@@ -240,8 +243,9 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .trigram-display-option { gap:4px; padding:3px 6px; font-size:11px; }
   .trigram-size-switch { padding:2px; }
   .trigram-size-switch button { min-width:35px; min-height:27px; padding:1px 5px; font-size:11px; }
-  .matter-field { order:4; gap:3px; margin:0; font-size:12px; }
+  .matter-field { order:-1; gap:3px; margin:0 0 4px; font-size:12px; }
   .matter-field input { min-height:34px; padding:5px 7px; font-size:12px; }
+  .trigram-number-toggle { min-height:31px; padding:2px 7px; border-radius:6px; font-size:11px; }
   .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
   .compact-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; padding-inline:2px; }

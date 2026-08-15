@@ -7,12 +7,13 @@
   let lang = localStorage.getItem('najia_display_language') || 'zh';
   let showTrigramSymbols = localStorage.getItem('najia_show_trigram_symbols') === 'true';
   let trigramTextSize = localStorage.getItem('najia_trigram_text_size') || 'large';
+  let trigramNumberMode = localStorage.getItem('najia_trigram_number_mode') === 'true';
   if (!['zh','en','bi'].includes(lang)) lang = 'zh';
   if (!['normal','large'].includes(trigramTextSize)) trigramTextSize = 'large';
 
   const UI = {
-    zh:{eyebrow:'I-ChingWay',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navCompass:'風水羅盤',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',showTrigramSymbols:'顯示卦象',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',headers:['六親','納甲','伏神','旬空','本卦','變卦','變卦六親','變卦納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
-    en:{eyebrow:'I-ChingWay',title:'Jing Fang Najia Casting',subtitle:'Original and changed hexagrams, Najia, Six Kin, Shi/Ying, Six Beasts, Xunkong and hidden spirits',navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navCompass:'Feng Shui Compass',settings:'Cast Settings',lineHint:'Lines are counted upward; the first line is at the bottom.',showTrigramSymbols:'Show Trigram Symbols',matterLabel:'Question',matterPlaceholder:'For example: career, investment, health, or the outcome of an event',upper:'Upper Trigram・Outer',lower:'Lower Trigram・Inner',moving:'Moving Lines (optional, multi-select)',localDate:'Date & Time (local)',castButton:'CAST HEXAGRAM',footer:'Ganzhi and casting dates use China Standard Time (UTC+8). This tool works offline.',chinaTime:'China Standard Time',year:' Year',month:' Month',day:' Day',void:'Xunkong',matter:'Question',to:'to',palace:' Palace',hexagram:' Hex.',hidden:'Hidden',change:'Changed',save:'▣ Save Cast Image',creating:'Creating image…',selectDate:'Please select a casting date.',headers:['Six Kin','Najia','Hidden Spirit','Xunkong','Original','Changed Hex.','Changed Kin','Changed Najia','Six Beasts'],lineNames:['1st','2nd','3rd','4th','5th','6th']}
+    zh:{eyebrow:'I-ChingWay',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navCompass:'風水羅盤',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',showTrigramSymbols:'顯示卦象',numberMode:'使用 1 到 8 數字選卦',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',headers:['六親','納甲','伏神','旬空','本卦','變卦','變卦六親','變卦納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
+    en:{eyebrow:'I-ChingWay',title:'Jing Fang Najia Casting',subtitle:'Original and changed hexagrams, Najia, Six Kin, Shi/Ying, Six Beasts, Xunkong and hidden spirits',navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navCompass:'Feng Shui Compass',settings:'Cast Settings',lineHint:'Lines are counted upward; the first line is at the bottom.',showTrigramSymbols:'Show Trigram Symbols',numberMode:'Use numbers 1 through 8 to select trigrams',matterLabel:'Question',matterPlaceholder:'For example: career, investment, health, or the outcome of an event',upper:'Upper Trigram・Outer',lower:'Lower Trigram・Inner',moving:'Moving Lines (optional, multi-select)',localDate:'Date & Time (local)',castButton:'CAST HEXAGRAM',footer:'Ganzhi and casting dates use China Standard Time (UTC+8). This tool works offline.',chinaTime:'China Standard Time',year:' Year',month:' Month',day:' Day',void:'Xunkong',matter:'Question',to:'to',palace:' Palace',hexagram:' Hex.',hidden:'Hidden',change:'Changed',save:'▣ Save Cast Image',creating:'Creating image…',selectDate:'Please select a casting date.',headers:['Six Kin','Najia','Hidden Spirit','Xunkong','Original','Changed Hex.','Changed Kin','Changed Najia','Six Beasts'],lineNames:['1st','2nd','3rd','4th','5th','6th']}
   };
   const SIX_KIN_EN = {'父母':'Parents','兄弟':'Brothers','官鬼':'Officer/Ghost','妻財':'Wealth','子孫':'Offspring'};
   const BEAST_EN = {'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
@@ -92,7 +93,7 @@
   function createTrigramGrid(elementId, key) {
     const grid = document.getElementById(elementId);
     grid.innerHTML = '';
-    core.TRIGS.forEach(function (trigram) {
+    core.TRIGS.forEach(function (trigram, index) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'trigram-button' + (showTrigramSymbols ? ' show-symbol' : '');
@@ -101,7 +102,7 @@
       const trigramEnglish = TRIGRAM_EN[trigram.name];
       button.setAttribute('aria-label', text(trigram.nature + '卦，' + trigram.name, trigramEnglish[0] + ', ' + trigramEnglish[1]));
       button.innerHTML = (showTrigramSymbols ? '<span class="trigram-symbol">' + trigram.symbol + '</span>' : '') +
-        '<span class="trigram-name">' + text(trigram.nature, trigramEnglish[0]) + '</span>';
+        '<span class="trigram-name' + (trigramNumberMode ? ' number-name' : '') + '">' + (trigramNumberMode ? String(index + 1) : text(trigram.nature, trigramEnglish[0])) + '</span>';
       button.addEventListener('click', function () {
         state[key] = trigram.name;
         grid.querySelectorAll('.trigram-button').forEach(function (item) {
@@ -459,6 +460,7 @@
     document.title = ui('title');
     document.querySelectorAll('[data-i18n]').forEach(function (element) { element.textContent = ui(element.dataset.i18n); });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (element) { element.placeholder = ui(element.dataset.i18nPlaceholder); });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (element) { element.setAttribute('aria-label', ui(element.dataset.i18nAriaLabel)); });
     document.querySelectorAll('.language-switch button').forEach(function (button) {
       const active = button.dataset.lang === lang;
       button.classList.toggle('active', active);
@@ -470,6 +472,7 @@
       button.setAttribute('aria-pressed', String(active));
     });
     document.getElementById('showTrigramSymbols').checked = showTrigramSymbols;
+    document.getElementById('trigramNumberToggle').setAttribute('aria-pressed', String(trigramNumberMode));
     createTrigramGrid('lowerGrid', 'lower');
     createTrigramGrid('upperGrid', 'upper');
     createMovingOptions();
@@ -503,6 +506,14 @@
     localStorage.setItem('najia_show_trigram_symbols', String(showTrigramSymbols));
     createTrigramGrid('lowerGrid', 'lower');
     createTrigramGrid('upperGrid', 'upper');
+  });
+
+  document.getElementById('trigramNumberToggle').addEventListener('click', function (event) {
+    trigramNumberMode = !trigramNumberMode;
+    localStorage.setItem('najia_trigram_number_mode', String(trigramNumberMode));
+    event.currentTarget.setAttribute('aria-pressed', String(trigramNumberMode));
+    createTrigramGrid('upperGrid', 'upper');
+    createTrigramGrid('lowerGrid', 'lower');
   });
   applyLanguage();
   document.getElementById('castButton').addEventListener('click', castFromUI);
