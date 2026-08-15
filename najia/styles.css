@@ -38,6 +38,7 @@ button,input { font:inherit; }
 
 .eyebrow,.step { margin:0 0 3px; color:var(--red); font-size:12px; font-weight:800; letter-spacing:.18em; }
 h1 { margin:0; font-size:clamp(28px,5vw,44px); line-height:1.2; letter-spacing:.08em; }
+.wordmark { color:var(--ink); font-size:clamp(24px,4vw,36px); letter-spacing:.04em; }
 .subtitle { margin:6px 0 0; color:var(--muted); }
 .language-switch { display:flex; gap:5px; padding:4px; background:#e9e3d6; border-radius:9px; }
 .language-switch button { min-height:36px; padding:6px 11px; color:var(--ink); background:transparent; border:0; border-radius:6px; cursor:pointer; font-weight:800; }
@@ -200,23 +201,47 @@ html[data-lang="en"] .compact-side b,html[data-lang="bi"] .compact-side b { font
 html[data-lang="bi"] .language-switch button { padding-inline:8px; }
 
 @media (max-width:480px) {
-  .shell { width:min(100% - 20px,1120px); padding-top:20px; }
-  .card { padding:17px; border-radius:12px; }
-  .trigram-grid { grid-template-columns:repeat(4,1fr); gap:5px; }
-  .trigram-button { min-height:70px; padding:4px 2px; }
-  .trigram-button.show-symbol { min-height:88px; }
+  .shell { width:min(100% - 12px,1120px); padding-top:6px; }
+  .page-header { flex-direction:row; align-items:center; gap:5px; margin-bottom:5px; padding:0; }
+  .wordmark { font-size:20px; line-height:1.1; white-space:nowrap; }
+  .language-switch { gap:2px; margin-left:auto; padding:2px; border-radius:6px; }
+  .language-switch button { min-height:27px; padding:2px 5px; border-radius:4px; font-size:10px; }
+  .app-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:3px; margin-bottom:5px; }
+  .app-tab { min-width:0; min-height:30px; padding:4px 1px; border-radius:6px; font-size:11px; line-height:1.2; }
+  html[data-lang="en"] .app-tabs,html[data-lang="bi"] .app-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .card { padding:8px; border-radius:9px; }
+  .card.controls { display:flex; flex-direction:column; margin:5px 0; }
+  .section-heading { order:0; flex-direction:row; align-items:center; margin-bottom:2px; }
+  .section-heading .step,.section-heading > p { display:none; }
+  .section-heading h2 { font-size:14px; line-height:1.2; }
+  .selectors { order:1; gap:3px; }
+  .selectors legend { margin-bottom:2px; font-size:12px; line-height:1.2; }
+  .trigram-grid { grid-template-columns:repeat(4,1fr); gap:3px; }
+  .trigram-button { min-height:47px; padding:1px; border-radius:6px; }
+  .trigram-button.show-symbol { min-height:67px; }
   .trigram-name { font-size:32px; }
   html[data-lang="en"] .trigram-name { font-size:14px; }
   html[data-lang="bi"] .trigram-name { font-size:10px; letter-spacing:-.02em; }
-  html[data-trigram-size="large"] .trigram-button { min-height:96px; }
-  html[data-trigram-size="large"] .trigram-button.show-symbol { min-height:116px; }
+  html[data-trigram-size="large"] .trigram-button { min-height:64px; }
+  html[data-trigram-size="large"] .trigram-button.show-symbol { min-height:84px; }
   html[data-trigram-size="large"] .trigram-name { font-size:52px; }
   html[data-trigram-size="large"][data-lang="en"] .trigram-grid,
   html[data-trigram-size="large"][data-lang="bi"] .trigram-grid { grid-template-columns:repeat(2,1fr); }
   html[data-trigram-size="large"][data-lang="en"] .trigram-name { font-size:25px; }
   html[data-trigram-size="large"][data-lang="bi"] .trigram-name { font-size:18px; letter-spacing:0; }
-  .section-heading { align-items:flex-start; flex-direction:column; gap:5px; }
-  .app-tab { flex:1 1 calc(50% - 4px); min-width:0; padding-inline:8px; }
+  .cast-options { order:2; display:flex; flex-direction:column; align-items:stretch; gap:6px; margin-top:4px; padding-top:4px; }
+  .primary-button { order:-2; min-height:34px; padding:4px 8px; border-radius:6px; font-size:12px; line-height:1.2; }
+  .moving-fieldset,.date-field { order:0; }
+  .moving-fieldset legend,.date-field { font-size:12px; }
+  .moving-grid { gap:3px; }
+  .moving-option { padding:3px 5px; font-size:11px; }
+  .date-field input { min-height:34px; padding:4px 7px; font-size:12px; }
+  .trigram-toolbar { order:3; gap:4px; margin:5px 0; }
+  .trigram-display-option { gap:4px; padding:3px 6px; font-size:11px; }
+  .trigram-size-switch { padding:2px; }
+  .trigram-size-switch button { min-width:35px; min-height:27px; padding:1px 5px; font-size:11px; }
+  .matter-field { order:4; gap:3px; margin:0; font-size:12px; }
+  .matter-field input { min-height:34px; padding:5px 7px; font-size:12px; }
   .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
   .compact-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; padding-inline:2px; }
