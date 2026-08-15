@@ -166,9 +166,9 @@
         '<td>' + yaoDisplay(line, moving) + '</td>' +
         '<td class="beast">' + beastText(result.beasts[index]) + '</td></tr>';
       if (changedLine) {
-        compactRows += '<div class="compact-line has-change ' + (moving ? 'moving-row' : '') + '">' +
+        compactRows += '<div class="compact-line has-change ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
           (moving ? '<div class="compact-hex compact-changed"><div class="compact-info"><b>' + sixKinText(changedLine.sixKin) + '</b><span>' + najiaText(changedLine) +
-          '</span></div>' + yaoOnlyDisplay(changedLine) + '</div>' : '<div class="compact-hex compact-changed is-empty" aria-hidden="true"></div>') +
+          '</span></div>' + yaoOnlyDisplay(changedLine) + '</div>' : '') +
           '<div class="compact-hex compact-original"><div class="compact-info"><b>' + sixKinText(line.sixKin) + '</b><span>' + najiaText(line) +
           (voidText ? ' <em>' + voidText + '</em>' : '') + '</span>' +
           (hidden ? '<small>' + hiddenText + '</small>' : '') + '</div>' + yaoDisplay(line, moving) + '</div>' +
