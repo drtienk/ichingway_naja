@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1f2236">
+<title>京房納甲裝卦 × 台股應證</title>
+<style>
+  :root{
+    --bg:#f5f4ee; --ink:#1f2236; --gold:#ceb078; --red:#ad5a55;
+    --card:#fff; --muted:#8a8674; --line:#d8d2c0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;padding:20px;background:var(--bg);color:var(--ink);
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;line-height:1.6;}
+  .wrap{max-width:920px;margin:0 auto;}
+  h1{font-size:22px;margin:0 0 4px;color:var(--ink);border-left:4px solid var(--gold);
+    padding-left:10px;letter-spacing:2px;}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 18px;padding-left:14px;}
+  .tool-nav{display:flex;justify-content:flex-end;margin:-44px 0 18px;}
+  .tool-nav a{display:inline-block;padding:8px 13px;color:var(--ink);background:#fff;border:1px solid var(--gold);
+    border-radius:6px;text-decoration:none;font-size:13px;font-weight:700;box-shadow:0 1px 4px #0001;}
+  .tool-nav a:hover{background:#fff8e8;}
+  .panel{background:var(--card);border-radius:8px;padding:18px 20px;margin:14px 0;
+    box-shadow:0 1px 4px #0001;border-top:3px solid var(--ink);}
+  .panel.result-card{border-top-color:var(--gold);}
+  .panel h2{font-size:15px;margin:0 0 12px;color:var(--ink);font-weight:700;letter-spacing:1px;}
+  .row{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:13px;color:#52566e;font-weight:600;}
+  select,input{font-size:15px;padding:7px 10px;border:1.5px solid #bbb;border-radius:6px;
+    color:var(--ink);background:#fff;font-family:inherit;min-width:80px;}
+  /* 八卦選擇格 */
+  .trigram-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:300px;}
+  .trigram-grid button{padding:8px 4px;cursor:pointer;border:1px solid #c4c4c4;background:#fafafa;
+    border-radius:6px;color:var(--ink);min-height:64px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-family:inherit;gap:2px;}
+  .trigram-grid button .sym-big{font-size:22px;line-height:1;}
+  .trigram-grid button .name-big{font-size:15px;font-weight:700;}
+  .trigram-grid button .name-sub{font-size:11px;color:#888;}
+  .trigram-grid button.active{background:var(--ink);color:var(--gold);border-color:var(--ink);}
+  .trigram-grid button.active .name-sub{color:#a89773;}
+  .grid-label{font-size:13px;color:#52566e;font-weight:600;margin:0 0 6px;}
+  .yao-checks{display:flex;gap:10px;flex-wrap:wrap;}
+  .yao-checks label{display:flex;align-items:center;gap:4px;font-size:14px;cursor:pointer;font-weight:400;}
+  button.cast{margin-top:4px;padding:10px 28px;font-size:15px;background:var(--red);color:#fff;
+    border:none;border-radius:5px;cursor:pointer;font-weight:700;letter-spacing:2px;}
+  button.cast:hover{background:#8c4641;}
+  button.cast:disabled{opacity:.5;cursor:wait;}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;}
+  #progress{font-size:13px;color:var(--red);margin:10px 0;min-height:20px;font-weight:600;}
+  /* 卦盤干支橫幅 */
+  .gz-banner{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;padding:8px 12px;
+    margin:0 0 14px;background:#2a2e44;border-radius:6px;}
+  .gz-col{font-size:15px;font-weight:700;color:#cfc9b8;}
+  .gz-col small{font-size:10px;color:#9a958a;margin-left:1px;}
+  .gz-col.gz-major{font-size:19px;color:#fff;}
+  .gz-col.gz-major small{color:var(--gold);}
+  .gz-kong{font-size:15px;font-weight:700;color:#ff9a9a;}
+  .gz-kong b{color:#ff7676;font-size:18px;margin-left:3px;}
+  /* 卦象標題 */
+  .gua-title{margin-bottom:12px;color:var(--ink);padding:8px 12px;background:var(--bg);
+    border-left:4px solid var(--red);border-radius:4px;}
+  .gua-title .gname{font-size:20px;font-weight:700;}
+  .gua-title .gua-zhi{font-size:18px;color:#888;margin:0 8px;}
+  .gua-title .gmeta{font-size:13px;color:#888;margin-left:10px;font-weight:400;}
+  table.gua .col-head td{font-size:11px;color:#aaa;font-weight:600;padding-bottom:2px;border-bottom:1px solid #eee;}
+  /* 卦表 */
+  table.gua{border-collapse:collapse;margin:0 auto;}
+  table.gua td{padding:5px 8px;vertical-align:middle;font-size:14px;white-space:nowrap;text-align:center;}
+  td.beast{font-size:13px;font-weight:600;}
+  td.lq{font-weight:700;}
+  td.gz .nj-stem{font-size:.72em;color:#888;font-weight:500;}
+  td.kong-col{width:18px;color:#c00;font-size:12px;font-weight:bold;}
+  td.bian-lq{color:#888;font-weight:600;font-size:13px;text-align:right;}
+  td.bian-gz{color:#888;font-size:13px;text-align:left;border-right:1px dashed #ccc;padding-right:8px;}
+  td.bian-gz .nj-stem{font-size:.72em;}
+  td.yao-cell{position:relative;padding:0 10px 14px;}
+  td.yao-cell svg{display:block;margin:0 auto;}
+  .sy-label{position:absolute;left:0;right:0;bottom:0;height:13px;font-size:11px;line-height:13px;}
+  .shi{color:#c00;font-weight:bold;} .ying{color:#06c;font-weight:bold;}
+  .wealth-row td{background:#fff8e8;}
+  td.fu{color:#999;font-size:12px;}
+  .beast-青龍{color:#0a6b25;} .beast-朱雀{color:#b51f1f;} .beast-勾陳{color:#8a5e0e;}
+  .beast-呈蛇{color:#5d228f;} .beast-白虎{color:#444;} .beast-玄武{color:#143075;}
+  /* 財爻摘要 */
+  .wealth-summary{margin:14px 0 0;padding:10px 14px;background:#fff8e8;border-left:5px solid var(--gold);
+    border-radius:4px;font-size:14px;}
+  .wealth-summary b{color:#8a5e0e;}
+  /* 旺衰徽章（淺底） */
+  .badge{display:inline-block;padding:1px 7px;border-radius:4px;font-size:12px;font-weight:600;}
+  .b-旺{background:#e3f2e3;color:#1d7a36;} .b-相{background:#e4ecf6;color:#1f4e8a;}
+  .b-休{background:#f6efda;color:#8a5e0e;} .b-囚{background:#f7e7d8;color:#b5631f;}
+  .b-死{background:#f8e3e1;color:#b51f1f;}
+  .up{color:#1d7a36;} .down{color:#b51f1f;}
+  .legend{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.9;}
+  .stat-table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px;}
+  .stat-table th,.stat-table td{padding:7px 6px;text-align:center;border-bottom:1px solid #eee;}
+  .stat-table th{color:#8a5e0e;font-weight:700;font-size:12px;}
+  .scroll{max-height:420px;overflow-y:auto;border:1px solid #eee;border-radius:8px;margin-top:6px;}
+  .scroll table{width:100%;border-collapse:collapse;font-size:14px;}
+  .scroll th,.scroll td{padding:6px;text-align:center;border-bottom:1px solid #f0f0f0;}
+  .scroll th{position:sticky;top:0;background:#fff;color:#52566e;font-size:12px;}
+  .note{font-size:12px;color:#999;margin-top:12px;line-height:1.6;}
+  .hist-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #eee;
+    border-radius:6px;margin:6px 0;font-size:14px;}
+  .hist-item:hover{background:#faf8f0;}
+  .hist-item .hi-main{flex:1;cursor:pointer;}
+  .hist-item .hi-main b{color:var(--ink);} .hist-item .hi-sub{color:#999;font-size:12px;}
+  .hist-item .hi-del{color:#b51f1f;cursor:pointer;font-size:13px;border:none;background:none;padding:4px 8px;}
+  .hist-item .hi-del:hover{text-decoration:underline;}
+  @media(max-width:680px){.tool-nav{justify-content:flex-start;margin:-8px 0 16px;padding-left:14px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>京房納甲裝卦 × 台股應證</h1>
+  <p class="sub">起卦取財爻・連動每日股價・統計旺相休囚與漲跌的關係</p>
+  <nav class="tool-nav" aria-label="其他工具"><a href="najia/index.html">獨立京房納甲裝卦 →</a></nav>
+
+  <div class="panel">
+    <h2>一、起卦（裝卦）</h2>
+    <div class="row" style="align-items:flex-start">
+      <div>
+        <div class="grid-label">下卦（內卦）</div>
+        <div class="trigram-grid" id="gridLower"></div>
+      </div>
+      <div>
+        <div class="grid-label">上卦（外卦）</div>
+        <div class="trigram-grid" id="gridUpper"></div>
+      </div>
+      <div class="field">
+        <label>動爻（可多選）</label>
+        <div class="yao-checks" id="movingChecks"></div>
+        <label style="margin-top:10px">起卦日</label>
+        <input type="date" id="castDate">
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>二、綁定股票與回測區間</h2>
+    <div class="row">
+      <div class="field"><label>股票代號</label>
+        <input id="stockNo" value="2330" style="min-width:120px"></div>
+      <div class="field"><label>回測起日（＝起卦日）</label>
+        <input type="date" id="startDate" readonly style="background:#f0eee6"></div>
+      <div class="field"><label>到某一天（區間迄）</label><input type="date" id="endDate"></div>
+    </div>
+    <p class="hint">※ 回測起日固定等於上方「起卦日」（兩者一致）；回測時請把「起卦日」往前調，觀察到「某一天」為止。<br>
+       代號範例：上市/上櫃/興櫃輸入數字（2330、5483），美股輸入英文代號（AAPL、TSLA），指數加 ^（^TWII 加權、^DJI 道瓊）。<br>
+       資料來源：Yahoo Finance，自動判斷市場別。純網頁直接開啟即可，無需安裝任何程式。</p>
+  </div>
+
+  <div class="row" style="justify-content:center;margin:6px 0 10px;">
+    <button class="cast" id="goBtn" onclick="run()">裝卦並抓取股價對照</button>
+  </div>
+  <div id="progress"></div>
+
+  <div class="panel" id="historyPanel" style="display:none">
+    <h2>歷史記錄（本機儲存，可回頭查看多檔）</h2>
+    <div id="historyList"></div>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+/* ===================== 基礎資料 ===================== */
+const STEMS=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BRANCH_WX={子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',
+  午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const TRIGS=[
+  {name:'乾',sym:'☰',label:'天'},{name:'兌',sym:'☱',label:'澤'},
+  {name:'離',sym:'☲',label:'火'},{name:'震',sym:'☳',label:'雷'},
+  {name:'巽',sym:'☴',label:'風'},{name:'坎',sym:'☵',label:'水'},
+  {name:'艮',sym:'☶',label:'山'},{name:'坤',sym:'☷',label:'地'}];
+const TRI={
+  乾:{inner:['子','寅','辰'],outer:['午','申','戌'],iStem:'甲',oStem:'壬',lines:'111'},
+  兌:{inner:['巳','卯','丑'],outer:['亥','酉','未'],iStem:'丁',oStem:'丁',lines:'110'},
+  離:{inner:['卯','丑','亥'],outer:['酉','未','巳'],iStem:'己',oStem:'己',lines:'101'},
+  震:{inner:['子','寅','辰'],outer:['午','申','戌'],iStem:'庚',oStem:'庚',lines:'100'},
+  巽:{inner:['丑','亥','酉'],outer:['未','巳','卯'],iStem:'辛',oStem:'辛',lines:'011'},
+  坎:{inner:['寅','辰','午'],outer:['申','戌','子'],iStem:'戊',oStem:'戊',lines:'010'},
+  艮:{inner:['辰','午','申'],outer:['戌','子','寅'],iStem:'丙',oStem:'丙',lines:'001'},
+  坤:{inner:['未','巳','卯'],outer:['丑','亥','酉'],iStem:'乙',oStem:'癸',lines:'000'},
+};
+const PALACE_WX={乾:'金',兌:'金',坤:'土',艮:'土',震:'木',巽:'木',坎:'水',離:'火'};
+const PALACES={
+  乾:[['乾','乾','乾為天'],['乾','巽','天風姤'],['乾','艮','天山遯'],['乾','坤','天地否'],
+     ['巽','坤','風地觀'],['艮','坤','山地剝'],['離','坤','火地晉'],['離','乾','火天大有']],
+  坎:[['坎','坎','坎為水'],['坎','兌','水澤節'],['坎','震','水雷屯'],['坎','離','水火既濟'],
+     ['兌','離','澤火革'],['震','離','雷火豐'],['坤','離','地火明夷'],['坤','坎','地水師']],
+  艮:[['艮','艮','艮為山'],['艮','離','山火賁'],['艮','乾','山天大畜'],['艮','兌','山澤損'],
+     ['離','兌','火澤睽'],['乾','兌','天澤履'],['巽','兌','風澤中孚'],['巽','艮','風山漸']],
+  震:[['震','震','震為雷'],['震','坤','雷地豫'],['震','坎','雷水解'],['震','巽','雷風恒'],
+     ['坤','巽','地風升'],['坎','巽','水風井'],['兌','巽','澤風大過'],['兌','震','澤雷隨']],
+  巽:[['巽','巽','巽為風'],['巽','乾','風天小畜'],['巽','離','風火家人'],['巽','震','風雷益'],
+     ['乾','震','天雷無妄'],['離','震','火雷噬嗑'],['艮','震','山雷頤'],['艮','巽','山風蠱']],
+  離:[['離','離','離為火'],['離','艮','火山旅'],['離','巽','火風鼎'],['離','坎','火水未濟'],
+     ['艮','坎','山水蒙'],['巽','坎','風水渙'],['乾','坎','天水訟'],['乾','離','天火同人']],
+  坤:[['坤','坤','坤為地'],['坤','震','地雷復'],['坤','兌','地澤臨'],['坤','乾','地天泰'],
+     ['震','乾','雷天大壯'],['兌','乾','澤天夬'],['坎','乾','水天需'],['坎','坤','水地比']],
+  兌:[['兌','兌','兌為澤'],['兌','坎','澤水困'],['兌','坤','澤地萃'],['兌','艮','澤山咸'],
+     ['坎','艮','水山蹇'],['坤','艮','地山謙'],['震','艮','雷山小過'],['震','兌','雷澤歸妹']],
+};
+const SHIYING=[[6,3],[1,4],[2,5],[3,6],[4,1],[5,2],[4,1],[3,6]];
+const POS_NAME=['本宮','一世','二世','三世','四世','五世','游魂','歸魂'];
+const HEXLOOKUP={};
+for(const p in PALACES) PALACES[p].forEach((h,i)=>{
+  HEXLOOKUP[h[0]+h[1]]={name:h[2],palace:p,pos:i};});
+
+/* ===================== 五行生剋 ===================== */
+const SHENG={木:'火',火:'土',土:'金',金:'水',水:'木'};
+const KE={木:'土',土:'水',水:'火',火:'金',金:'木'};
+function liuqin(p,y){
+  if(p===y)return'兄弟';if(SHENG[p]===y)return'子孫';if(SHENG[y]===p)return'父母';
+  if(KE[p]===y)return'妻財';if(KE[y]===p)return'官鬼';}
+function wangShuai(yWX,ling){
+  if(yWX===ling)return'旺';if(SHENG[ling]===yWX)return'相';if(SHENG[yWX]===ling)return'休';
+  if(KE[yWX]===ling)return'囚';if(KE[ling]===yWX)return'死';}
+const MONTH_LING={寅:'木',卯:'木',巳:'火',午:'火',申:'金',酉:'金',
+  亥:'水',子:'水',辰:'土',戌:'土',丑:'土',未:'土'};
+const CHONG={子:'午',丑:'未',寅:'申',卯:'酉',辰:'戌',巳:'亥',
+  午:'子',未:'丑',申:'寅',酉:'卯',戌:'辰',亥:'巳'};
+const HE={子:'丑',丑:'子',寅:'亥',亥:'寅',卯:'戌',戌:'卯',
+  辰:'酉',酉:'辰',巳:'申',申:'巳',午:'未',未:'午'};
+function dayRelation(dayB,yaoB){
+  const d=BRANCH_WX[dayB],y=BRANCH_WX[yaoB],a=[];
+  if(dayB===yaoB)a.push('值日');
+  if(CHONG[dayB]===yaoB)a.push('日沖');
+  if(HE[dayB]===yaoB)a.push('日合');
+  if(SHENG[d]===y)a.push('日生');
+  else if(KE[d]===y)a.push('日剋');
+  else if(d===y&&dayB!==yaoB)a.push('日比');
+  return a.length?a.join('、'):'平';}
+function dayCat(dayB,yaoB){
+  if(CHONG[dayB]===yaoB)return'日沖';if(dayB===yaoB)return'值日';
+  if(HE[dayB]===yaoB)return'日合';
+  const d=BRANCH_WX[dayB],y=BRANCH_WX[yaoB];
+  if(SHENG[d]===y)return'日生';if(KE[d]===y)return'日剋';
+  if(d===y)return'日比';return'平';}
+
+// 十二長生（水土同宮）
+const ZS_STAGES=['長生','沐浴','冠帶','臨官','帝旺','衰','病','死','墓','絕','胎','養'];
+const ZS_START={木:'亥',火:'寅',金:'巳',水:'申',土:'申'};
+const ZS_ORDER=['長生','臨官','帝旺','冠帶','養','沐浴','胎','衰','病','死','墓','絕'];
+const ZS_LEVEL={長生:'旺',臨官:'旺',帝旺:'旺',冠帶:'相',養:'相',
+  沐浴:'休',胎:'休',衰:'囚',病:'囚',死:'死',墓:'死',絕:'死'};
+function zhangsheng(wx,dayB){
+  const L=BRANCHES.indexOf(ZS_START[wx]),B=BRANCHES.indexOf(dayB);
+  return ZS_STAGES[((B-L)%12+12)%12];}
+
+// 六神（依日干起）
+const BEAST_ORDER=['青龍','朱雀','勾陳','呈蛇','白虎','玄武'];
+const BEAST_START={甲:0,乙:0,丙:1,丁:1,戊:2,己:3,庚:4,辛:4,壬:5,癸:5};
+function getBeasts(dayStem){const s=BEAST_START[dayStem],a=[];
+  for(let i=0;i<6;i++)a.push(BEAST_ORDER[(s+i)%6]);return a;}
+// 旬空（依日干支）
+function getKong(dayStem,dayBranch){
+  const s=STEMS.indexOf(dayStem),b=BRANCHES.indexOf(dayBranch);
+  const head=(b-s+12)%12;
+  return[BRANCHES[(head+10)%12],BRANCHES[(head+11)%12]];}
+
+/* ===================== 干支曆 ===================== */
+function jdnFromDate(y,m,d){const a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;
+  return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+function dayGanzhi(y,m,d){let idx=((jdnFromDate(y,m,d)+49)%60+60)%60;
+  return{stem:STEMS[idx%10],branch:BRANCHES[idx%12]};}
+function monthBranchApprox(y,m,d){
+  const cut=[6,4,6,5,6,6,7,8,8,8,7,7];
+  let mb=m; if(d<cut[m-1])mb=m-1; if(mb<1)mb=12;
+  const map={1:'丑',2:'寅',3:'卯',4:'辰',5:'巳',6:'午',7:'未',8:'申',9:'酉',10:'戌',11:'亥',12:'子'};
+  return map[mb];}
+
+/* ===================== 裝卦核心 ===================== */
+function buildHex(upper,lower){
+  const data=HEXLOOKUP[upper+lower],palaceWX=PALACE_WX[data.palace];
+  const[shi,ying]=SHIYING[data.pos];
+  const li=TRI[lower],ui=TRI[upper],yaos=[];
+  for(let i=0;i<6;i++){
+    let branch,stem,yang;
+    if(i<3){branch=li.inner[i];stem=li.iStem;yang=li.lines[i]==='1';}
+    else{branch=ui.outer[i-3];stem=ui.oStem;yang=ui.lines[i-3]==='1';}
+    const wx=BRANCH_WX[branch];
+    yaos.push({pos:i+1,yang,stem,branch,wx,liuqin:liuqin(palaceWX,wx),
+      shi:(i+1===shi),ying:(i+1===ying)});}
+  return{name:data.name,palace:data.palace,palaceWX,posName:POS_NAME[data.pos],
+    shi,ying,upper,lower,yaos};}
+function buildFu(hex){
+  const present=new Set(hex.yaos.map(y=>y.liuqin));
+  const missing=['兄弟','子孫','父母','妻財','官鬼'].filter(x=>!present.has(x));
+  if(!missing.length)return{};
+  const pure=buildHex(hex.palace,hex.palace),fu={};
+  missing.forEach(mq=>{const y=pure.yaos.find(yy=>yy.liuqin===mq);
+    if(y)fu[y.pos]={liuqin:mq,branch:y.branch,stem:y.stem,wx:y.wx};});
+  return fu;}
+function findTri(lines){for(const t in TRI)if(TRI[t].lines===lines)return t;}
+function changedHex(upper,lower,moving){
+  if(!moving.length)return null;
+  let ll=TRI[lower].lines.split(''),ul=TRI[upper].lines.split('');
+  moving.forEach(i=>{if(i<3)ll[i]=ll[i]==='1'?'0':'1';else ul[i-3]=ul[i-3]==='1'?'0':'1';});
+  return buildHex(findTri(ul.join('')),findTri(ll.join('')));}
+function getWealth(hex,fu){
+  const v=hex.yaos.filter(y=>y.liuqin==='妻財');
+  if(v.length)return{...v[0],hidden:false};
+  const f=Object.values(fu).find(x=>x.liuqin==='妻財');
+  if(f)return{...f,hidden:true};
+  return null;}
+
+/* ===================== 爻圖（SVG，比照來源） ===================== */
+function renderYao(isYang,isMoving){
+  const w=84,h=20,yc=10;
+  let s=`<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" style="overflow:visible">`;
+  if(isYang){
+    s+=`<rect x="0" y="${yc-4}" width="${w}" height="8" fill="#1f2236"/>`;
+    if(isMoving)s+=`<circle cx="${w/2}" cy="${yc}" r="8.5" fill="none" stroke="#d11" stroke-width="2.6"/>`;
+  }else{
+    const gw=w*0.42;
+    s+=`<rect x="0" y="${yc-4}" width="${gw}" height="8" fill="#1f2236"/>`;
+    s+=`<rect x="${w-gw}" y="${yc-4}" width="${gw}" height="8" fill="#1f2236"/>`;
+    if(isMoving){const cx=w/2,r=8;
+      s+=`<line x1="${cx-r}" y1="${yc-r}" x2="${cx+r}" y2="${yc+r}" stroke="#d11" stroke-width="3" stroke-linecap="round"/>`;
+      s+=`<line x1="${cx+r}" y1="${yc-r}" x2="${cx-r}" y2="${yc+r}" stroke="#d11" stroke-width="3" stroke-linecap="round"/>`;}
+  }
+  return s+`</svg>`;}
+
+function renderHexTable(hex,moving,fu,bian,dayStem,kong){
+  const beasts=dayStem?getBeasts(dayStem):null;
+  let html=`<table class="gua">`;
+  html+=`<tr class="col-head">${bian?'<td colspan="2">化出</td>':''}
+    <td>六親</td><td>納甲</td>${kong?'<td></td>':''}<td>本卦</td>${beasts?'<td>六獸</td>':''}</tr>`;
+  for(let i=5;i>=0;i--){
+    const y=hex.yaos[i],mv=moving.includes(i),isW=y.liuqin==='妻財';
+    const shiy=y.shi?'<span class="shi">世</span>':(y.ying?'<span class="ying">應</span>':'');
+    const bianCell=bian?(mv
+      ?`<td class="bian-lq">${bian.yaos[i].liuqin}</td><td class="bian-gz"><span class="nj-stem">${bian.yaos[i].stem}</span>${bian.yaos[i].branch}</td>`
+      :`<td class="bian-lq"></td><td class="bian-gz"></td>`):'';
+    const kongCell=kong?`<td class="kong-col">${kong.includes(y.branch)?'空':''}</td>`:'';
+    const beastCell=beasts?`<td class="beast beast-${beasts[i]}">${beasts[i]}</td>`:'';
+    html+=`<tr class="${isW?'wealth-row':''}">
+      ${bianCell}
+      <td class="lq">${y.liuqin}${isW?'💰':''}</td>
+      <td class="gz"><span class="nj-stem">${y.stem}</span>${y.branch}<small style="color:#aaa">${y.wx}</small></td>
+      ${kongCell}
+      <td class="yao-cell">${renderYao(y.yang,mv)}<div class="sy-label">${shiy}</div></td>
+      ${beastCell}
+    </tr>`;}
+  return html+`</table>`;}
+
+/* ===================== Yahoo Finance 抓取（上市/上櫃/興櫃/美股） ===================== */
+// 純前端透過公用 CORS 代理鏈（自動容錯），雙擊 HTML 即可，不需本機伺服器
+const PROXIES=[
+  u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
+  u=>'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u),
+  u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+];
+async function fetchJSON(url){
+  let lastErr;
+  for(const make of PROXIES){
+    try{
+      const r=await fetch(make(url));
+      const t=await r.text();
+      // 代理層忙線／回 HTML → 換下一個代理；Yahoo 本身的 404 仍是合法 JSON，直接收下交上層判斷
+      if(t.includes('Too Many Requests')||t.trim().startsWith('<'))throw new Error('proxy busy');
+      return JSON.parse(t);
+    }catch(e){lastErr=e;}
+  }
+  throw lastErr||new Error('fetch failed');
+}
+const MARKET_LABEL={Taiwan:'上市','Taipei Exchange':'上櫃'};
+// 抓單一 Yahoo 代號的日線，並算每日漲跌幅
+async function fetchYahoo(sym,sd,ed){
+  const p1=Math.floor(sd.getTime()/1000)-16*86400; // 提前取基準算漲跌幅
+  const p2=Math.floor(ed.getTime()/1000)+2*86400;
+  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?period1=${p1}&period2=${p2}&interval=1d`;
+  const j=await fetchJSON(url);
+  const res=j.chart&&j.chart.result&&j.chart.result[0];
+  if(!res||!res.timestamp)return null;
+  const off=res.meta.gmtoffset||0, q=res.indicators.quote[0];
+  const arr=[];
+  for(let i=0;i<res.timestamp.length;i++){
+    const c=q.close[i]; if(c==null)continue;
+    const d=new Date((res.timestamp[i]+off)*1000);
+    arr.push({y:d.getUTCFullYear(),m:d.getUTCMonth()+1,d:d.getUTCDate(),close:c});
+  }
+  for(let i=0;i<arr.length;i++){
+    const prev=i>0?arr[i-1].close:null;
+    arr[i].change=prev?arr[i].close-prev:0;
+    arr[i].pct=prev?(arr[i].close-prev)/prev*100:0;
+  }
+  const fx=res.meta.fullExchangeName||'';
+  const market=MARKET_LABEL[fx]||fx||'股市';
+  return{rows:arr,market,sym,currency:res.meta.currency||''};
+}
+// 解析使用者輸入的代號 → 自動嘗試台股/美股形式
+async function detectMarket(code,sd,ed){
+  code=code.trim().toUpperCase();
+  let variants;
+  if(/^\d+[A-Z]?$/.test(code))variants=[code+'.TW',code+'.TWO']; // 純數字：先上市再上櫃/興櫃
+  else variants=[code]; // 已含後綴、指數(^)、或美股代號
+  for(const v of variants){
+    let r=null; try{r=await fetchYahoo(v,sd,ed);}catch(e){r=null;}
+    if(r&&r.rows.length)return r;
+  }
+  return null;
+}
+
+/* ===================== 圖表 ===================== */
+const LV_COLOR={旺:'#2e8b57',相:'#3a6ea5',休:'#c79a3a',囚:'#cf7a3a',死:'#c0504d'};
+function renderChart(rows){
+  if(rows.length<2)return'';
+  const W=920,H=440,padL=56,padR=18,padT=24,padB=52;
+  const plotW=W-padL-padR,plotH=H-padT-padB;
+  const closes=rows.map(r=>r.close);
+  let mn=Math.min(...closes),mx=Math.max(...closes);
+  const pad=(mx-mn)*0.08||1;mn-=pad;mx+=pad;
+  const n=rows.length,bw=plotW/n;
+  const X=i=>padL+(n<=1?0:i/(n-1)*plotW);
+  const Y=c=>padT+(mx-c)/(mx-mn)*plotH;
+  const top=padT,bot=padT+plotH;
+  // 以「月令旺相休囚」分段為主（整片背景＋月支標籤），日辰為輔（圓點）
+  let bands='',i=0;
+  while(i<n){
+    let j=i;while(j+1<n&&rows[j+1].mb===rows[i].mb)j++;
+    const x0=X(i)-bw/2,x1=X(j)+bw/2,cx=(x0+x1)/2,ws=rows[i].ws,mb=rows[i].mb;
+    bands+=`<rect x="${x0.toFixed(1)}" y="${top}" width="${(x1-x0).toFixed(1)}"
+      height="${plotH.toFixed(1)}" fill="${LV_COLOR[ws]}" opacity="0.15"/>
+      <line x1="${x0.toFixed(1)}" y1="${top}" x2="${x0.toFixed(1)}" y2="${bot}" stroke="#d9d2bd" stroke-dasharray="2 2"/>
+      <rect x="${(cx-26).toFixed(1)}" y="${top+2}" width="52" height="21" rx="5" fill="${LV_COLOR[ws]}"/>
+      <text x="${cx.toFixed(1)}" y="${top+16}" text-anchor="middle" font-size="12.5"
+      font-weight="700" fill="#fff">${mb}月·${ws}</text>`;
+    i=j+1;}
+  const yticks=[mx,(mx*3+mn)/4,(mx+mn)/2,(mx+mn*3)/4,mn].map(v=>
+    `<line x1="${padL}" y1="${Y(v).toFixed(1)}" x2="${W-padR}" y2="${Y(v).toFixed(1)}"
+     stroke="#eee" stroke-dasharray="3 3"/>
+     <text x="${padL-8}" y="${(Y(v)+4).toFixed(1)}" text-anchor="end" font-size="11"
+     fill="#8a8674">${v.toFixed(0)}</text>`).join('');
+  const pts=rows.map((r,k)=>`${X(k).toFixed(1)},${Y(r.close).toFixed(1)}`).join(' ');
+  let dots='';
+  rows.forEach((r,k)=>{dots+=`<circle cx="${X(k).toFixed(1)}" cy="${Y(r.close).toFixed(1)}"
+    r="4" fill="${LV_COLOR[ZS_LEVEL[r.ls]]}" stroke="#fff" stroke-width="1.1">
+    <title>${r.y}/${r.m}/${r.d} ${r.dayS}${r.dayB}　長生:${r.ls}　月令:${r.ws}　收${r.close} ${r.pct>=0?'+':''}${r.pct.toFixed(2)}%</title></circle>`;});
+  const idxs=[...new Set([0,Math.floor(n/4),Math.floor(n/2),Math.floor(n*3/4),n-1])];
+  const xticks=idxs.map(k=>{const r=rows[k];
+    return`<text x="${X(k).toFixed(1)}" y="${bot+22}" text-anchor="middle" font-size="11"
+      fill="#8a8674">${String(r.m).padStart(2,'0')}/${String(r.d).padStart(2,'0')}</text>`;}).join('');
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    ${bands}${yticks}
+    <polyline points="${pts}" fill="none" stroke="#ad5a55" stroke-width="2.2" stroke-linejoin="round"/>
+    ${dots}
+    <line x1="${padL}" y1="${bot}" x2="${W-padR}" y2="${bot}" stroke="#ccc"/>${xticks}
+  </svg>
+  <div class="legend"><b style="color:#8a5e0e">主：月令旺相休囚</b>（背景色塊依月分段，標「月支·旺衰」）　|
+    <b style="color:#8a5e0e">輔：日辰十二長生</b>（線上每日圓點）<br>
+    <span class="badge b-旺">旺　長生臨官帝旺</span>
+    <span class="badge b-相">相　冠帶養</span>
+    <span class="badge b-休">休　沐浴胎</span>
+    <span class="badge b-囚">囚　衰病</span>
+    <span class="badge b-死">死　死墓絕</span>
+    　滑鼠移到圓點看當日詳情</div>`;}
+
+function aggregate(rows,keyFn){
+  const g={};rows.forEach(r=>{const k=keyFn(r);(g[k]=g[k]||[]).push(r.pct);});
+  return Object.entries(g).map(([k,arr])=>{const n=arr.length,avg=arr.reduce((a,b)=>a+b,0)/n;
+    return{k,n,avg,upRate:arr.filter(x=>x>0).length/n*100};});}
+function statTable(title,stats,order){
+  stats.sort((a,b)=>order?order.indexOf(a.k)-order.indexOf(b.k):b.avg-a.avg);
+  const rows=stats.map(s=>`<tr><td>${s.k}</td><td>${s.n}</td>
+    <td class="${s.avg>=0?'up':'down'}">${s.avg>=0?'+':''}${s.avg.toFixed(2)}%</td>
+    <td>${s.upRate.toFixed(0)}%</td></tr>`).join('');
+  return`<h2 style="margin-top:18px">${title}</h2>
+    <table class="stat-table"><tr><th>分類</th><th>樣本天數</th><th>平均漲跌幅</th><th>上漲比例</th></tr>
+    ${rows}</table>`;}
+
+/* ===================== UI ===================== */
+let selLower='乾',selUpper='乾';
+function initGrid(id,isLower){
+  const g=document.getElementById(id);
+  TRIGS.forEach(t=>{const b=document.createElement('button');
+    b.innerHTML=`<span class="sym-big">${t.sym}</span><span class="name-big">${t.label}</span><span class="name-sub">(${t.name})</span>`;
+    b.dataset.name=t.name;
+    if((isLower?selLower:selUpper)===t.name)b.classList.add('active');
+    b.onclick=()=>{if(isLower)selLower=t.name;else selUpper=t.name;
+      g.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.name===t.name));};
+    g.appendChild(b);});}
+function initUI(){
+  initGrid('gridLower',true);initGrid('gridUpper',false);
+  const mc=document.getElementById('movingChecks');
+  ['初','二','三','四','五','上'].forEach((n,i)=>mc.insertAdjacentHTML('beforeend',
+    `<label><input type="checkbox" id="mv${i}" value="${i}">${n}爻</label>`));
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('castDate').value=today;
+  document.getElementById('startDate').value=today;
+  document.getElementById('endDate').value=today;
+  // 起卦日與區間起同步
+  document.getElementById('castDate').addEventListener('change',e=>{
+    document.getElementById('startDate').value=e.target.value;});
+}
+
+/* ===================== 卦盤渲染（化出內聯同一表） ===================== */
+function hexPanelHTML(rec){
+  const[cy,cm,cd]=rec.castDate.split('-').map(Number);
+  const castGZ=dayGanzhi(cy,cm,cd), kong=getKong(castGZ.stem,castGZ.branch);
+  const hex=buildHex(rec.upper,rec.lower), fu=buildFu(hex);
+  const bian=changedHex(rec.upper,rec.lower,rec.moving), wealth=rec.wealth;
+  let head=`<div class="panel result-card">
+    <div class="gz-banner">
+      <span class="gz-col gz-major">${castGZ.stem}${castGZ.branch}<small>日</small></span>
+      <span class="gz-kong">旬空<b>${kong.join('')}</b></span>
+    </div>
+    <div class="gua-title"><span class="gname">${hex.name}</span>${bian?`<span class="gua-zhi">之</span><span class="gname">${bian.name}</span>`:''}
+      <span class="gmeta">${hex.palace}宮${hex.palaceWX}・${hex.posName}卦　起卦日 ${rec.castDate}</span></div>
+    ${renderHexTable(hex,rec.moving,fu,bian,castGZ.stem,kong)}`;
+  if(wealth)head+=`<div class="wealth-summary"><b>財爻</b>：${wealth.stem}${wealth.branch}
+    （五行<b>${wealth.wx}</b>）${wealth.hidden?'　<span style="color:#999">※財不上卦，取伏神</span>':''}
+    <br>下方逐日對照即以此財爻地支，配當日月令、日辰判旺衰與十二長生。</div>`;
+  else head+=`<div class="wealth-summary"><b>此卦無財爻可取</b>，無法做財爻對照。</div>`;
+  head+=`<div class="note">六獸依日干起，旬空依日干支推；化出爻列於同一表內（動爻才有）。動爻：紅圈＝老陽、紅×＝老陰。</div></div>`;
+  return head;
+}
+function stockPanelsHTML(rec){
+  const rows=rec.rows, wealth=rec.wealth, stockNo=rec.stock, market=rec.market;
+  if(!rows.length)return'';
+  const chart=`<div class="panel result-card"><h2>股價曲線 × 日月旺相</h2>
+    <p class="hint">${stockNo}（${market}）　財爻 ${wealth.stem}${wealth.branch}（${wealth.wx}）　${rows.length} 個交易日　${rec.castDate}~${rec.endDate}</p>
+    ${renderChart(rows)}</div>`;
+  const stats=`<div class="panel result-card"><h2>統計：財爻狀態 vs 漲跌</h2>
+    <p class="hint">樣本：${stockNo}，${rows.length} 個交易日（財爻 ${wealth.stem}${wealth.branch}・${wealth.wx}）</p>
+    ${statTable('① 依月令旺相休囚死',aggregate(rows,r=>r.ws),['旺','相','休','囚','死'])}
+    ${statTable('② 依日辰對財爻關係',aggregate(rows,r=>r.dcat),['值日','日合','日生','日比','日沖','日剋','平'])}
+    ${statTable('③ 依日辰十二長生（每日變動）',aggregate(rows,r=>r.ls),ZS_ORDER)}
+    <p class="hint">旺相休囚依月令（整月固定）；逐日變動的是日辰關係與十二長生。樣本越多越有參考性。</p></div>`;
+  let detail=`<div class="panel result-card"><h2>逐日對照明細</h2><div class="scroll"><table>
+    <tr><th>日期</th><th>日干支</th><th>月令旺衰</th><th>日辰長生</th><th>日辰關係</th><th>收盤</th><th>漲跌幅</th></tr>`;
+  rows.slice().reverse().forEach(r=>{detail+=`<tr>
+    <td>${r.y}/${String(r.m).padStart(2,'0')}/${String(r.d).padStart(2,'0')}</td>
+    <td>${r.dayS}${r.dayB}</td>
+    <td><span class="badge b-${r.ws}">${r.ws}</span></td>
+    <td><span class="badge b-${ZS_LEVEL[r.ls]}">${r.ls}</span></td>
+    <td style="color:#888">${r.drel}</td>
+    <td>${r.close.toFixed(2)}</td>
+    <td class="${r.pct>=0?'up':'down'}">${r.pct>=0?'+':''}${r.pct.toFixed(2)}%</td></tr>`;});
+  detail+='</table></div></div>';
+  return chart+stats+detail;
+}
+function renderAll(rec){
+  document.getElementById('result').innerHTML=hexPanelHTML(rec)+stockPanelsHTML(rec);
+}
+
+/* ===================== 歷史記錄（localStorage） ===================== */
+const LS_KEY='iching_stock_records';
+function loadRecords(){try{return JSON.parse(localStorage.getItem(LS_KEY))||[];}catch(e){return[];}}
+function saveRecords(a){try{localStorage.setItem(LS_KEY,JSON.stringify(a));}catch(e){}}
+function saveRecord(rec){const a=loadRecords();a.unshift(rec);if(a.length>50)a.length=50;saveRecords(a);renderHistory();}
+function delRecord(ts){if(!confirm('刪除此筆記錄？'))return;saveRecords(loadRecords().filter(r=>r.ts!==ts));renderHistory();}
+function loadRecordByTs(ts){const r=loadRecords().find(x=>x.ts===ts);
+  if(r){renderAll(r);document.getElementById('result').scrollIntoView({behavior:'smooth'});}}
+function renderHistory(){
+  const a=loadRecords(), p=document.getElementById('historyPanel');
+  if(!a.length){p.style.display='none';return;}
+  p.style.display='';
+  document.getElementById('historyList').innerHTML=a.map(r=>{
+    const hex=buildHex(r.upper,r.lower);
+    const up=r.rows.length?(r.rows.filter(x=>x.pct>0).length/r.rows.length*100).toFixed(0):'-';
+    return`<div class="hist-item">
+      <div class="hi-main" onclick="loadRecordByTs(${r.ts})">
+        <b>${r.stock}（${r.market}）${hex.name}</b>
+        <span class="hi-sub">　財${r.wealth.stem}${r.wealth.branch}　${r.castDate}~${r.endDate}　${r.rows.length}日　收紅${up}%</span>
+      </div>
+      <button class="hi-del" onclick="delRecord(${r.ts})">刪除</button>
+    </div>`;}).join('');
+}
+
+/* ===================== 主流程 ===================== */
+async function run(){
+  const btn=document.getElementById('goBtn'),prog=document.getElementById('progress');
+  const upper=selUpper,lower=selLower;
+  const moving=[];for(let i=0;i<6;i++)if(document.getElementById('mv'+i).checked)moving.push(i);
+  const stockNo=document.getElementById('stockNo').value.trim();
+  const cv=document.getElementById('castDate').value, ev=document.getElementById('endDate').value;
+  if(!cv||!ev){prog.textContent='請選擇起卦日與到某一天。';return;}
+  const sd=new Date(cv+'T00:00:00'), ed=new Date(ev+'T00:00:00');
+  if(sd>ed){prog.textContent='起卦日不能晚於迄日。';return;}
+
+  const hex=buildHex(upper,lower);
+  const wealth=getWealth(hex,buildFu(hex));
+  // 先顯示卦盤
+  const baseRec={ts:Date.now(),stock:stockNo,market:'',upper,lower,moving,
+    castDate:cv,endDate:ev,rows:[],wealth};
+  document.getElementById('result').innerHTML=hexPanelHTML(baseRec);
+  if(!wealth)return;
+
+  // 抓股價（Yahoo 單一請求，涵蓋上市/上櫃/興櫃/美股）
+  btn.disabled=true; prog.textContent=`抓取 ${stockNo} 股價中…`;
+  let det;try{det=await detectMarket(stockNo,sd,ed);}catch(e){det=null;}
+  btn.disabled=false;
+  if(!det){prog.innerHTML='查無此代號資料。請確認：台股輸入數字（如 2330、5483），美股輸入代號（如 AAPL），指數加 ^（如 ^TWII）。';return;}
+  prog.textContent='';
+  let all=det.rows.filter(r=>{const t=new Date(r.y,r.m-1,r.d);return t>=sd&&t<=ed;});
+  if(!all.length){prog.textContent='此區間內查無交易資料（可能起卦日為未來或非交易日）。';return;}
+
+  const rows=all.map(r=>{
+    const mb=monthBranchApprox(r.y,r.m,r.d), ling=MONTH_LING[mb];
+    const dg=dayGanzhi(r.y,r.m,r.d);
+    return{...r,mb,ws:wangShuai(wealth.wx,ling),dcat:dayCat(dg.branch,wealth.branch),
+      drel:dayRelation(dg.branch,wealth.branch),ls:zhangsheng(wealth.wx,dg.branch),
+      dayB:dg.branch,dayS:dg.stem};});
+
+  const rec={...baseRec,stock:det.sym,market:det.market,rows};
+  renderAll(rec);
+  saveRecord(rec);
+}
+
+initUI();
+renderHistory();
+</script>
+</body>
+</html>
