@@ -148,19 +148,79 @@
 
   function dayGanzhi(year, month, day) {
     const index = ((julianDayNumber(year, month, day) + 49) % 60 + 60) % 60;
-    return {stem:STEMS[index % 10], branch:BRANCHES[index % 12]};
+    return {stem:STEMS[index % 10], branch:BRANCHES[index % 12], index:index};
   }
 
-  function cast(upper, lower, movingIndexes, dateParts) {
+  function chinaTimeFields(date) {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) throw new Error('無效的日期時間');
+    const chinaDate = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+    return {
+      year:chinaDate.getUTCFullYear(),
+      month:chinaDate.getUTCMonth() + 1,
+      day:chinaDate.getUTCDate(),
+      hour:chinaDate.getUTCHours(),
+      minute:chinaDate.getUTCMinutes()
+    };
+  }
+
+  function yearGanzhi(fields) {
+    let year = fields.year;
+    if (fields.month < 2 || (fields.month === 2 && fields.day < 4)) year -= 1;
+    const index = ((year - 1984) % 60 + 60) % 60;
+    return {stem:STEMS[index % 10], branch:BRANCHES[index % 12], index:index};
+  }
+
+  const MONTH_TERMS = [
+    [1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],
+    [7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]
+  ];
+  const TIGER_START = {0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0};
+
+  function monthGanzhi(fields, yearStemIndex) {
+    let chosen = MONTH_TERMS[MONTH_TERMS.length - 1];
+    for (let index = MONTH_TERMS.length - 1; index >= 0; index -= 1) {
+      const term = MONTH_TERMS[index];
+      if (fields.month > term[0] || (fields.month === term[0] && fields.day >= term[1])) {
+        chosen = term;
+        break;
+      }
+    }
+    const branchIndex = chosen[2];
+    const yinStem = TIGER_START[yearStemIndex];
+    const offset = (branchIndex - 2 + 12) % 12;
+    const stemIndex = (yinStem + offset) % 10;
+    return {stem:STEMS[stemIndex], branch:BRANCHES[branchIndex]};
+  }
+
+  function chinaGanzhi(date) {
+    const chinaFields = chinaTimeFields(date);
+    let pillarFields = chinaFields;
+    if (chinaFields.hour >= 23) {
+      const nextDate = new Date(Date.UTC(chinaFields.year, chinaFields.month - 1, chinaFields.day) + 86400000);
+      pillarFields = Object.assign({}, chinaFields, {
+        year:nextDate.getUTCFullYear(), month:nextDate.getUTCMonth() + 1, day:nextDate.getUTCDate()
+      });
+    }
+    const year = yearGanzhi(pillarFields);
+    const month = monthGanzhi(pillarFields, year.index % 10);
+    const day = dayGanzhi(pillarFields.year, pillarFields.month, pillarFields.day);
+    return {fields:chinaFields, pillarFields:pillarFields, year:year, month:month, day:day};
+  }
+
+  function cast(upper, lower, movingIndexes, date) {
     const base = buildHex(upper, lower);
     const changed = changedHex(base, movingIndexes);
-    const ganzhi = dayGanzhi(dateParts.year, dateParts.month, dateParts.day);
+    const pillars = chinaGanzhi(date);
+    const ganzhi = pillars.day;
     return {
       base:base,
       changed:changed,
       movingIndexes:movingIndexes.slice().sort(function (a, b) { return a - b; }),
       hidden:hiddenSpirits(base),
       ganzhi:ganzhi,
+      yearGanzhi:pillars.year,
+      monthGanzhi:pillars.month,
+      chinaFields:pillars.fields,
       beasts:beasts(ganzhi.stem),
       voidBranches:voidBranches(ganzhi.stem, ganzhi.branch)
     };
@@ -181,6 +241,10 @@
     beasts:beasts,
     voidBranches:voidBranches,
     dayGanzhi:dayGanzhi,
+    chinaTimeFields:chinaTimeFields,
+    yearGanzhi:yearGanzhi,
+    monthGanzhi:monthGanzhi,
+    chinaGanzhi:chinaGanzhi,
     cast:cast
   };
 });

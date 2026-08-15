@@ -55,6 +55,7 @@
         <label class="date-field">
           <span>日期時間（本地）</span>
           <input type="datetime-local" id="castDate">
+          <small class="china-time-preview" id="chinaTimePreview"></small>
         </label>
         <button class="primary-button" id="castButton" type="button">排出納甲卦盤</button>
       </div>
@@ -63,7 +64,7 @@
     <section id="result" aria-live="polite"></section>
 
     <footer>
-      <p>本工具只排卦，不連線、不抓股價；占事與卦盤只在目前畫面及匯出的圖片中使用。</p>
+      <p>干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。</p>
     </footer>
   </main>
   <script src="core.js"></script>

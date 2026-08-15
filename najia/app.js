@@ -21,8 +21,23 @@
     });
   }
 
-  function displayDateTime(value) {
-    return value.replace('T', ' ');
+  function pad2(value) {
+    return String(value).padStart(2, '0');
+  }
+
+  function chinaDateTimeText(fields) {
+    return fields.year + '/' + pad2(fields.month) + '/' + pad2(fields.day) + ' ' + pad2(fields.hour) + ':' + pad2(fields.minute);
+  }
+
+  function updateChinaTimePreview() {
+    const value = document.getElementById('castDate').value;
+    const preview = document.getElementById('chinaTimePreview');
+    if (!value) { preview.textContent = ''; return; }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) { preview.textContent = ''; return; }
+    const pillars = core.chinaGanzhi(date);
+    preview.textContent = '中原標準時間 ' + chinaDateTimeText(pillars.fields) + '（UTC+8）' +
+      '｜' + pillars.year.stem + pillars.year.branch + '年 ' + pillars.month.stem + pillars.month.branch + '月 ' + pillars.day.stem + pillars.day.branch + '日';
   }
 
   function createTrigramGrid(elementId, key) {
@@ -103,8 +118,11 @@
   function renderResult(result, dateValue, matter) {
     const changedTitle = result.changed ? '<span class="to">之</span><h2>' + result.changed.name + '</h2>' : '';
     document.getElementById('result').innerHTML = '<section class="card result-card">' +
-      '<div class="result-banner"><strong>' + result.ganzhi.stem + result.ganzhi.branch + '日</strong>' +
-      '<span>旬空 <b>' + result.voidBranches.join('') + '</b></span><span>本地時間 ' + displayDateTime(dateValue) + '</span></div>' +
+      '<div class="result-banner"><strong>' + result.yearGanzhi.stem + result.yearGanzhi.branch + '年</strong>' +
+      '<span class="pillar">' + result.monthGanzhi.stem + result.monthGanzhi.branch + '月</span>' +
+      '<span class="pillar">' + result.ganzhi.stem + result.ganzhi.branch + '日</span>' +
+      '<span>旬空 <b>' + result.voidBranches.join('') + '</b></span>' +
+      '<span class="china-date">中原標準時間 ' + chinaDateTimeText(result.chinaFields) + '（UTC+8）</span></div>' +
       (matter ? '<div class="matter-result"><strong>占事</strong>' + escapeHTML(matter) + '</div>' : '') +
       '<div class="hex-title"><h2>' + result.base.name + '</h2>' + changedTitle +
       '<span class="hex-meta">' + result.base.palace + '宮' + result.base.palaceElement + '・' + result.base.positionName + '卦</span></div>' +
@@ -195,13 +213,15 @@
     context.fillRect(48, contentY, 1104, 72);
     context.fillStyle = '#fff';
     context.font = '800 31px "Microsoft JhengHei", sans-serif';
-    context.fillText(result.ganzhi.stem + result.ganzhi.branch + '日', 70, contentY + 47);
+    context.fillText(result.yearGanzhi.stem + result.yearGanzhi.branch + '年', 70, contentY + 47);
+    context.fillText(result.monthGanzhi.stem + result.monthGanzhi.branch + '月', 255, contentY + 47);
+    context.fillText(result.ganzhi.stem + result.ganzhi.branch + '日', 440, contentY + 47);
     context.fillStyle = '#ffb2aa';
     context.font = '700 25px "Microsoft JhengHei", sans-serif';
-    context.fillText('旬空 ' + result.voidBranches.join(''), 265, contentY + 46);
+    context.fillText('旬空 ' + result.voidBranches.join(''), 625, contentY + 46);
     context.fillStyle = '#ded7c8';
     context.font = '500 23px "Microsoft JhengHei", sans-serif';
-    context.fillText('本地時間 ' + displayDateTime(record.dateValue), 690, contentY + 45);
+    context.fillText('中原 ' + chinaDateTimeText(result.chinaFields), 850, contentY + 45);
     contentY += 112;
 
     const changedName = result.changed ? '　之　' + result.changed.name : '';
@@ -339,10 +359,9 @@
       document.getElementById('result').innerHTML = '<div class="card empty-result">請先選擇起卦日期。</div>';
       return;
     }
-    const dateParts = dateValue.slice(0, 10).split('-').map(Number);
     const matter = document.getElementById('castMatter').value.trim();
     const moving = Array.from(document.querySelectorAll('#movingGrid input:checked')).map(function (input) { return Number(input.value); });
-    const result = core.cast(state.upper, state.lower, moving, {year:dateParts[0], month:dateParts[1], day:dateParts[2]});
+    const result = core.cast(state.upper, state.lower, moving, new Date(dateValue));
     renderResult(result, dateValue, matter);
   }
 
@@ -350,5 +369,7 @@
   createTrigramGrid('upperGrid', 'upper');
   createMovingOptions();
   document.getElementById('castDate').value = localDateTimeValue(new Date());
+  document.getElementById('castDate').addEventListener('input', updateChinaTimePreview);
+  updateChinaTimePreview();
   document.getElementById('castButton').addEventListener('click', castFromUI);
 })();
