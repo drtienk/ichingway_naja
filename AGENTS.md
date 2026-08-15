@@ -85,6 +85,7 @@
 
 - 兩頁功能移植自參考專案 `4. 六爻裝卦app`，保留原本完整能力，不把其程式複製回納甲 `app.js`。
 - 萬年曆使用瀏覽器 `Intl` Chinese calendar，無外部套件；支援國曆／農曆、1901–2100、日期跳轉、五級字體、中文／English／中英、年/月/日干支與旬空。
+- 萬年曆開啟後必須先顯示今天／所選日期的日期詳情：國曆、農曆、年柱、月柱、日柱與旬空；月曆本體排列在日期詳情下方，讓手機首屏優先看到當日資訊。
 - 萬年曆與裝卦共用 `najia_display_language` 語言偏好；同時相容參考版舊鍵 `liuyao_lang`。萬年曆檢視與字級仍使用 `liuyao_calendar_view`、`liuyao_calendar_font_size`。
 - 風水羅盤必須保留：地址與 Google Maps 連結解析、經緯度輸入、目前位置、搜尋紀錄、街道／衛星圖、正北／磁北、WMM 磁偏角、二十四山、大小、透明度、羅盤顯示切換、拖曳、量向線與控制列收合。
 - 羅盤需要網路載入 Leaflet、geomagnetism、OpenStreetMap／Esri 圖磚及 Nominatim 地址服務；定位需要 HTTPS 與使用者授權。納甲與萬年曆仍可完全離線。
