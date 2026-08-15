@@ -92,26 +92,26 @@
       const moving = result.movingIndexes.includes(index);
       const hidden = result.hidden[line.position];
       rows += '<tr class="' + (moving ? 'moving-row' : '') + '">' +
-        '<td class="beast">' + result.beasts[index] + '</td>' +
-        '<td class="hidden">' + (hidden ? '伏 ' + hidden.sixKin + ' <span class="stem">' + hidden.stem + '</span>' + hidden.branch + hidden.element : '—') + '</td>' +
         '<td class="kin">' + line.sixKin + '</td>' +
         '<td><span class="stem">' + line.stem + '</span>' + line.branch + '<span class="element">' + line.element + '</span></td>' +
+        '<td class="hidden">' + (hidden ? '伏 ' + hidden.sixKin + ' <span class="stem">' + hidden.stem + '</span>' + hidden.branch + hidden.element : '—') + '</td>' +
         '<td class="void">' + (result.voidBranches.includes(line.branch) ? '空' : '') + '</td>' +
         '<td>' + lineGraphic(line, moving) + '</td>' +
         '<td>' + relationLabel(line) + '</td>' +
         '<td class="changed-cell">' + (moving && changedLine ? changedLine.sixKin : '') + '</td>' +
         '<td class="changed-cell">' + (moving && changedLine ? '<span class="stem">' + changedLine.stem + '</span>' + changedLine.branch + '<span class="element">' + changedLine.element + '</span>' : '') + '</td>' +
+        '<td class="beast">' + result.beasts[index] + '</td>' +
         '</tr>';
       compactRows += '<div class="compact-line ' + (moving ? 'moving-row' : '') + '">' +
         '<div class="compact-info"><b>' + line.sixKin + '</b><span><span class="stem">' + line.stem + '</span>' + line.branch + '・' + line.element +
         (result.voidBranches.includes(line.branch) ? ' <em>空</em>' : '') + '</span>' +
         (hidden ? '<small>伏 ' + hidden.sixKin + ' ' + hidden.stem + hidden.branch + '</small>' : '') + '</div>' +
-        '<div class="compact-yao">' + lineGraphic(line, moving) + '<span>' + relationLabel(line) + '</span></div>' +
-        '<div class="compact-side"><b>' + result.beasts[index] + '</b>' +
-        (moving && changedLine ? '<span>化 ' + changedLine.sixKin + '<br>' + changedLine.stem + changedLine.branch + '・' + changedLine.element + '</span>' : '') + '</div></div>';
+        '<div class="compact-yao"><div class="compact-main-yao">' + lineGraphic(line, moving) + '<span>' + relationLabel(line) + '</span></div>' +
+        (moving && changedLine ? '<small>化 ' + changedLine.sixKin + ' ' + changedLine.stem + changedLine.branch + '・' + changedLine.element + '</small>' : '') + '</div>' +
+        '<div class="compact-side"><b>' + result.beasts[index] + '</b></div></div>';
     }
     return '<div class="table-scroll"><table class="hex-table">' +
-      '<thead><tr><th>六獸</th><th>伏神</th><th>六親</th><th>納甲</th><th>旬空</th><th>本卦</th><th>世應</th><th>化爻六親</th><th>化爻納甲</th></tr></thead>' +
+      '<thead><tr><th>六親</th><th>納甲</th><th>伏神</th><th>旬空</th><th>本卦</th><th>世應</th><th>化爻六親</th><th>化爻納甲</th><th>六獸</th></tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div><div class="compact-lines">' + compactRows + '</div>';
   }
 
@@ -240,8 +240,8 @@
     context.fillText('六親／納甲', 68, contentY + 30);
     context.fillText('本卦', 502, contentY + 30);
     context.fillText('世應', 714, contentY + 30);
-    context.fillText('六獸', 820, contentY + 30);
-    context.fillText('化爻', 950, contentY + 30);
+    context.fillText('化爻', 815, contentY + 30);
+    context.fillText('六獸', 1060, contentY + 30);
     contentY += 62;
 
     for (let index = 5; index >= 0; index -= 1) {
@@ -282,14 +282,16 @@
       }
       context.fillStyle = '#20243a';
       context.font = '700 25px "Microsoft JhengHei", sans-serif';
-      context.fillText(result.beasts[index], 810, rowY + 40);
       if (changedLine) {
         context.fillStyle = '#645f54';
         context.font = '700 22px "Microsoft JhengHei", sans-serif';
-        context.fillText(changedLine.sixKin, 940, rowY + 30);
+        context.fillText(changedLine.sixKin, 810, rowY + 30);
         context.font = '500 20px "Microsoft JhengHei", sans-serif';
-        context.fillText(changedLine.stem + changedLine.branch + '・' + changedLine.element, 940, rowY + 65);
+        context.fillText(changedLine.stem + changedLine.branch + '・' + changedLine.element, 810, rowY + 65);
       }
+      context.fillStyle = '#20243a';
+      context.font = '700 25px "Microsoft JhengHei", sans-serif';
+      context.fillText(result.beasts[index], 1050, rowY + 40);
     }
 
     context.fillStyle = '#777061';

@@ -154,13 +154,14 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .compact-info span { font-size:13px; }
   .compact-info small { color:#80652f; font-size:11px; }
   .compact-info em { color:var(--red); font-style:normal; font-weight:900; }
-  .compact-yao { display:flex; align-items:center; justify-content:center; gap:4px; }
+  .compact-yao { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+  .compact-main-yao { display:flex; align-items:center; justify-content:center; gap:4px; }
   .compact-yao .line-wrap { min-width:0; }
   .compact-yao .yao { width:68px; }
   .compact-yao .yao.yin::before,.compact-yao .yao.yin::after { width:29px; }
+  .compact-yao small { color:#777061; font-size:10px; text-align:center; line-height:1.3; }
   .compact-side { display:flex; flex-direction:column; align-items:flex-end; color:#4f493d; text-align:right; line-height:1.35; }
   .compact-side b { font-size:15px; }
-  .compact-side span { margin-top:5px; color:#777061; font-size:11px; }
 }
 
 @media (max-width:480px) {
