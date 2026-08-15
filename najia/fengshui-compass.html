@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1f2236">
+<link rel="icon" type="image/png" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="I-ChingWay 羅盤">
+<title>I-ChingWay 風水羅盤</title>
+
+<!-- Leaflet 地圖 (免費，免金鑰) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- 世界磁場模型 WMM，用來算磁偏角 (esm.sh 會自動打包成瀏覽器可用) -->
+<script type="module">
+  import geomagnetism from 'https://esm.sh/geomagnetism@0.2.0';
+  window.geomagnetism = geomagnetism;
+  window.dispatchEvent(new Event('geomag-ready'));
+</script>
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; }
+  #app { display: flex; flex-direction: column; height: 100%; }
+
+  header {
+    background: #1f2236; color: #fff; padding: 10px 14px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  header h1 { font-size: 17px; margin: 0 12px 0 0; white-space: nowrap; }
+  header .nav-link {
+    color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.35);
+    padding: 7px 11px; border-radius: 6px; font-size: 13px; font-weight: bold;
+  }
+  header .nav-link:hover { background: rgba(255,255,255,.12); }
+  header .nav-link.active { color:#1f2236; background:#ceb078; border-color:#ceb078; }
+  header input[type=text] {
+    flex: 1 1 320px; min-width: 200px; padding: 8px 10px; border: none;
+    border-radius: 6px; font-size: 14px;
+  }
+  header button {
+    background: #ceb078; color: #1f2236; border: none; padding: 8px 16px;
+    border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;
+  }
+  header button:hover { background: #d8bd88; }
+
+  #toolbar {
+    background: #2a2e44; color: #eee; padding: 6px 14px; font-size: 13px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: center;
+  }
+  #toolbar label { display: flex; align-items: center; gap: 6px; }
+  #toolbar .seg { display: flex; border: 1px solid #ceb078; border-radius: 6px; overflow: hidden; }
+  #toolbar .seg button {
+    background: transparent; color: #ceb078; border: none; padding: 5px 12px;
+    cursor: pointer; font-size: 13px;
+  }
+  #toolbar .seg button.active { background: #ceb078; color: #1f2236; font-weight: bold; }
+  #info { color: #ceb078; }
+  #measureInfo { color: #f4dfae; }
+  #collapsedBar {
+    display: none; align-items: center; gap: 8px; padding: 7px 10px;
+    background: #1f2236; color: #f4dfae; font-size: 12px; line-height: 1.35;
+  }
+  #collapsedSummary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #collapsedMeasure { color: #ceb078; white-space: nowrap; }
+  #expandControls {
+    flex: none; background: #ceb078; color: #1f2236; border: none; border-radius: 6px;
+    padding: 6px 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+  }
+  #collapseControls {
+    background: #ceb078; color: #1f2236; border: none; border-radius: 6px;
+    padding: 5px 12px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  body.controls-collapsed header,
+  body.controls-collapsed #toolbar { display: none; }
+  body.controls-collapsed #collapsedBar { display: flex; }
+
+  #map { flex: 1 1 auto; background: #ddd; }
+
+  /* 羅盤可拖曳，用來微調下盤位置 */
+  .luopan-icon { cursor: move; }
+  .measure-handle {
+    width: 18px; height: 18px; border: 2px solid #fff; border-radius: 50%;
+    background: #ad5a55; box-shadow: 0 1px 6px rgba(0,0,0,.45);
+  }
+  .measure-center {
+    width: 14px; height: 14px; border: 2px solid #fff; border-radius: 50%;
+    background: #ceb078; box-shadow: 0 1px 6px rgba(0,0,0,.45);
+  }
+  .address-pin {
+    width: 22px; height: 22px; border: 3px solid #fff; border-radius: 50% 50% 50% 0;
+    background: #ceb078; box-shadow: 0 2px 8px rgba(0,0,0,.45);
+    transform: rotate(-45deg);
+  }
+  .address-pin::after {
+    content: ""; position: absolute; inset: 5px; border-radius: 50%;
+    background: #1f2236;
+  }
+
+  #hint {
+    position: absolute; bottom: 12px; left: 12px; z-index: 1000;
+    background: rgba(0,0,0,.65); color: #fff; padding: 8px 12px;
+    border-radius: 8px; font-size: 12px; max-width: 320px; line-height: 1.6;
+  }
+  #hint b { color: #ceb078; }
+
+  @media (max-width: 640px) {
+    header { padding: 8px; gap: 6px; }
+    header h1 { font-size: 16px; margin-right: 4px; }
+    header .nav-link { padding: 6px 9px; font-size: 12px; }
+    header input[type=text] { flex: 1 1 100%; min-width: 0; font-size: 15px; padding: 9px 10px; }
+    header button { flex: 1 1 auto; padding: 9px 12px; }
+    #toolbar { padding: 6px 8px; gap: 8px; font-size: 12px; align-content: flex-start; }
+    #toolbar label { gap: 4px; }
+    #toolbar .seg button { padding: 6px 9px; font-size: 12px; }
+    #sizeRange, #opacityRange { width: 92px; }
+    #info, #measureInfo { flex: 1 1 100%; line-height: 1.35; }
+    #collapsedBar { padding: 6px 8px; }
+    #collapsedMeasure { display: none; }
+    #map { min-height: 360px; }
+    #hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🧭 風水羅盤</h1>
+    <a class="nav-link" href="index.html">裝卦</a>
+    <a class="nav-link" href="../易經股市應證.html">股市應證</a>
+    <a class="nav-link" href="calendar.html">萬年曆</a>
+    <a class="nav-link active" href="fengshui-compass.html" aria-current="page">風水羅盤</a>
+    <input id="urlInput" type="text" list="addrHistory" autocomplete="off"
+      placeholder="輸入地址、貼 Google 地圖連結，或輸入 緯度,經度">
+    <datalist id="addrHistory"></datalist>
+    <button id="goBtn">搜尋 / 下羅盤</button>
+    <button id="btnHere" title="定位到目前位置">📍 目前位置</button>
+  </header>
+
+  <div id="toolbar">
+    <label>對北：
+      <span class="seg">
+        <button id="btnTrue" class="active">正北</button>
+        <button id="btnMag">磁北</button>
+      </span>
+    </label>
+    <label>大小 <input id="sizeRange" type="range" min="200" max="1200" value="500"></label>
+    <label>透明度 <input id="opacityRange" type="range" min="20" max="100" value="85"></label>
+    <label><input id="satChk" type="checkbox" checked> 衛星圖</label>
+    <label><input id="mountainChk" type="checkbox" checked> 二十四山</label>
+    <span class="seg">
+      <button id="btnCompassVisible" class="active">羅盤顯示</button>
+      <button id="btnCompassHidden">隱藏</button>
+    </span>
+    <span class="seg">
+      <button id="btnMeasure">量向線</button>
+      <button id="btnResetMeasure">重設</button>
+    </span>
+    <span id="info">尚未定位</span>
+    <span id="measureInfo">尚未量向</span>
+    <button id="collapseControls" title="收起控制列">收起 ▲</button>
+  </div>
+
+  <div id="collapsedBar">
+    <span id="collapsedSummary">已定位</span>
+    <span id="collapsedMeasure"></span>
+    <button id="expandControls">展開</button>
+  </div>
+
+  <div id="warn" style="background:#b00;color:#fff;text-align:center;padding:6px 14px;font-size:13px;font-weight:bold;letter-spacing:.5px;">⚠ 此羅盤僅供參考，坐山應以實地量測為準，因為氣場不同</div>
+
+  <div id="map"></div>
+  <div id="hint">
+    使用方式：輸入地址、貼 Google 地圖連結，或直接輸入座標 → 按 <b>搜尋 / 下羅盤</b>。<br>
+    羅盤會釘在該座標、永遠對準南北。<b>磁北</b>鈕會依當地磁偏角自動校正（風水下羅盤用磁北）。<br>
+    按 <b>量向線</b> 後拖曳兩端紅點旋轉十字線，讓它對齊建築物邊線；拖曳中心金點可移動整組量向線。
+  </div>
+</div>
+
+<script>
+/* ---------- 1. 地圖 ---------- */
+const map = L.map('map', { zoomControl: true }).setView([23.7, 121], 7);
+let addressMarker = null;
+
+const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19, attribution: '© OpenStreetMap'
+});
+
+const satLayer = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom: 19, attribution: 'Esri 衛星影像' }).addTo(map);
+
+const addressIcon = L.divIcon({
+  className: '',
+  html: '<div class="address-pin"></div>',
+  iconSize: [22, 22],
+  iconAnchor: [11, 22],
+  popupAnchor: [0, -24]
+});
+
+document.getElementById('satChk').addEventListener('change', e => {
+  if (e.target.checked) { map.removeLayer(streetLayer); satLayer.addTo(map); }
+  else { map.removeLayer(satLayer); streetLayer.addTo(map); }
+});
+
+/* ---------- 2. 解析 Google 地圖連結 / 座標 ---------- */
+function parseLatLng(text) {
+  if (!text) return null;
+  text = text.trim();
+  // 純座標： 25.033, 121.565
+  let m = text.match(/^\s*(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)\s*$/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  // 網址 @lat,lng
+  m = text.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  // !3dLAT!4dLNG
+  m = text.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  // q=lat,lng 或 query=lat,lng 或 ll=lat,lng
+  m = text.match(/[?&](?:q|query|ll|destination|center)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  // 任意位置出現的 lat,lng
+  m = text.match(/(-?\d{1,2}\.\d{3,}),\s*(-?\d{1,3}\.\d{3,})/);
+  if (m) return [parseFloat(m[1]), parseFloat(m[2])];
+  return null;
+}
+
+async function geocodeAddress(query) {
+  const q = query.trim();
+  if (!q) return null;
+  const attempts = buildAddressQueries(q);
+  for (const item of attempts) {
+    const found = await geocodeWithNominatim(item.query, item.approx, item.countrycodes);
+    if (found) return found;
+  }
+  return null;
+}
+
+// 阿拉伯數字段號轉中文（如 太平路2段 → 太平路二段），OSM 台灣路名用中文數字
+function arabicSegToChinese(s) {
+  const cn = ['零','一','二','三','四','五','六','七','八','九','十'];
+  return s.replace(/([路街道])\s*(\d{1,2})\s*段/g, (mm, road, numStr) => {
+    let n = parseInt(numStr, 10), c;
+    if (n <= 10) c = cn[n];
+    else if (n < 20) c = '十' + (n % 10 ? cn[n % 10] : '');
+    else c = cn[Math.floor(n / 10)] + '十' + (n % 10 ? cn[n % 10] : '');
+    return road + c + '段';
+  });
+}
+
+function buildAddressQueries(q) {
+  const compact = q.replace(/\s+/g, '');
+  const norm = arabicSegToChinese(compact);            // 段號轉中文
+  const roadLevel = norm.replace(/\d+(?:-\d+)?號?$/, '').trim();  // 去門牌→路段近似
+
+  const list = [{ query: q, approx: false, countrycodes: '' }];
+  list.push({ query: norm, approx: false, countrycodes: 'tw' });
+  if (roadLevel && roadLevel !== norm) {
+    list.push({ query: roadLevel, approx: true, countrycodes: 'tw' });
+    list.push({ query: roadLevel, approx: true, countrycodes: '' });
+  }
+  if (!list.some(item => item.query === compact)) list.push({ query: compact, approx: false, countrycodes: '' });
+  const seen = new Set();
+  return list.filter(item => { const k = item.query + '|' + item.countrycodes; if (seen.has(k)) return false; seen.add(k); return true; });
+}
+
+async function geocodeWithNominatim(query, approx = false, countrycodes = '') {
+  const params = new URLSearchParams({
+    format: 'jsonv2',
+    limit: '3',
+    addressdetails: '1',
+    'accept-language': 'zh-TW,zh,en',
+    q: query
+  });
+  if (countrycodes) params.set('countrycodes', countrycodes);
+  const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+  if (!res.ok) throw new Error('地址搜尋服務暫時無法使用');
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) return null;
+  const best = data.find(item => approx || item.addresstype === 'house' || item.type === 'house') || data[0];
+  const isApprox = approx || best.addresstype === 'road' || best.category === 'highway';
+  return {
+    latlng: [parseFloat(best.lat), parseFloat(best.lon)],
+    label: `${best.display_name || query}${isApprox ? '（道路近似位置）' : ''}`
+  };
+}
+
+function parseHeading(text) {
+  if (!text) return null;
+  let m = text.match(/(?:,|%2C)(-?\d+(?:\.\d+)?)h(?:,|%2C)/i);
+  if (m) return normalizeDeg(parseFloat(m[1]));
+  m = text.match(/[?&](?:heading|h)=(-?\d+(?:\.\d+)?)/i);
+  if (m) return normalizeDeg(parseFloat(m[1]));
+  return null;
+}
+
+/* ---------- 2b. 搜尋紀錄 (localStorage) ---------- */
+const HISTORY_KEY = 'luopan_addr_history';
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function saveHistory(list) {
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, 20))); } catch (e) {}
+}
+function addHistory(text) {
+  const q = (text || '').trim();
+  if (!q) return;
+  let list = loadHistory().filter(item => item !== q);
+  list.unshift(q);
+  saveHistory(list);
+  renderHistory();
+}
+function renderHistory() {
+  const dl = document.getElementById('addrHistory');
+  if (!dl) return;
+  dl.innerHTML = loadHistory().map(q => `<option value="${escapeHtml(q)}"></option>`).join('');
+}
+
+/* ---------- 2c. 反查地址 (座標→地址) ---------- */
+async function reverseGeocode(lat, lng) {
+  try {
+    const params = new URLSearchParams({
+      format: 'jsonv2', 'accept-language': 'zh-TW,zh,en',
+      lat: String(lat), lon: String(lng)
+    });
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && data.display_name ? data.display_name : null;
+  } catch (e) { return null; }
+}
+
+/* ---------- 2d. 目前位置定位 ---------- */
+function locateCurrentPosition(silent = false) {
+  if (!navigator.geolocation) {
+    if (!silent) alert('此瀏覽器不支援定位功能。');
+    return;
+  }
+  document.getElementById('info').textContent = '正在取得目前位置...';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude, lng = pos.coords.longitude;
+    const label = await reverseGeocode(lat, lng);
+    if (label) document.getElementById('urlInput').value = label;
+    locate([lat, lng], null, label || '目前位置');
+  }, err => {
+    console.warn('定位失敗', err);
+    if (!silent) alert('無法取得目前位置，請確認已允許定位權限。');
+    else document.getElementById('info').textContent = '尚未定位（可手動輸入地址）';
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+}
+
+/* ---------- 3. 二十四山羅盤 (SVG) ---------- */
+// 子=正北(0°)，順時針每山15°
+const MOUNTAINS = ['子','癸','丑','艮','寅','甲','卯','乙','辰','巽','巳','丙',
+                   '午','丁','未','坤','申','庚','酉','辛','戌','乾','亥','壬'];
+// 八方(八卦)，每卦45°，坎=北
+const BAGUA = [['坎',0],['艮',45],['震',90],['巽',135],['離',180],['坤',225],['兌',270],['乾',315]];
+
+function buildLuopanSVG(size) {
+  const c = size / 2;                 // 中心
+  const rOuter = c - 2;
+  const rDeg   = rOuter;              // 360度刻度環外緣
+  const rMtnO  = rOuter * 0.80;       // 二十四山外
+  const rMtnI  = rOuter * 0.55;       // 二十四山內
+  const rBagua = rOuter * 0.40;       // 八卦環
+  const ns = 'http://www.w3.org/2000/svg';
+  const ink = '#1f2236';
+  const gold = '#ceb078';
+  const accent = '#ad5a55';
+  // 角度→座標 (0°=上/北, 順時針)
+  function pt(angleDeg, r) {
+    const a = (angleDeg - 90) * Math.PI / 180;
+    return [c + r * Math.cos(a), c + r * Math.sin(a)];
+  }
+  let s = `<svg xmlns="${ns}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">`;
+  // 底圈
+  s += `<circle cx="${c}" cy="${c}" r="${rOuter}" fill="rgba(255,250,235,0.34)" stroke="${ink}" stroke-width="2"/>`;
+  s += `<circle cx="${c}" cy="${c}" r="${rMtnO}" fill="none" stroke="${ink}" stroke-width="1.5"/>`;
+  s += `<circle cx="${c}" cy="${c}" r="${rMtnI}" fill="rgba(255,250,235,0.25)" stroke="${gold}" stroke-width="1.5"/>`;
+  s += `<circle cx="${c}" cy="${c}" r="${rBagua}" fill="none" stroke="${ink}" stroke-width="1.2"/>`;
+
+  // 360度刻度
+  for (let d = 0; d < 360; d++) {
+    const big = d % 30 === 0, mid = d % 10 === 0;
+    const len = big ? rOuter*0.07 : mid ? rOuter*0.05 : rOuter*0.025;
+    const [x1,y1] = pt(d, rDeg), [x2,y2] = pt(d, rDeg - len);
+    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ink}" stroke-width="${big?1.4:0.6}"/>`;
+    if (d % 30 === 0) {
+      const [tx,ty] = pt(d, rDeg - rOuter*0.13);
+      s += `<text x="${tx}" y="${ty}" font-size="${size*0.022}" fill="${ink}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${d} ${tx} ${ty})">${d}</text>`;
+    }
+  }
+  // 二十四山分隔線 (每15°邊界 = 7.5°起算)
+  const rMtnMid = (rMtnO + rMtnI) / 2;
+  for (let i = 0; i < 24; i++) {
+    const bnd = i * 15 + 7.5;
+    const [x1,y1] = pt(bnd, rMtnI), [x2,y2] = pt(bnd, rMtnO);
+    s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ink}" stroke-width="0.8"/>`;
+  }
+  // 二十四山文字
+  if (current.showMountains) {
+    MOUNTAINS.forEach((name, i) => {
+      const ang = i * 15;
+      const [tx,ty] = pt(ang, rMtnMid);
+      const cardinal = (name==='子'||name==='午'||name==='卯'||name==='酉');
+      s += `<text x="${tx}" y="${ty}" font-size="${size*(cardinal?0.045:0.038)}" font-weight="bold" fill="${cardinal?accent:ink}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${ang} ${tx} ${ty})">${name}</text>`;
+    });
+  }
+  // 八卦
+  BAGUA.forEach(([name, ang]) => {
+    const [tx,ty] = pt(ang, (rMtnI + rBagua)/2);
+    s += `<text x="${tx}" y="${ty}" font-size="${size*0.032}" fill="${ink}" text-anchor="middle" dominant-baseline="middle" transform="rotate(${ang} ${tx} ${ty})">${name}</text>`;
+  });
+  // 十字準線 + 紅色指北
+  s += `<line x1="${c}" y1="${c-rBagua}" x2="${c}" y2="${c+rBagua}" stroke="${accent}" stroke-width="1.2"/>`;
+  s += `<line x1="${c-rBagua}" y1="${c}" x2="${c+rBagua}" y2="${c}" stroke="${ink}" stroke-width="0.8"/>`;
+  // 北方紅色箭頭
+  s += `<polygon points="${c-size*0.02},${c-rBagua*0.55} ${c+size*0.02},${c-rBagua*0.55} ${c},${c-rBagua*0.95}" fill="${accent}"/>`;
+  // 中心紅點 = 定位點
+  s += `<circle cx="${c}" cy="${c}" r="${size*0.012}" fill="${accent}"/>`;
+  s += `<text x="${c}" y="${c+rBagua*0.4}" font-size="${size*0.03}" fill="${ink}" text-anchor="middle">天池</text>`;
+  s += `</svg>`;
+  return s;
+}
+
+/* ---------- 4. 放上羅盤 ---------- */
+let luopanMarker = null;
+let current = {
+  latlng: null,
+  decl: 0,
+  mode: 'true',
+  size: 500,
+  opacity: 0.85,
+  heading: null,
+  label: null,
+  compassVisible: true,
+  showMountains: true
+};
+let currentAddress = { latlng: null, label: null };
+
+function mobileCompassSize() {
+  const mapEl = document.getElementById('map');
+  const w = mapEl ? mapEl.clientWidth : window.innerWidth;
+  const h = mapEl ? mapEl.clientHeight : window.innerHeight;
+  return Math.max(220, Math.min(500, Math.floor(Math.min(w * 0.86, h * 0.68))));
+}
+
+function applyResponsiveCompassSize(force = false) {
+  if (window.innerWidth > 640 && !force) return;
+  const fitted = mobileCompassSize();
+  if (force || current.size > fitted) {
+    current.size = fitted;
+    document.getElementById('sizeRange').value = String(fitted);
+    render();
+  }
+}
+
+function render() {
+  if (!current.latlng) return;
+  if (!current.compassVisible) {
+    if (luopanMarker && map.hasLayer(luopanMarker)) map.removeLayer(luopanMarker);
+    return;
+  }
+  const rot = current.mode === 'mag' ? current.decl : 0;  // 磁北：順時針轉磁偏角
+  const svg = buildLuopanSVG(current.size);
+  const html = `<div style="transform:rotate(${rot}deg);transform-origin:center;opacity:${current.opacity};">${svg}</div>`;
+  const icon = L.divIcon({
+    className: 'luopan-icon',
+    html: html,
+    iconSize: [current.size, current.size],
+    iconAnchor: [current.size/2, current.size/2]
+  });
+  if (luopanMarker) {
+    luopanMarker.setIcon(icon);
+    luopanMarker.setLatLng(current.latlng);
+    if (!map.hasLayer(luopanMarker)) luopanMarker.addTo(map);
+  } else {
+    luopanMarker = L.marker(current.latlng, { icon, interactive: true, draggable: true }).addTo(map);
+    luopanMarker.on('dragend', e => {
+      const p = e.target.getLatLng();
+      current.latlng = [p.lat, p.lng];
+      updateDeclination();
+      updateInfo();
+    });
+  }
+}
+
+function updateDeclination() {
+  let decl = 0;
+  try {
+    if (window.geomagnetism) decl = window.geomagnetism.model().point(current.latlng).decl;
+  } catch (e) { console.warn('磁偏角計算失敗', e); }
+  current.decl = decl;
+}
+
+function locate(latlng, heading = null, label = null) {
+  current.latlng = latlng;
+  current.heading = heading;
+  current.label = label;
+  setAddressMarker(latlng, label);
+  // 算磁偏角
+  updateDeclination();
+  map.setView(latlng, Math.max(map.getZoom(), 17));
+  applyResponsiveCompassSize();
+  render();
+  if (measure.active) ensureMeasureLine(heading);
+  updateInfo();
+  collapseControls();
+}
+
+function setAddressMarker(latlng, label = null) {
+  currentAddress = { latlng, label };
+  const popupText = label || `定位點 ${latlng[0].toFixed(5)}, ${latlng[1].toFixed(5)}`;
+  if (addressMarker) {
+    addressMarker.setLatLng(latlng);
+  } else {
+    addressMarker = L.marker(latlng, { icon: addressIcon, zIndexOffset: 700 }).addTo(map);
+  }
+  addressMarker.bindPopup(`<b>地址定位點</b><br>${escapeHtml(popupText)}`);
+  if (label) addressMarker.openPopup();
+}
+
+function updateInfo() {
+  const [lat,lng] = current.latlng;
+  const d = current.decl;
+  const dir = d >= 0 ? '東偏' : '西偏';
+  const label = current.label ? `${current.label} ｜ ` : '';
+  document.getElementById('info').textContent =
+    `${label}座標 ${lat.toFixed(5)}, ${lng.toFixed(5)} ｜ 磁偏角 ${dir} ${Math.abs(d).toFixed(2)}° ｜ 目前對 ${current.mode==='mag'?'磁北':'正北'}`;
+  updateCollapsedSummary();
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function collapseControls() {
+  document.body.classList.add('controls-collapsed');
+  setTimeout(() => {
+    map.invalidateSize();
+    applyResponsiveCompassSize();
+  }, 100);
+}
+
+function expandControls() {
+  document.body.classList.remove('controls-collapsed');
+  setTimeout(() => {
+    map.invalidateSize();
+    applyResponsiveCompassSize();
+  }, 100);
+}
+
+function updateCollapsedSummary() {
+  if (!current.latlng) return;
+  const [lat, lng] = current.latlng;
+  const text = current.label || `座標 ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  document.getElementById('collapsedSummary').textContent = text;
+}
+
+/* ---------- 5. 量向線 / 十字線 ---------- */
+const measure = {
+  active: false,
+  startMarker: null,
+  endMarker: null,
+  centerMarker: null,
+  mainLine: null,
+  crossLine: null
+};
+
+const handleIcon = L.divIcon({
+  className: '',
+  html: '<div class="measure-handle"></div>',
+  iconSize: [18, 18],
+  iconAnchor: [9, 9]
+});
+
+const centerIcon = L.divIcon({
+  className: '',
+  html: '<div class="measure-center"></div>',
+  iconSize: [14, 14],
+  iconAnchor: [7, 7]
+});
+
+function normalizeDeg(deg) {
+  return ((deg % 360) + 360) % 360;
+}
+
+function bearingDeg(from, to) {
+  const lat1 = from.lat * Math.PI / 180;
+  const lat2 = to.lat * Math.PI / 180;
+  const dLng = (to.lng - from.lng) * Math.PI / 180;
+  const y = Math.sin(dLng) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+  return normalizeDeg(Math.atan2(y, x) * 180 / Math.PI);
+}
+
+function mountainFor(deg) {
+  const idx = Math.floor(normalizeDeg(deg + 7.5) / 15) % 24;
+  return MOUNTAINS[idx];
+}
+
+function latLngFromPointAngle(center, angleDeg, pixelLength) {
+  const p = map.latLngToLayerPoint(center);
+  const a = (angleDeg - 90) * Math.PI / 180;
+  const p2 = L.point(p.x + Math.cos(a) * pixelLength, p.y + Math.sin(a) * pixelLength);
+  return map.layerPointToLatLng(p2);
+}
+
+function pixelDistance(a, b) {
+  const p1 = map.latLngToLayerPoint(a);
+  const p2 = map.latLngToLayerPoint(b);
+  return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+}
+
+function setMeasureByCenterAngle(center, angle, halfLen = 130) {
+  const start = latLngFromPointAngle(center, angle + 180, halfLen);
+  const end = latLngFromPointAngle(center, angle, halfLen);
+  measure.startMarker.setLatLng(start);
+  measure.endMarker.setLatLng(end);
+  measure.centerMarker.setLatLng(center);
+  syncMeasureFromHandles();
+}
+
+function ensureMeasureLine(heading = null) {
+  if (!current.latlng) return;
+  const center = L.latLng(current.latlng[0], current.latlng[1]);
+  const angle = heading ?? current.heading ?? (measure.startMarker && measure.endMarker
+    ? bearingDeg(measure.startMarker.getLatLng(), measure.endMarker.getLatLng())
+    : 0);
+  const halfLen = 130;
+  const start = latLngFromPointAngle(center, angle + 180, halfLen);
+  const end = latLngFromPointAngle(center, angle, halfLen);
+
+  if (!measure.mainLine) {
+    measure.mainLine = L.polyline([start, end], { color: '#ad5a55', weight: 3, opacity: 0.95 }).addTo(map);
+    measure.crossLine = L.polyline([], { color: '#ceb078', weight: 2, opacity: 0.9, dashArray: '8 6' }).addTo(map);
+    measure.startMarker = L.marker(start, { icon: handleIcon, draggable: true, zIndexOffset: 900 }).addTo(map);
+    measure.endMarker = L.marker(end, { icon: handleIcon, draggable: true, zIndexOffset: 900 }).addTo(map);
+    measure.centerMarker = L.marker(center, { icon: centerIcon, draggable: true, zIndexOffset: 901 }).addTo(map);
+
+    measure.startMarker.on('drag', () => rotateMeasureFromHandle('start'));
+    measure.endMarker.on('drag', () => rotateMeasureFromHandle('end'));
+    measure.centerMarker.on('drag', moveMeasureCenter);
+  } else {
+    measure.startMarker.setLatLng(start);
+    measure.endMarker.setLatLng(end);
+    measure.centerMarker.setLatLng(center);
+  }
+  syncMeasureFromHandles();
+}
+
+function syncMeasureFromHandles() {
+  if (!measure.mainLine) return;
+  const start = measure.startMarker.getLatLng();
+  const end = measure.endMarker.getLatLng();
+  const center = measure.centerMarker.getLatLng();
+  measure.mainLine.setLatLngs([start, end]);
+  updateCrossLine(start, end, center);
+  updateMeasureInfo(start, end);
+}
+
+function rotateMeasureFromHandle(which) {
+  const center = measure.centerMarker.getLatLng();
+  const dragged = which === 'end' ? measure.endMarker.getLatLng() : measure.startMarker.getLatLng();
+  const angleToDragged = bearingDeg(center, dragged);
+  const facing = which === 'end' ? angleToDragged : normalizeDeg(angleToDragged + 180);
+  const halfLen = Math.max(50, pixelDistance(center, dragged));
+  setMeasureByCenterAngle(center, facing, halfLen);
+}
+
+function moveMeasureCenter() {
+  const oldStart = measure.startMarker.getLatLng();
+  const oldEnd = measure.endMarker.getLatLng();
+  const oldCenter = L.latLng((oldStart.lat + oldEnd.lat) / 2, (oldStart.lng + oldEnd.lng) / 2);
+  const newCenter = measure.centerMarker.getLatLng();
+  const dLat = newCenter.lat - oldCenter.lat;
+  const dLng = newCenter.lng - oldCenter.lng;
+  measure.startMarker.setLatLng([oldStart.lat + dLat, oldStart.lng + dLng]);
+  measure.endMarker.setLatLng([oldEnd.lat + dLat, oldEnd.lng + dLng]);
+  syncMeasureFromHandles();
+}
+
+function updateCrossLine(start, end, center) {
+  const angle = bearingDeg(start, end) + 90;
+  const p1 = latLngFromPointAngle(center, angle + 180, 90);
+  const p2 = latLngFromPointAngle(center, angle, 90);
+  measure.crossLine.setLatLngs([p1, p2]);
+}
+
+function updateMeasureInfo(start, end) {
+  const facing = bearingDeg(start, end);
+  const sitting = normalizeDeg(facing + 180);
+  const text = `向 ${facing.toFixed(1)}° ${mountainFor(facing)} ｜ 坐 ${sitting.toFixed(1)}° ${mountainFor(sitting)}`;
+  document.getElementById('measureInfo').textContent = text;
+  document.getElementById('collapsedMeasure').textContent = text;
+}
+
+function setMeasureMode(active) {
+  measure.active = active;
+  document.getElementById('btnMeasure').classList.toggle('active', active);
+  if (active) {
+    ensureMeasureLine();
+  }
+}
+
+function clearMeasureLine() {
+  [measure.startMarker, measure.endMarker, measure.centerMarker, measure.mainLine, measure.crossLine].forEach(layer => {
+    if (layer) map.removeLayer(layer);
+  });
+  measure.startMarker = null;
+  measure.endMarker = null;
+  measure.centerMarker = null;
+  measure.mainLine = null;
+  measure.crossLine = null;
+  document.getElementById('measureInfo').textContent = '尚未量向';
+  document.getElementById('collapsedMeasure').textContent = '';
+}
+
+/* ---------- 6. 事件 ---------- */
+document.getElementById('goBtn').addEventListener('click', async () => {
+  const v = document.getElementById('urlInput').value;
+  const goBtn = document.getElementById('goBtn');
+  const ll = parseLatLng(v);
+  if (ll) {
+    locate(ll, parseHeading(v));
+    addHistory(v);
+    return;
+  }
+  goBtn.disabled = true;
+  goBtn.textContent = '搜尋中...';
+  document.getElementById('info').textContent = '正在搜尋地址...';
+  try {
+    const found = await geocodeAddress(v);
+    if (!found) {
+      alert('找不到這個地址。\n請試著加上縣市/鄉鎮區，或貼 Google 地圖連結、直接輸入座標。');
+      document.getElementById('info').textContent = '地址搜尋不到';
+      return;
+    }
+    locate(found.latlng, null, found.label);
+    addHistory(v);
+  } catch (err) {
+    console.warn(err);
+    alert('地址搜尋暫時失敗。\n可以先貼 Google 地圖連結，或直接輸入「緯度,經度」。');
+    document.getElementById('info').textContent = '地址搜尋失敗';
+  } finally {
+    goBtn.disabled = false;
+    goBtn.textContent = '搜尋 / 下羅盤';
+  }
+});
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('goBtn').click();
+});
+document.getElementById('expandControls').addEventListener('click', expandControls);
+document.getElementById('collapseControls').addEventListener('click', collapseControls);
+document.getElementById('btnHere').addEventListener('click', () => locateCurrentPosition(false));
+document.getElementById('urlInput').addEventListener('focus', expandControls);
+
+document.getElementById('btnTrue').addEventListener('click', () => setMode('true'));
+document.getElementById('btnMag').addEventListener('click', () => setMode('mag'));
+function setMode(mode) {
+  current.mode = mode;
+  document.getElementById('btnTrue').classList.toggle('active', mode==='true');
+  document.getElementById('btnMag').classList.toggle('active', mode==='mag');
+  render(); if (current.latlng) updateInfo();
+}
+
+document.getElementById('sizeRange').addEventListener('input', e => {
+  current.size = parseInt(e.target.value); render();
+});
+document.getElementById('opacityRange').addEventListener('input', e => {
+  current.opacity = parseInt(e.target.value)/100; render();
+});
+document.getElementById('mountainChk').addEventListener('change', e => {
+  current.showMountains = e.target.checked;
+  render();
+});
+document.getElementById('btnCompassVisible').addEventListener('click', () => setCompassVisible(true));
+document.getElementById('btnCompassHidden').addEventListener('click', () => setCompassVisible(false));
+function setCompassVisible(visible) {
+  current.compassVisible = visible;
+  document.getElementById('btnCompassVisible').classList.toggle('active', visible);
+  document.getElementById('btnCompassHidden').classList.toggle('active', !visible);
+  render();
+}
+window.addEventListener('resize', () => {
+  setTimeout(() => {
+    map.invalidateSize();
+    applyResponsiveCompassSize();
+  }, 100);
+});
+document.getElementById('btnMeasure').addEventListener('click', () => setMeasureMode(!measure.active));
+document.getElementById('btnResetMeasure').addEventListener('click', () => {
+  clearMeasureLine();
+  if (measure.active) ensureMeasureLine();
+});
+
+/* 也允許直接在地圖上點一下放羅盤 */
+map.on('click', e => {
+  if (measure.active) {
+    if (!measure.mainLine) ensureMeasureLine();
+    return;
+  }
+  locate([e.latlng.lat, e.latlng.lng]);
+});
+map.on('zoomend moveend', () => {
+  if (measure.active && measure.mainLine) syncMeasureFromHandles();
+});
+
+/* 磁場模型載入完成後，若已有定位點則重新計算磁偏角 */
+window.addEventListener('geomag-ready', () => {
+  if (!current.latlng) return;
+  updateDeclination();
+  render();
+  updateInfo();
+});
+if (window.innerWidth <= 640) applyResponsiveCompassSize();
+
+/* ---------- 7. 初始化：搜尋紀錄 + 預設目前位置 ---------- */
+renderHistory();
+locateCurrentPosition(true);
+</script>
+</body>
+</html>

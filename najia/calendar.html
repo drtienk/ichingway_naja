@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f2236">
+<link rel="icon" type="image/png" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="I-ChingWay 萬年曆">
+<title>I-ChingWay 萬年曆</title>
+<style>
+  * { box-sizing:border-box; }
+  body { font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif; margin:20px; background:#f5f4ee; color:#1f2236; }
+  button, select, input { font:inherit; }
+  .brand { display:flex; align-items:center; gap:14px; margin:0 0 18px; }
+  .brand .logo { flex:none; }
+  .brand-divider { width:1px; height:34px; background:#d8d2c0; }
+  .brand-text { display:flex; flex-direction:column; line-height:1.15; }
+  .brand-zh { font-size:22px; font-weight:800; color:#1f2236; letter-spacing:2px; }
+  .brand-sub { font-size:12px; color:#8a8674; letter-spacing:1px; }
+  .site-nav { display:flex; gap:8px; flex-wrap:wrap; margin:-6px 0 18px; }
+  .site-nav a { display:inline-flex; align-items:center; min-height:34px; padding:7px 13px; border:1px solid #d8d2c0; border-radius:6px; background:#fff; color:#1f2236; text-decoration:none; font-size:13px; font-weight:700; box-shadow:0 1px 3px #0000000d; }
+  .site-nav a.active { background:#1f2236; color:#ceb078; border-color:#1f2236; }
+  .site-nav a:hover { border-color:#ceb078; }
+  .lang-switch { margin-left:auto; display:flex; gap:4px; }
+  .site-nav .lang-btn { min-height:34px; padding:7px 10px; border:1px solid #ceb078; border-radius:6px; background:#fff; color:#8a5a2b; font-size:13px; font-weight:700; cursor:pointer; }
+  .site-nav .lang-btn:hover { background:#faf6ec; }
+  .site-nav .lang-btn.active { background:#8a5a2b; color:#fff; }
+  .calendar-layout { display:grid; grid-template-columns:minmax(0,780px) minmax(260px,330px); gap:24px; align-items:start; }
+  .calendar-card, .detail-card { background:#fff; border-radius:8px; box-shadow:0 1px 4px #0001; }
+  .calendar-card { padding:18px; border-top:3px solid #1f2236; }
+  .detail-card { padding:20px; border-top:3px solid #ceb078; }
+  .calendar-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:14px; }
+  .month-nav { display:flex; gap:6px; }
+  .icon-btn, .today-btn { border:1px solid #d8d2c0; background:#fafafa; color:#1f2236; border-radius:6px; min-height:38px; padding:7px 12px; cursor:pointer; font-weight:700; }
+  .icon-btn { width:40px; padding:6px; font-size:20px; line-height:1; }
+  .icon-btn:hover, .today-btn:hover { border-color:#ceb078; background:#fffaf0; }
+  .icon-btn:disabled { color:#bbb; background:#f1f1f1; border-color:#ddd; cursor:not-allowed; }
+  .jump-controls { display:flex; gap:6px; align-items:center; }
+  .jump-controls select { min-height:38px; padding:6px 30px 6px 9px; border:1px solid #c4c4c4; border-radius:6px; background:#fff; color:#1f2236; }
+  .view-switch { display:flex; margin-left:auto; border:1px solid #ceb078; border-radius:6px; overflow:hidden; }
+  .view-switch button { min-height:38px; padding:7px 16px; border:0; border-right:1px solid #ceb078; background:#fff; color:#8a5a2b; cursor:pointer; font-weight:700; }
+  .view-switch button:last-child { border-right:0; }
+  .view-switch button.active { background:#8a5a2b; color:#fff; }
+  .font-control { display:flex; align-items:center; gap:7px; color:#666; font-size:12px; font-weight:700; }
+  .font-switch { display:flex; border:1px solid #1f2236; border-radius:6px; overflow:hidden; }
+  .font-switch button { min-width:40px; min-height:38px; padding:7px 9px; border:0; border-right:1px solid #1f2236; background:#fff; color:#1f2236; cursor:pointer; font-weight:700; }
+  .font-switch button:last-child { border-right:0; }
+  .font-switch button:hover:not(:disabled) { background:#1f2236; color:#ceb078; }
+  .font-switch button:disabled { color:#aaa; background:#f0f0f0; cursor:not-allowed; }
+  .font-level { display:flex; min-width:58px; align-items:center; justify-content:center; border-right:1px solid #1f2236; background:#1f2236; color:#ceb078; font-size:13px; font-weight:800; }
+  .month-heading { margin:4px 0 13px; padding-left:10px; border-left:4px solid #ceb078; font-size:22px; }
+  .weekdays, .calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+  .weekdays { border:1px solid #e4dfd1; border-bottom:0; border-radius:7px 7px 0 0; overflow:hidden; background:#f5f4ee; }
+  .weekday { padding:8px 2px; text-align:center; color:#666; font-size:12px; font-weight:700; }
+  .weekday:first-child { color:#ad5a55; }
+  .weekday:last-child { color:#435a91; }
+  .calendar-grid { border-top:1px solid #e4dfd1; border-left:1px solid #e4dfd1; }
+  .day { position:relative; min-height:84px; padding:8px 7px; border:0; border-right:1px solid #e4dfd1; border-bottom:1px solid #e4dfd1; background:#fff; color:#1f2236; text-align:left; cursor:pointer; }
+  .day:hover { background:#fffaf0; z-index:1; box-shadow:inset 0 0 0 2px #e5cea0; }
+  .day.outside { background:#fafafa; color:#aaa; }
+  .day.outside .lunar { color:#aaa; }
+  .day.unavailable { color:#ccc; background:#f4f4f4; cursor:not-allowed; }
+  .day.unavailable .lunar { color:#ccc; }
+  .day.unavailable:hover { box-shadow:none; background:#f4f4f4; }
+  .day.today::after { content:""; position:absolute; inset:4px; border:2px solid #ceb078; border-radius:6px; pointer-events:none; }
+  .day.selected { background:#1f2236; color:#fff; }
+  .day.selected .lunar, .day.selected .ganzhi-day, .day.selected .secondary { color:#ceb078; }
+  .solar { display:block; font-size:22px; font-weight:800; line-height:1.2; }
+  .lunar { display:block; margin-top:5px; color:#8a5a2b; font-size:12px; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ganzhi-day { display:block; margin-top:3px; color:#6f6a5c; font-size:10px; font-weight:700; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .day.lunar-primary .solar { font-size:11px; color:#777; font-weight:600; }
+  .day.lunar-primary .lunar { margin-top:3px; color:#1f2236; font-size:17px; font-weight:800; }
+  .day.lunar-primary.selected .solar, .day.lunar-primary.selected .lunar, .day.lunar-primary.selected .ganzhi-day { color:#ceb078; }
+  .detail-kicker { color:#8a8674; font-size:12px; font-weight:700; letter-spacing:1px; }
+  .detail-day { margin:5px 0 14px; font-size:44px; font-weight:800; line-height:1; color:#1f2236; }
+  .detail-week { color:#ad5a55; font-size:16px; font-weight:700; }
+  .date-block { margin-top:16px; padding:13px 14px; border-left:4px solid #ceb078; background:#f5f4ee; border-radius:4px; }
+  .date-block.lunar-block { border-left-color:#ad5a55; background:#fff8e8; }
+  .date-block.ganzhi-block { border-left-color:#1f2236; background:#f1f2f6; }
+  .date-label { display:block; color:#777; font-size:12px; margin-bottom:4px; }
+  .date-value { font-size:18px; font-weight:800; line-height:1.5; overflow-wrap:anywhere; }
+  .date-sub { color:#666; font-size:13px; line-height:1.55; overflow-wrap:anywhere; }
+  .ganzhi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:7px; }
+  .ganzhi-col { padding:8px 4px; border-radius:5px; background:#fff; text-align:center; }
+  .ganzhi-col span { display:block; color:#777; font-size:10px; }
+  .ganzhi-col strong { display:block; margin-top:2px; color:#1f2236; font-size:18px; overflow-wrap:anywhere; }
+  .ganzhi-void { margin-top:7px; color:#ad5a55; font-size:12px; font-weight:700; text-align:center; }
+  .date-picker-label { display:block; margin:18px 0 5px; color:#52566e; font-size:13px; font-weight:700; }
+  #datePicker { width:100%; min-height:42px; padding:8px 10px; border:1.5px solid #bbb; border-radius:6px; color:#1f2236; background:#fff; }
+  .support-note { margin:14px 0 0; color:#888; font-size:11px; line-height:1.5; }
+  .unsupported { padding:24px; color:#a00; background:#fff5f5; border:1px solid #efcaca; border-radius:6px; }
+  @media (max-width:820px) {
+    body { margin:12px; }
+    .brand { margin-bottom:14px; gap:9px; }
+    .brand .logo { width:158px; height:37px; }
+    .brand-zh { font-size:19px; letter-spacing:1px; }
+    .brand-sub { font-size:11px; }
+    .site-nav { margin:-2px 0 12px; }
+    .site-nav a { flex:1; justify-content:center; font-size:14px; min-height:40px; padding:6px; }
+    .site-nav .lang-switch { width:100%; margin-left:0; }
+    .site-nav .lang-btn { flex:1; min-height:40px; }
+    .calendar-layout { grid-template-columns:1fr; gap:12px; }
+    .calendar-card, .detail-card { padding:12px; }
+    .detail-day { font-size:34px; }
+    .detail-summary { display:grid; grid-template-columns:minmax(160px,auto) 1fr; gap:12px; align-items:center; }
+    .detail-summary .detail-day { margin:4px 0; }
+    .detail-summary .detail-week { grid-column:2; }
+    .detail-card .date-block { margin-top:10px; }
+    .calendar-toolbar { gap:6px; }
+    .view-switch { width:100%; margin-left:0; order:3; }
+    .view-switch button { flex:1; font-size:16px; min-height:44px; }
+    .font-control { width:100%; order:4; }
+    .font-switch { flex:1; }
+    .font-switch button { flex:1; min-height:44px; font-size:17px; }
+    .font-level { min-width:68px; font-size:15px; }
+    .jump-controls { flex:1; }
+    .jump-controls select { flex:1; min-width:0; }
+    .today-btn { padding-left:10px; padding-right:10px; }
+    .day { min-height:78px; padding:6px 4px; }
+    .solar { font-size:18px; }
+    .lunar { margin-top:4px; font-size:10px; }
+    .ganzhi-day { margin-top:2px; font-size:9px; }
+    .day.lunar-primary .lunar { font-size:14px; }
+  }
+  @media (max-width:390px) {
+    .brand .logo { width:140px; }
+    .brand-zh { font-size:17px; }
+    .site-nav a { font-size:13px; }
+    .calendar-card { padding:9px; }
+    .month-nav { gap:4px; }
+    .icon-btn { width:36px; }
+    .today-btn { font-size:13px; }
+    .jump-controls select { padding-left:6px; padding-right:22px; font-size:13px; }
+    .weekday { font-size:11px; }
+    .day { min-height:74px; padding:5px 3px; }
+    .lunar { font-size:9px; }
+    .ganzhi-day { font-size:8px; }
+    .day.lunar-primary .lunar { font-size:12px; }
+  }
+  html[data-calendar-font="large"] .solar { font-size:26px; }
+  html[data-calendar-font="large"] .lunar { font-size:14px; }
+  html[data-calendar-font="large"] .ganzhi-day { font-size:12px; }
+  html[data-calendar-font="large"] .day.lunar-primary .solar { font-size:13px; }
+  html[data-calendar-font="large"] .day.lunar-primary .lunar { font-size:20px; }
+  html[data-calendar-font="large"] .detail-day { font-size:53px; white-space:nowrap; }
+  html[data-calendar-font="large"] .date-value, html[data-calendar-font="large"] .ganzhi-col strong { font-size:22px; }
+  html[data-calendar-font="large"] .date-sub, html[data-calendar-font="large"] .ganzhi-void { font-size:16px; }
+  html[data-calendar-font="xlarge"] .solar { font-size:30px; }
+  html[data-calendar-font="xlarge"] .lunar { font-size:16px; }
+  html[data-calendar-font="xlarge"] .ganzhi-day { font-size:13px; }
+  html[data-calendar-font="xlarge"] .day.lunar-primary .solar { font-size:15px; }
+  html[data-calendar-font="xlarge"] .day.lunar-primary .lunar { font-size:23px; }
+  html[data-calendar-font="xlarge"] .detail-day { font-size:62px; white-space:nowrap; }
+  html[data-calendar-font="xlarge"] .date-value, html[data-calendar-font="xlarge"] .ganzhi-col strong { font-size:25px; }
+  html[data-calendar-font="xlarge"] .date-sub, html[data-calendar-font="xlarge"] .ganzhi-void { font-size:18px; }
+  html[data-calendar-font="max"] .solar { font-size:34px; }
+  html[data-calendar-font="max"] .lunar { font-size:18px; }
+  html[data-calendar-font="max"] .ganzhi-day { font-size:15px; }
+  html[data-calendar-font="max"] .day.lunar-primary .solar { font-size:17px; }
+  html[data-calendar-font="max"] .day.lunar-primary .lunar { font-size:26px; }
+  html[data-calendar-font="max"] .detail-day { font-size:72px; white-space:nowrap; }
+  html[data-calendar-font="max"] .date-value, html[data-calendar-font="max"] .ganzhi-col strong { font-size:29px; }
+  html[data-calendar-font="max"] .date-sub, html[data-calendar-font="max"] .ganzhi-void { font-size:21px; }
+  html[data-calendar-font="medium"] .solar { font-size:20px; }
+  html[data-calendar-font="medium"] .lunar { font-size:11px; }
+  html[data-calendar-font="medium"] .day.lunar-primary .lunar { font-size:15px; }
+  html[data-calendar-font="medium"] .ganzhi-day { font-size:9px; }
+  html[data-calendar-font="medium"] .detail-day { font-size:38px; }
+  html[data-calendar-font="medium"] .date-value, html[data-calendar-font="medium"] .ganzhi-col strong { font-size:16px; }
+  html[data-calendar-font="medium"] .date-sub, html[data-calendar-font="medium"] .ganzhi-void { font-size:12px; }
+  html[data-calendar-font="small"] .solar { font-size:17px; }
+  html[data-calendar-font="small"] .lunar { font-size:10px; }
+  html[data-calendar-font="small"] .day.lunar-primary .lunar { font-size:13px; }
+  html[data-calendar-font="small"] .ganzhi-day { font-size:8px; }
+  html[data-calendar-font="small"] .detail-day { font-size:32px; }
+  html[data-calendar-font="small"] .date-value, html[data-calendar-font="small"] .ganzhi-col strong { font-size:14px; }
+  html[data-calendar-font="small"] .date-sub, html[data-calendar-font="small"] .ganzhi-void { font-size:11px; }
+  @media (max-width:820px) {
+    html[data-calendar-font="max"] .day { min-height:96px; }
+    html[data-calendar-font="max"] .solar { font-size:30px; }
+    html[data-calendar-font="max"] .lunar { font-size:15px; }
+    html[data-calendar-font="max"] .ganzhi-day { font-size:13px; }
+    html[data-calendar-font="max"] .day.lunar-primary .solar { font-size:15px; }
+    html[data-calendar-font="max"] .day.lunar-primary .lunar { font-size:20px; }
+    html[data-calendar-font="max"] .detail-day { font-size:58px; }
+    html[data-calendar-font="max"] .date-value, html[data-calendar-font="max"] .ganzhi-col strong { font-size:28px; }
+    html[data-calendar-font="max"] .date-sub, html[data-calendar-font="max"] .ganzhi-void { font-size:20px; }
+    html[data-calendar-font="xlarge"] .day { min-height:88px; }
+    html[data-calendar-font="xlarge"] .solar { font-size:26px; }
+    html[data-calendar-font="xlarge"] .lunar { font-size:13px; }
+    html[data-calendar-font="xlarge"] .ganzhi-day { font-size:11px; }
+    html[data-calendar-font="xlarge"] .day.lunar-primary .solar { font-size:14px; }
+    html[data-calendar-font="xlarge"] .day.lunar-primary .lunar { font-size:18px; }
+    html[data-calendar-font="xlarge"] .detail-day { font-size:49px; }
+    html[data-calendar-font="xlarge"] .date-value, html[data-calendar-font="xlarge"] .ganzhi-col strong { font-size:25px; }
+    html[data-calendar-font="xlarge"] .date-sub, html[data-calendar-font="xlarge"] .ganzhi-void { font-size:18px; }
+    html[data-calendar-font="large"] .solar { font-size:22px; }
+    html[data-calendar-font="large"] .lunar { font-size:12px; }
+    html[data-calendar-font="large"] .ganzhi-day { font-size:11px; }
+    html[data-calendar-font="large"] .day.lunar-primary .solar { font-size:13px; }
+    html[data-calendar-font="large"] .day.lunar-primary .lunar { font-size:17px; }
+    html[data-calendar-font="large"] .detail-day { font-size:41px; }
+    html[data-calendar-font="medium"] .solar { font-size:16px; }
+    html[data-calendar-font="medium"] .lunar { font-size:9px; }
+    html[data-calendar-font="medium"] .day.lunar-primary .lunar { font-size:12px; }
+    html[data-calendar-font="medium"] .ganzhi-day { font-size:8px; }
+    html[data-calendar-font="medium"] .detail-day { font-size:30px; }
+    html[data-calendar-font="small"] .solar { font-size:14px; }
+    html[data-calendar-font="small"] .lunar { font-size:8px; }
+    html[data-calendar-font="small"] .day.lunar-primary .lunar { font-size:10px; }
+    html[data-calendar-font="small"] .ganzhi-day { font-size:7px; }
+    html[data-calendar-font="small"] .detail-day { font-size:27px; }
+  }
+  @media (max-width:380px) {
+    html[data-calendar-font="max"] .solar { font-size:29px; }
+    html[data-calendar-font="max"] .lunar { font-size:15px; }
+    html[data-calendar-font="max"] .ganzhi-day { font-size:12px; }
+    html[data-calendar-font="max"] .day.lunar-primary .lunar { font-size:19px; }
+    html[data-calendar-font="xlarge"] .solar { font-size:25px; }
+    html[data-calendar-font="xlarge"] .lunar { font-size:13px; }
+    html[data-calendar-font="xlarge"] .ganzhi-day { font-size:11px; }
+    html[data-calendar-font="xlarge"] .day.lunar-primary .lunar { font-size:17px; }
+    html[data-calendar-font="large"] .lunar { font-size:11px; }
+    html[data-calendar-font="large"] .ganzhi-day { font-size:10px; }
+    html[data-calendar-font="large"] .day.lunar-primary .lunar { font-size:15px; }
+    html[data-calendar-font="medium"] .day.lunar-primary .lunar { font-size:11px; }
+    html[data-calendar-font="small"] .day.lunar-primary .lunar { font-size:9px; }
+  }
+</style>
+</head>
+<body>
+<div class="brand">
+  <svg class="logo" width="190" height="44" viewBox="0 0 190 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="I-ChingWay">
+    <rect x="0" y="2" width="40" height="40" rx="9" fill="#1f2236"/>
+    <rect x="9" y="12.5" width="22" height="3.6" rx="1.8" fill="#ceb078"/>
+    <rect x="9" y="20.2" width="22" height="3.6" rx="1.8" fill="#ceb078"/>
+    <rect x="9" y="27.9" width="22" height="3.6" rx="1.8" fill="#ceb078"/>
+    <text x="49" y="29" font-family="Georgia,'Times New Roman',serif" font-size="21" font-weight="700"><tspan fill="#1f2236">I-Ching</tspan><tspan fill="#ceb078">Way</tspan></text>
+  </svg>
+  <span class="brand-divider"></span>
+  <div class="brand-text">
+    <span class="brand-zh" data-i18n="brandZh">萬年曆</span>
+    <span class="brand-sub" data-i18n="brandSub">國曆・農曆</span>
+  </div>
+</div>
+<nav class="site-nav" aria-label="工具切換">
+  <a href="index.html" data-i18n="navCast">裝卦</a>
+  <a href="../易經股市應證.html" data-i18n="navStock">股市應證</a>
+  <a class="active" href="calendar.html" data-i18n="navCalendar">萬年曆</a>
+  <a href="fengshui-compass.html" data-i18n="navCompass">風水羅盤</a>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button class="lang-btn" id="langZh" type="button" data-lang="zh">中文</button>
+    <button class="lang-btn" id="langEn" type="button" data-lang="en">EN</button>
+    <button class="lang-btn" id="langBi" type="button" data-lang="bi">中英</button>
+  </div>
+</nav>
+
+<main class="calendar-layout">
+  <section class="calendar-card" aria-labelledby="monthHeading">
+    <div class="calendar-toolbar">
+      <div class="month-nav">
+        <button class="icon-btn" id="prevMonth" type="button" aria-label="上一個月">‹</button>
+        <button class="icon-btn" id="nextMonth" type="button" aria-label="下一個月">›</button>
+      </div>
+      <button class="today-btn" id="todayBtn" type="button" data-i18n="today">今天</button>
+      <div class="jump-controls">
+        <select id="yearSelect" aria-label="年份"></select>
+        <select id="monthSelect" aria-label="月份"></select>
+      </div>
+      <div class="view-switch" role="group" aria-label="國曆農曆顯示切換">
+        <button id="solarView" class="active" type="button" data-view="solar" data-i18n="solar">國曆</button>
+        <button id="lunarView" type="button" data-view="lunar" data-i18n="lunar">農曆</button>
+      </div>
+      <div class="font-control">
+        <span data-i18n="fontSize">字體</span>
+        <div class="font-switch" role="group" aria-label="字體大小">
+          <button id="fontDecrease" type="button">A−</button>
+          <output class="font-level" id="fontLevel" aria-live="polite">5 / 5</output>
+          <button id="fontIncrease" type="button">A＋</button>
+        </div>
+      </div>
+    </div>
+    <h1 class="month-heading" id="monthHeading"></h1>
+    <div class="weekdays" id="weekdays" aria-hidden="true"></div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </section>
+
+  <aside class="detail-card" aria-live="polite">
+    <div class="detail-summary">
+      <div>
+        <div class="detail-kicker" id="detailYear"></div>
+        <div class="detail-day" id="detailDay"></div>
+      </div>
+      <div class="detail-week" id="detailWeek"></div>
+    </div>
+    <div class="date-block">
+      <span class="date-label" data-i18n="solarFull">國曆日期</span>
+      <div class="date-value" id="solarFull"></div>
+    </div>
+    <div class="date-block lunar-block">
+      <span class="date-label" data-i18n="lunarFull">農曆日期</span>
+      <div class="date-value" id="lunarFull"></div>
+      <div class="date-sub" id="lunarYear"></div>
+    </div>
+    <div class="date-block ganzhi-block">
+      <span class="date-label" data-i18n="ganzhiFull">天干地支</span>
+      <div class="ganzhi-grid">
+        <div class="ganzhi-col"><span data-i18n="yearPillar">年柱</span><strong id="ganzhiYear"></strong></div>
+        <div class="ganzhi-col"><span data-i18n="monthPillar">月柱</span><strong id="ganzhiMonth"></strong></div>
+        <div class="ganzhi-col"><span data-i18n="dayPillar">日柱</span><strong id="ganzhiDay"></strong></div>
+      </div>
+      <div class="ganzhi-void" id="ganzhiVoid"></div>
+    </div>
+    <label class="date-picker-label" for="datePicker" data-i18n="jumpDate">直接選擇國曆日期</label>
+    <input id="datePicker" type="date" min="1901-01-01" max="2100-12-31">
+    <p class="support-note" data-i18n="rangeNote">可查詢 1901–2100 年；農曆依裝置內建曆法換算。</p>
+  </aside>
+</main>
+
+<script>
+const I18N = {
+  zh: {
+    navCast:'裝卦', navStock:'股市應證', navCalendar:'萬年曆', navCompass:'風水羅盤', brandZh:'萬年曆', brandSub:'國曆・農曆',
+    today:'今天', solar:'國曆', lunar:'農曆', solarFull:'國曆日期', lunarFull:'農曆日期', ganzhiFull:'天干地支',
+    yearPillar:'年柱', monthPillar:'月柱', dayPillar:'日柱', xunkong:'旬空', fontSize:'字體', jumpDate:'直接選擇國曆日期',
+    rangeNote:'可查詢 1901–2100 年；農曆依裝置內建曆法換算。', yearUnit:'年', monthUnit:'月',
+    weekdays:['日','一','二','三','四','五','六'], unsupported:'此瀏覽器不支援農曆換算，請改用最新版 Safari、Chrome 或 Edge。'
+  },
+  en: {
+    navCast:'Cast', navStock:'Stock Study', navCalendar:'Calendar', navCompass:'Feng Shui Compass', brandZh:'Calendar', brandSub:'Gregorian · Lunar',
+    today:'Today', solar:'Gregorian', lunar:'Lunar', solarFull:'Gregorian date', lunarFull:'Lunar date', ganzhiFull:'Heavenly Stems & Earthly Branches',
+    yearPillar:'Year Pillar', monthPillar:'Month Pillar', dayPillar:'Day Pillar', xunkong:'Xunkong (Void)', fontSize:'Text', jumpDate:'Choose a Gregorian date',
+    rangeNote:'Available for 1901–2100. Lunar dates use your device’s built-in calendar.', yearUnit:'', monthUnit:'',
+    weekdays:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], unsupported:'This browser cannot convert lunar dates. Please use the latest Safari, Chrome, or Edge.'
+  }
+};
+
+let lang = localStorage.getItem('najia_display_language') || localStorage.getItem('liuyao_lang');
+if (!lang) lang = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+if (!['zh','en','bi'].includes(lang)) lang = 'zh';
+let viewMode = localStorage.getItem('liuyao_calendar_view') === 'lunar' ? 'lunar' : 'solar';
+const calendarFontLevels = ['small','medium','large','xlarge','max'];
+let calendarFontSize = localStorage.getItem('liuyao_calendar_font_size');
+if (calendarFontSize === 'large' || !calendarFontLevels.includes(calendarFontSize)) calendarFontSize = 'max';
+const today = atNoon(new Date());
+let selectedDate = today;
+let displayYear = today.getFullYear();
+let displayMonth = today.getMonth();
+
+const lunarFormatter = (() => {
+  try {
+    const f = new Intl.DateTimeFormat('zh-Hant-u-ca-chinese', { year:'numeric', month:'long', day:'numeric' });
+    f.format(today);
+    return f;
+  } catch (err) { return null; }
+})();
+
+function text(zh, en) {
+  if (lang === 'en') return en;
+  if (lang === 'bi') return `${zh} / ${en}`;
+  return zh;
+}
+function tr(key) { return text(I18N.zh[key], I18N.en[key]); }
+function atNoon(date) { return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12); }
+function sameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+function parseDate(value) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return m ? new Date(+m[1], +m[2]-1, +m[3], 12) : null;
+}
+function isInRange(date) { return date >= new Date(1901,0,1,12) && date <= new Date(2100,11,31,12); }
+function lunarInfo(date) {
+  if (!lunarFormatter) return null;
+  const parts = lunarFormatter.formatToParts(date);
+  const get = type => (parts.find(p => p.type === type) || {}).value || '';
+  const month = get('month').replace('月','');
+  const monthNums = {'正':1,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10,'十一':11,'十二':12};
+  const plainMonth = month.replace(/^閏/,'');
+  return { yearName:get('yearName'), relatedYear:get('relatedYear'), month, monthNumber:monthNums[plainMonth] || plainMonth, isLeap:month.startsWith('閏'), day:get('day') };
+}
+function lunarDayLabel(info) {
+  if (!info) return '—';
+  return info.day === '1' ? `${info.month}月` : chineseDay(+info.day);
+}
+function chineseDay(day) {
+  const nums = ['','一','二','三','四','五','六','七','八','九','十'];
+  if (day <= 10) return day === 10 ? '初十' : `初${nums[day]}`;
+  if (day < 20) return `十${nums[day-10]}`;
+  if (day === 20) return '二十';
+  if (day < 30) return `廿${nums[day-20]}`;
+  return '三十';
+}
+function lunarFullText(info) {
+  if (!info) return tr('unsupported');
+  const zh = `${info.month}月${chineseDay(+info.day)}`;
+  const en = `${info.isLeap ? 'Leap ' : ''}month ${info.monthNumber}, day ${info.day}`;
+  return text(zh, en);
+}
+function ganzhiEnglish(gz) {
+  const stems = {'甲':'Jia','乙':'Yi','丙':'Bing','丁':'Ding','戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui'};
+  const branches = {'子':'Zi','丑':'Chou','寅':'Yin','卯':'Mao','辰':'Chen','巳':'Si','午':'Wu','未':'Wei','申':'Shen','酉':'You','戌':'Xu','亥':'Hai'};
+  return gz ? `${stems[gz[0]] || gz[0]}-${branches[gz[1]] || gz[1]}` : '';
+}
+
+// 與裝卦頁完全相同的年月日干支規則；日期模式以正午計算，不帶時柱。
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const MONTH_TERMS = [
+  [1,6,1],[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],
+  [7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,7,11],[12,7,0]
+];
+const TIGER_START = {0:2,5:2,1:4,6:4,2:6,7:6,3:8,8:8,4:0,9:0};
+function getDayGZ(f) {
+  const ref = Date.UTC(2026,5,5);
+  const d = Date.UTC(f.year,f.month-1,f.day);
+  const diff = Math.round((d-ref)/86400000);
+  const idx = ((46+diff)%60+60)%60;
+  return {stem:STEMS[idx%10],branch:BRANCHES[idx%12],idx};
+}
+function getYearGZ(f) {
+  let y=f.year;
+  if (f.month<2 || (f.month===2 && f.day<4)) y-=1;
+  const idx=((y-1984)%60+60)%60;
+  return {stem:STEMS[idx%10],branch:BRANCHES[idx%12],idx};
+}
+function getMonthGZ(f,yearStemIdx) {
+  let chosen=[12,7,0];
+  for (let i=MONTH_TERMS.length-1;i>=0;i--) {
+    const [mm,dd]=MONTH_TERMS[i];
+    if (f.month>mm || (f.month===mm && f.day>=dd)) { chosen=MONTH_TERMS[i]; break; }
+  }
+  const branchIdx=chosen[2];
+  const yinStem=TIGER_START[yearStemIdx];
+  const off=(branchIdx-2+12)%12;
+  return {stem:STEMS[(yinStem+off)%10],branch:BRANCHES[branchIdx]};
+}
+function getKong(dayStem,dayBranch) {
+  const head=(BRANCHES.indexOf(dayBranch)-STEMS.indexOf(dayStem)+12)%12;
+  return [BRANCHES[(head+10)%12],BRANCHES[(head+11)%12]];
+}
+function getDateGanzhi(date) {
+  const f={year:date.getFullYear(),month:date.getMonth()+1,day:date.getDate(),hour:12,minute:0};
+  const y=getYearGZ(f),m=getMonthGZ(f,y.idx%10),d=getDayGZ(f);
+  return {y,m,d,k:getKong(d.stem,d.branch)};
+}
+function ganzhiPair(g) {
+  const zh=`${g.stem}${g.branch}`;
+  const en=`${ganzhiEnglish(zh).replace('-', ' ')}`;
+  return text(zh,en);
+}
+function branchPair(branch) {
+  const en=ganzhiEnglish(`甲${branch}`).split('-')[1] || branch;
+  return text(branch,en);
+}
+function solarFullText(date) {
+  const zh = `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+  const en = new Intl.DateTimeFormat('en-US', { year:'numeric', month:'long', day:'numeric' }).format(date);
+  return text(zh, en);
+}
+function weekText(date) {
+  const zh = `星期${I18N.zh.weekdays[date.getDay()]}`;
+  const en = new Intl.DateTimeFormat('en-US', { weekday:'long' }).format(date);
+  return text(zh, en);
+}
+function monthHeadingText() {
+  const zh = `${displayYear}年 ${displayMonth+1}月`;
+  const en = new Intl.DateTimeFormat('en-US', { year:'numeric', month:'long' }).format(new Date(displayYear,displayMonth,1,12));
+  return text(zh,en);
+}
+
+function populateSelects() {
+  const yearSelect = document.getElementById('yearSelect');
+  const monthSelect = document.getElementById('monthSelect');
+  if (!yearSelect.options.length) {
+    for (let y=1901; y<=2100; y++) yearSelect.add(new Option(lang==='en' ? String(y) : `${y}年`, y));
+    for (let m=1; m<=12; m++) monthSelect.add(new Option(lang==='en' ? new Intl.DateTimeFormat('en-US',{month:'short'}).format(new Date(2020,m-1,1)) : `${m}月`, m-1));
+  }
+  yearSelect.value = displayYear;
+  monthSelect.value = displayMonth;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
+  document.documentElement.dataset.uiLang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = tr(el.dataset.i18n));
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+  document.getElementById('prevMonth').setAttribute('aria-label', trLabel('上一個月','Previous month'));
+  document.getElementById('nextMonth').setAttribute('aria-label', trLabel('下一個月','Next month'));
+  document.title = trLabel('I-ChingWay 萬年曆','I-ChingWay Calendar');
+  const ys = document.getElementById('yearSelect');
+  const ms = document.getElementById('monthSelect');
+  ys.innerHTML = ''; ms.innerHTML = '';
+  populateSelects();
+  applyFontSize();
+  render();
+}
+function trLabel(zh,en) { return text(zh,en); }
+function applyFontSize() {
+  document.documentElement.dataset.calendarFont = calendarFontSize;
+  const level = calendarFontLevels.indexOf(calendarFontSize);
+  const decrease = document.getElementById('fontDecrease');
+  const increase = document.getElementById('fontIncrease');
+  document.getElementById('fontLevel').textContent = `${level + 1} / ${calendarFontLevels.length}`;
+  decrease.disabled = level === 0;
+  increase.disabled = level === calendarFontLevels.length - 1;
+  decrease.setAttribute('aria-label', trLabel('縮小字體','Decrease text size'));
+  increase.setAttribute('aria-label', trLabel('放大字體','Increase text size'));
+}
+
+function render() {
+  populateSelects();
+  document.getElementById('prevMonth').disabled = displayYear === 1901 && displayMonth === 0;
+  document.getElementById('nextMonth').disabled = displayYear === 2100 && displayMonth === 11;
+  document.getElementById('monthHeading').textContent = monthHeadingText();
+  document.getElementById('weekdays').innerHTML = I18N.zh.weekdays.map((zh,i) => `<div class="weekday">${text(zh,I18N.en.weekdays[i])}</div>`).join('');
+  document.getElementById('solarView').classList.toggle('active', viewMode === 'solar');
+  document.getElementById('lunarView').classList.toggle('active', viewMode === 'lunar');
+  renderGrid();
+  renderDetail();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('calendarGrid');
+  if (!lunarFormatter) {
+    grid.innerHTML = `<div class="unsupported" style="grid-column:1/-1">${tr('unsupported')}</div>`;
+    return;
+  }
+  const first = new Date(displayYear, displayMonth, 1, 12);
+  const start = new Date(displayYear, displayMonth, 1-first.getDay(), 12);
+  let html = '';
+  for (let i=0; i<42; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate()+i, 12);
+    const lunar = lunarInfo(d);
+    const gz = getDateGanzhi(d);
+    const classes = ['day'];
+    if (d.getMonth() !== displayMonth) classes.push('outside');
+    if (sameDay(d,today)) classes.push('today');
+    if (sameDay(d,selectedDate)) classes.push('selected');
+    if (viewMode === 'lunar') classes.push('lunar-primary');
+    const available = isInRange(d);
+    if (!available) classes.push('unavailable');
+    const label = `${solarFullText(d)}，${tr('lunar')} ${lunarFullText(lunar)}，${tr('dayPillar')} ${ganzhiPair(gz.d)}`;
+    html += `<button class="${classes.join(' ')}" type="button" data-date="${dateKey(d)}" aria-label="${label}"${available ? '' : ' disabled'}><span class="solar">${d.getDate()}</span><span class="lunar">${lunarDayLabel(lunar)}</span><span class="ganzhi-day">${ganzhiPair(gz.d)}</span></button>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll('.day').forEach(btn => btn.addEventListener('click', () => {
+    const d = parseDate(btn.dataset.date);
+    if (!d) return;
+    selectedDate = d;
+    if (d.getMonth() !== displayMonth || d.getFullYear() !== displayYear) {
+      displayYear = d.getFullYear(); displayMonth = d.getMonth();
+    }
+    render();
+  }));
+}
+
+function renderDetail() {
+  const lunar = lunarInfo(selectedDate);
+  const gz = getDateGanzhi(selectedDate);
+  document.getElementById('detailYear').textContent = lang === 'en' ? String(selectedDate.getFullYear()) : `${selectedDate.getFullYear()}年`;
+  document.getElementById('detailDay').textContent = `${selectedDate.getMonth()+1} / ${selectedDate.getDate()}`;
+  document.getElementById('detailWeek').textContent = weekText(selectedDate);
+  document.getElementById('solarFull').textContent = solarFullText(selectedDate);
+  document.getElementById('lunarFull').textContent = lunarFullText(lunar);
+  document.getElementById('lunarYear').textContent = lunar ? text(`${lunar.yearName}年（${lunar.relatedYear}）`, `${ganzhiEnglish(lunar.yearName)} year (${lunar.relatedYear})`) : '';
+  document.getElementById('ganzhiYear').textContent = ganzhiPair(gz.y);
+  document.getElementById('ganzhiMonth').textContent = ganzhiPair(gz.m);
+  document.getElementById('ganzhiDay').textContent = ganzhiPair(gz.d);
+  document.getElementById('ganzhiVoid').textContent = `${tr('xunkong')}：${gz.k.map(branchPair).join('、')}`;
+  document.getElementById('datePicker').value = dateKey(selectedDate);
+}
+
+function changeMonth(delta) {
+  const next = new Date(displayYear, displayMonth + delta, 1, 12);
+  if (next.getFullYear() < 1901 || next.getFullYear() > 2100) return;
+  displayYear = next.getFullYear(); displayMonth = next.getMonth();
+  render();
+}
+document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+document.getElementById('todayBtn').addEventListener('click', () => {
+  selectedDate = today; displayYear = today.getFullYear(); displayMonth = today.getMonth(); render();
+});
+document.getElementById('yearSelect').addEventListener('change', e => { displayYear = +e.target.value; render(); });
+document.getElementById('monthSelect').addEventListener('change', e => { displayMonth = +e.target.value; render(); });
+document.querySelectorAll('[data-view]').forEach(btn => btn.addEventListener('click', () => {
+  viewMode = btn.dataset.view; localStorage.setItem('liuyao_calendar_view', viewMode); render();
+}));
+function changeFontSize(step) {
+  const current = calendarFontLevels.indexOf(calendarFontSize);
+  const next = Math.max(0, Math.min(calendarFontLevels.length - 1, current + step));
+  calendarFontSize = calendarFontLevels[next];
+  localStorage.setItem('liuyao_calendar_font_size', calendarFontSize);
+  applyFontSize();
+}
+document.getElementById('fontDecrease').addEventListener('click', () => changeFontSize(-1));
+document.getElementById('fontIncrease').addEventListener('click', () => changeFontSize(1));
+document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => {
+  lang = btn.dataset.lang;
+  localStorage.setItem('najia_display_language', lang);
+  localStorage.setItem('liuyao_lang', lang);
+  applyLanguage();
+}));
+document.getElementById('datePicker').addEventListener('change', e => {
+  const d = parseDate(e.target.value);
+  if (!d || !isInRange(d)) return;
+  selectedDate = d; displayYear = d.getFullYear(); displayMonth = d.getMonth(); render();
+});
+
+applyLanguage();
+</script>
+</body>
+</html>
