@@ -37,6 +37,7 @@
 ├─ AGENTS.md                 # 本檔；唯一真實來源
 ├─ index.html                # 預設入口；轉入獨立納甲頁
 ├─ 易經股市應證.html          # 既有股市功能；維持單檔，僅做必要維護
+├─ .github/workflows/pages.yml # GitHub Pages 靜態網站自動部署
 ├─ najia/
 │  ├─ index.html             # 獨立納甲頁的語意結構
 │  ├─ styles.css             # 獨立納甲頁樣式
@@ -74,6 +75,12 @@
 - 裝卦前可填寫占事與本地日期時間；結果可輸出 PNG。手機優先提供系統分享／儲存影像及長按存圖，桌面直接下載。圖片由原生 Canvas 在記憶體產生，不使用或複製大型截圖套件。
 - 尚未包含：銅錢擲卦、數字起卦、時間起卦、月建節氣、月破日破、進退神、反吟伏吟、三合六合與斷卦文字。
 - 股市頁仍透過公共 CORS proxy 抓 Yahoo Finance，可靠度受外部服務影響。
+
+## 公開網站部署
+
+- GitHub repository：`https://github.com/drtienk/ichingway_naja`
+- GitHub Pages：`https://drtienk.github.io/ichingway_naja/`
+- 推送到 `main` 後，由 `.github/workflows/pages.yml` 自動發布靜態檔案；不在 OneDrive 本機產生 build 或 dist。
 
 ## 驗收標準
 
