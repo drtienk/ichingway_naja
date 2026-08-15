@@ -11,60 +11,65 @@
   <main class="shell">
     <header class="page-header">
       <div>
-        <p class="eyebrow">獨立工具</p>
-        <h1>京房納甲裝卦</h1>
-        <p class="subtitle">排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神</p>
+        <p class="eyebrow" data-i18n="eyebrow">獨立工具</p>
+        <h1 data-i18n="title">京房納甲裝卦</h1>
+        <p class="subtitle" data-i18n="subtitle">排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神</p>
+      </div>
+      <div class="language-switch" role="group" aria-label="顯示語言">
+        <button type="button" data-lang="zh">中文</button>
+        <button type="button" data-lang="en">English</button>
+        <button type="button" data-lang="bi">中英</button>
       </div>
     </header>
 
     <nav class="app-tabs" aria-label="主要功能">
-      <a class="app-tab active" href="index.html" aria-current="page">裝卦</a>
-      <a class="app-tab" href="../易經股市應證.html">股市應證</a>
+      <a class="app-tab active" href="index.html" aria-current="page" data-i18n="navCast">裝卦</a>
+      <a class="app-tab" href="../易經股市應證.html" data-i18n="navStock">股市應證</a>
     </nav>
 
     <section class="card controls" aria-labelledby="cast-settings">
       <div class="section-heading">
         <div>
           <p class="step">STEP 01</p>
-          <h2 id="cast-settings">設定卦象</h2>
+          <h2 id="cast-settings" data-i18n="settings">設定卦象</h2>
         </div>
-        <p>由下往上選爻，初爻為第一爻。</p>
+        <p data-i18n="lineHint">由下往上選爻，初爻為第一爻。</p>
       </div>
 
       <label class="matter-field">
-        <span>占事（這次要問的事）</span>
-        <input type="text" id="castMatter" maxlength="120" placeholder="例如：問工作、投資、健康或某件事情的發展">
+        <span data-i18n="matterLabel">占事（這次要問的事）</span>
+        <input type="text" id="castMatter" maxlength="120" placeholder="例如：問工作、投資、健康或某件事情的發展" data-i18n-placeholder="matterPlaceholder">
       </label>
 
       <div class="selectors">
         <fieldset>
-          <legend>上卦・外卦</legend>
+          <legend data-i18n="upper">上卦・外卦</legend>
           <div class="trigram-grid" id="upperGrid"></div>
         </fieldset>
         <fieldset>
-          <legend>下卦・內卦</legend>
+          <legend data-i18n="lower">下卦・內卦</legend>
           <div class="trigram-grid" id="lowerGrid"></div>
         </fieldset>
       </div>
 
       <div class="cast-options">
         <fieldset class="moving-fieldset">
-          <legend>動爻（可複選，也可不選）</legend>
+          <legend data-i18n="moving">動爻（可複選，也可不選）</legend>
           <div class="moving-grid" id="movingGrid"></div>
         </fieldset>
         <label class="date-field">
-          <span>日期時間（本地）</span>
+          <span data-i18n="localDate">日期時間（本地）</span>
           <input type="datetime-local" id="castDate">
           <small class="china-time-preview" id="chinaTimePreview"></small>
         </label>
-        <button class="primary-button" id="castButton" type="button">排出納甲卦盤</button>
+        <button class="primary-button" id="castButton" type="button" data-i18n="castButton">排出納甲卦盤</button>
       </div>
     </section>
 
     <section id="result" aria-live="polite"></section>
 
     <footer>
-      <p>干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。</p>
+      <p data-i18n="footer">干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。</p>
     </footer>
   </main>
   <script src="core.js"></script>

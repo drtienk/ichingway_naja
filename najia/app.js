@@ -3,8 +3,52 @@
 
   const core = window.NaJiaCore;
   const state = {lower:'乾', upper:'乾'};
-  const lineNames = ['初爻','二爻','三爻','四爻','五爻','上爻'];
   let lastCast = null;
+  let lang = localStorage.getItem('najia_display_language') || 'zh';
+  if (!['zh','en','bi'].includes(lang)) lang = 'zh';
+
+  const UI = {
+    zh:{eyebrow:'獨立工具',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',headers:['六親','納甲','伏神','旬空','本卦','化爻六親','化爻納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
+    en:{eyebrow:'STANDALONE TOOL',title:'Jing Fang Najia Casting',subtitle:'Original and changed hexagrams, Najia, Six Kin, Shi/Ying, Six Beasts, Xunkong and hidden spirits',navCast:'Cast',navStock:'Stock Study',settings:'Cast Settings',lineHint:'Lines are counted upward; the first line is at the bottom.',matterLabel:'Question',matterPlaceholder:'For example: career, investment, health, or the outcome of an event',upper:'Upper Trigram・Outer',lower:'Lower Trigram・Inner',moving:'Moving Lines (optional, multi-select)',localDate:'Date & Time (local)',castButton:'CAST HEXAGRAM',footer:'Ganzhi and casting dates use China Standard Time (UTC+8). This tool works offline.',chinaTime:'China Standard Time',year:' Year',month:' Month',day:' Day',void:'Xunkong',matter:'Question',to:'to',palace:' Palace',hexagram:' Hex.',hidden:'Hidden',change:'Changed',save:'▣ Save Cast Image',creating:'Creating image…',selectDate:'Please select a casting date.',headers:['Six Kin','Najia','Hidden Spirit','Xunkong','Original','Changed Kin','Changed Najia','Six Beasts'],lineNames:['1st','2nd','3rd','4th','5th','6th']}
+  };
+  const SIX_KIN_EN = {'父母':'Parents','兄弟':'Brothers','官鬼':'Officer/Ghost','妻財':'Wealth','子孫':'Offspring'};
+  const BEAST_EN = {'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
+  const ELEMENT_EN = {'金':'Metal','木':'Wood','水':'Water','火':'Fire','土':'Earth'};
+  const STEM_EN = {'甲':'Jia','乙':'Yi','丙':'Bing','丁':'Ding','戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui'};
+  const BRANCH_EN = {'子':'Zi','丑':'Chou','寅':'Yin','卯':'Mao','辰':'Chen','巳':'Si','午':'Wu','未':'Wei','申':'Shen','酉':'You','戌':'Xu','亥':'Hai'};
+  const TRIGRAM_EN = {乾:['Heaven','Qian'],兌:['Lake','Dui'],離:['Fire','Li'],震:['Thunder','Zhen'],巽:['Wind','Xun'],坎:['Water','Kan'],艮:['Mountain','Gen'],坤:['Earth','Kun']};
+  const POSITION_EN = {'本宮':'Pure','一世':'1st Generation','二世':'2nd Generation','三世':'3rd Generation','四世':'4th Generation','五世':'5th Generation','游魂':'Wandering Soul','歸魂':'Returning Soul'};
+  const HEX_EN = {
+    '乾為天':['Qian','The Creative'],'坤為地':['Kun','The Receptive'],'水雷屯':['Zhun','Difficulty at the Beginning'],'山水蒙':['Meng','Youthful Folly'],
+    '水天需':['Xu','Waiting'],'天水訟':['Song','Conflict'],'地水師':['Shi','The Army'],'水地比':['Bi','Holding Together'],
+    '風天小畜':['Xiaoxu','Taming Power of the Small'],'天澤履':['Lü','Treading'],'地天泰':['Tai','Peace'],'天地否':['Pi','Standstill'],
+    '天火同人':['Tongren','Fellowship'],'火天大有':['Dayou','Possession in Great Measure'],'地山謙':['Qian','Modesty'],'雷地豫':['Yu','Enthusiasm'],
+    '澤雷隨':['Sui','Following'],'山風蠱':['Gu','Work on the Decayed'],'地澤臨':['Lin','Approach'],'風地觀':['Guan','Contemplation'],
+    '火雷噬嗑':['Shihe','Biting Through'],'山火賁':['Bi','Grace'],'山地剝':['Bo','Splitting Apart'],'地雷復':['Fu','Return'],
+    '天雷無妄':['Wuwang','Innocence'],'山天大畜':['Daxu','Taming Power of the Great'],'山雷頤':['Yi','Corners of the Mouth'],'澤風大過':['Daguo','Preponderance of the Great'],
+    '坎為水':['Kan','The Abysmal'],'離為火':['Li','The Clinging'],'澤山咸':['Xian','Influence'],'雷風恒':['Heng','Duration'],
+    '天山遯':['Dun','Retreat'],'雷天大壯':['Dazhuang','Power of the Great'],'火地晉':['Jin','Progress'],'地火明夷':['Mingyi','Darkening of the Light'],
+    '風火家人':['Jiaren','The Family'],'火澤睽':['Kui','Opposition'],'水山蹇':['Jian','Obstruction'],'雷水解':['Xie','Deliverance'],
+    '山澤損':['Sun','Decrease'],'風雷益':['Yi','Increase'],'澤天夬':['Guai','Break-through'],'天風姤':['Gou','Coming to Meet'],
+    '澤地萃':['Cui','Gathering Together'],'地風升':['Sheng','Pushing Upward'],'澤水困':['Kun','Oppression'],'水風井':['Jing','The Well'],
+    '澤火革':['Ge','Revolution'],'火風鼎':['Ding','The Cauldron'],'震為雷':['Zhen','The Arousing'],'艮為山':['Gen','Keeping Still'],
+    '風山漸':['Jian','Development'],'雷澤歸妹':['Guimei','The Marrying Maiden'],'雷火豐':['Feng','Abundance'],'火山旅':['Lü','The Wanderer'],
+    '巽為風':['Xun','The Gentle'],'兌為澤':['Dui','The Joyous'],'風水渙':['Huan','Dispersion'],'水澤節':['Jie','Limitation'],
+    '風澤中孚':['Zhongfu','Inner Truth'],'雷山小過':['Xiaoguo','Preponderance of the Small'],'水火既濟':['Jiji','After Completion'],'火水未濟':['Weiji','Before Completion']
+  };
+
+  function text(zh, en) { return lang === 'en' ? en : (lang === 'bi' ? zh + ' / ' + en : zh); }
+  function ui(key) { return lang === 'bi' ? UI.zh[key] + ' / ' + UI.en[key] : UI[lang][key]; }
+  function sixKinText(value) { return text(value, SIX_KIN_EN[value] || value); }
+  function beastText(value) { return text(value, BEAST_EN[value] || value); }
+  function elementText(value) { return text(value, ELEMENT_EN[value] || value); }
+  function stemText(value) { return text(value, STEM_EN[value] || value); }
+  function branchText(value) { return text(value, BRANCH_EN[value] || value); }
+  function najiaText(line) { return text(line.stem + line.branch + '・' + line.element, (STEM_EN[line.stem] || line.stem) + ' ' + (BRANCH_EN[line.branch] || line.branch) + ' · ' + (ELEMENT_EN[line.element] || line.element)); }
+  function relationText(line) { return line.shi ? text('世','Shi Yao') : (line.ying ? text('應','Ying Yao') : ''); }
+  function hexText(value) { const item=HEX_EN[value] || [value,value]; return text(value,item[0] + ' — ' + item[1]); }
+  function pillarText(pillar, suffixKey) { return text(pillar.stem + pillar.branch + UI.zh[suffixKey], (STEM_EN[pillar.stem] || pillar.stem) + ' ' + (BRANCH_EN[pillar.branch] || pillar.branch) + UI.en[suffixKey]); }
+  function palaceMetaText(base) { return text(base.palace + '宮' + base.palaceElement + '・' + base.positionName + '卦', TRIGRAM_EN[base.palace][1] + UI.en.palace + ' · ' + ELEMENT_EN[base.palaceElement] + ' · ' + (POSITION_EN[base.positionName] || base.positionName) + UI.en.hexagram); }
 
   function localDateTimeValue(date) {
     const year = date.getFullYear();
@@ -36,22 +80,26 @@
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) { preview.textContent = ''; return; }
     const pillars = core.chinaGanzhi(date);
-    preview.textContent = '中原標準時間 ' + chinaDateTimeText(pillars.fields) + '（UTC+8）' +
-      '｜' + pillars.year.stem + pillars.year.branch + '年 ' + pillars.month.stem + pillars.month.branch + '月 ' + pillars.day.stem + pillars.day.branch + '日';
+    const year = pillarText(pillars.year, 'year');
+    const month = pillarText(pillars.month, 'month');
+    const day = pillarText(pillars.day, 'day');
+    preview.textContent = ui('chinaTime') + ' ' + chinaDateTimeText(pillars.fields) + '（UTC+8）｜' + year + ' ' + month + ' ' + day;
   }
 
   function createTrigramGrid(elementId, key) {
     const grid = document.getElementById(elementId);
+    grid.innerHTML = '';
     core.TRIGS.forEach(function (trigram) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'trigram-button';
       button.dataset.name = trigram.name;
       button.setAttribute('aria-pressed', String(state[key] === trigram.name));
-      button.setAttribute('aria-label', trigram.nature + '卦，' + trigram.name);
+      const trigramEnglish = TRIGRAM_EN[trigram.name];
+      button.setAttribute('aria-label', text(trigram.nature + '卦，' + trigram.name, trigramEnglish[0] + ', ' + trigramEnglish[1]));
       button.innerHTML = '<span class="trigram-symbol">' + trigram.symbol + '</span>' +
-        '<span class="trigram-name">' + trigram.nature + '</span>' +
-        '<span class="trigram-nature">' + trigram.name + '</span>';
+        '<span class="trigram-name">' + text(trigram.nature, trigramEnglish[0]) + '</span>' +
+        '<span class="trigram-nature">' + text(trigram.name, trigramEnglish[1]) + '</span>';
       button.addEventListener('click', function () {
         state[key] = trigram.name;
         grid.querySelectorAll('.trigram-button').forEach(function (item) {
@@ -64,23 +112,30 @@
 
   function createMovingOptions() {
     const grid = document.getElementById('movingGrid');
-    lineNames.forEach(function (name, index) {
+    const checked = new Set(Array.from(grid.querySelectorAll('input:checked')).map(function (input) { return Number(input.value); }));
+    grid.innerHTML = '';
+    UI[lang === 'bi' ? 'zh' : lang].lineNames.forEach(function (name, index) {
       const label = document.createElement('label');
       label.className = 'moving-option';
-      label.innerHTML = '<input type="checkbox" value="' + index + '"><span>' + name + '</span>';
+      const displayName = lang === 'bi' ? UI.zh.lineNames[index] + ' / ' + UI.en.lineNames[index] : name;
+      label.innerHTML = '<input type="checkbox" value="' + index + '"' + (checked.has(index) ? ' checked' : '') + '><span>' + displayName + '</span>';
       grid.appendChild(label);
     });
   }
 
   function lineGraphic(line, moving) {
-    const marker = moving ? '<span class="move-mark" aria-label="動爻">' + (line.yang ? '○' : '×') + '</span>' : '<span class="move-mark"></span>';
-    return '<div class="line-wrap"><span class="yao ' + (line.yang ? 'yang' : 'yin') + '"></span>' + marker + '</div>';
+    const marker = moving ? '<span class="move-mark ' + (line.yang ? 'move-yang' : 'move-yin') + '" aria-label="' + ui('moving') + '">' + (line.yang ? '' : '×') + '</span>' : '';
+    return '<div class="line-wrap"><span class="yao ' + (line.yang ? 'yang' : 'yin') + '">' + marker + '</span></div>';
   }
 
   function relationLabel(line) {
-    if (line.shi) return '<span class="shi">世</span>';
-    if (line.ying) return '<span class="ying">應</span>';
+    if (line.shi) return '<span class="shi">' + relationText(line) + '</span>';
+    if (line.ying) return '<span class="ying">' + relationText(line) + '</span>';
     return '';
+  }
+
+  function yaoDisplay(line, moving) {
+    return '<div class="yao-display">' + lineGraphic(line, moving) + '<div class="sy-under">' + relationLabel(line) + '</div></div>';
   }
 
   function renderTable(result) {
@@ -91,44 +146,47 @@
       const changedLine = result.changed ? result.changed.lines[index] : null;
       const moving = result.movingIndexes.includes(index);
       const hidden = result.hidden[line.position];
+      const hiddenText = hidden ? ui('hidden') + ' ' + sixKinText(hidden.sixKin) + ' ' + najiaText(hidden) : '—';
+      const voidText = result.voidBranches.includes(line.branch) ? (lang === 'en' ? 'XK' : (lang === 'bi' ? '空 / XK' : '空')) : '';
       rows += '<tr class="' + (moving ? 'moving-row' : '') + '">' +
-        '<td class="kin">' + line.sixKin + '</td>' +
-        '<td><span class="stem">' + line.stem + '</span>' + line.branch + '<span class="element">' + line.element + '</span></td>' +
-        '<td class="hidden">' + (hidden ? '伏 ' + hidden.sixKin + ' <span class="stem">' + hidden.stem + '</span>' + hidden.branch + hidden.element : '—') + '</td>' +
-        '<td class="void">' + (result.voidBranches.includes(line.branch) ? '空' : '') + '</td>' +
-        '<td>' + lineGraphic(line, moving) + '</td>' +
-        '<td>' + relationLabel(line) + '</td>' +
-        '<td class="changed-cell">' + (moving && changedLine ? changedLine.sixKin : '') + '</td>' +
-        '<td class="changed-cell">' + (moving && changedLine ? '<span class="stem">' + changedLine.stem + '</span>' + changedLine.branch + '<span class="element">' + changedLine.element + '</span>' : '') + '</td>' +
-        '<td class="beast">' + result.beasts[index] + '</td>' +
+        '<td class="kin">' + sixKinText(line.sixKin) + '</td>' +
+        '<td>' + najiaText(line) + '</td>' +
+        '<td class="hidden">' + hiddenText + '</td>' +
+        '<td class="void">' + voidText + '</td>' +
+        '<td>' + yaoDisplay(line, moving) + '</td>' +
+        '<td class="changed-cell">' + (moving && changedLine ? sixKinText(changedLine.sixKin) : '') + '</td>' +
+        '<td class="changed-cell">' + (moving && changedLine ? najiaText(changedLine) : '') + '</td>' +
+        '<td class="beast">' + beastText(result.beasts[index]) + '</td>' +
         '</tr>';
       compactRows += '<div class="compact-line ' + (moving ? 'moving-row' : '') + '">' +
-        '<div class="compact-info"><b>' + line.sixKin + '</b><span><span class="stem">' + line.stem + '</span>' + line.branch + '・' + line.element +
-        (result.voidBranches.includes(line.branch) ? ' <em>空</em>' : '') + '</span>' +
-        (hidden ? '<small>伏 ' + hidden.sixKin + ' ' + hidden.stem + hidden.branch + '</small>' : '') + '</div>' +
-        '<div class="compact-yao"><div class="compact-main-yao">' + lineGraphic(line, moving) + '<span>' + relationLabel(line) + '</span></div>' +
-        (moving && changedLine ? '<small>化 ' + changedLine.sixKin + ' ' + changedLine.stem + changedLine.branch + '・' + changedLine.element + '</small>' : '') + '</div>' +
-        '<div class="compact-side"><b>' + result.beasts[index] + '</b></div></div>';
+        '<div class="compact-info"><b>' + sixKinText(line.sixKin) + '</b><span>' + najiaText(line) +
+        (voidText ? ' <em>' + voidText + '</em>' : '') + '</span>' +
+        (hidden ? '<small>' + hiddenText + '</small>' : '') + '</div>' +
+        '<div class="compact-yao">' + yaoDisplay(line, moving) +
+        (moving && changedLine ? '<small>' + ui('change') + ' ' + sixKinText(changedLine.sixKin) + ' ' + najiaText(changedLine) + '</small>' : '') + '</div>' +
+        '<div class="compact-side"><b>' + beastText(result.beasts[index]) + '</b></div></div>';
     }
+    const headers = UI.zh.headers.map(function (header, index) { return lang === 'bi' ? header + ' / ' + UI.en.headers[index] : UI[lang].headers[index]; });
     return '<div class="table-scroll"><table class="hex-table">' +
-      '<thead><tr><th>六親</th><th>納甲</th><th>伏神</th><th>旬空</th><th>本卦</th><th>世應</th><th>化爻六親</th><th>化爻納甲</th><th>六獸</th></tr></thead>' +
+      '<thead><tr>' + headers.map(function (header) { return '<th>' + header + '</th>'; }).join('') + '</tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div><div class="compact-lines">' + compactRows + '</div>';
   }
 
   function renderResult(result, dateValue, matter) {
-    const changedTitle = result.changed ? '<span class="to">之</span><h2>' + result.changed.name + '</h2>' : '';
+    const changedTitle = result.changed ? '<span class="to">' + ui('to') + '</span><h2>' + hexText(result.changed.name) + '</h2>' : '';
+    const palaceMeta = palaceMetaText(result.base);
     document.getElementById('result').innerHTML = '<section class="card result-card">' +
-      '<div class="result-banner"><strong>' + result.yearGanzhi.stem + result.yearGanzhi.branch + '年</strong>' +
-      '<span class="pillar">' + result.monthGanzhi.stem + result.monthGanzhi.branch + '月</span>' +
-      '<span class="pillar">' + result.ganzhi.stem + result.ganzhi.branch + '日</span>' +
-      '<span>旬空 <b>' + result.voidBranches.join('') + '</b></span>' +
-      '<span class="china-date">中原標準時間 ' + chinaDateTimeText(result.chinaFields) + '（UTC+8）</span></div>' +
-      (matter ? '<div class="matter-result"><strong>占事</strong>' + escapeHTML(matter) + '</div>' : '') +
-      '<div class="hex-title"><h2>' + result.base.name + '</h2>' + changedTitle +
-      '<span class="hex-meta">' + result.base.palace + '宮' + result.base.palaceElement + '・' + result.base.positionName + '卦</span></div>' +
+      '<div class="result-banner"><strong>' + pillarText(result.yearGanzhi, 'year') + '</strong>' +
+      '<span class="pillar">' + pillarText(result.monthGanzhi, 'month') + '</span>' +
+      '<span class="pillar">' + pillarText(result.ganzhi, 'day') + '</span>' +
+      '<span>' + ui('void') + ' <b>' + result.voidBranches.map(branchText).join(' ') + '</b></span>' +
+      '<span class="china-date">' + ui('chinaTime') + ' ' + chinaDateTimeText(result.chinaFields) + '（UTC+8）</span></div>' +
+      (matter ? '<div class="matter-result"><strong>' + ui('matter') + '</strong>' + escapeHTML(matter) + '</div>' : '') +
+      '<div class="hex-title"><h2>' + hexText(result.base.name) + '</h2>' + changedTitle +
+      '<span class="hex-meta">' + palaceMeta + '</span></div>' +
       renderTable(result) +
-      '<p class="result-note">化爻六親以本卦「' + result.base.palace + '宮' + result.base.palaceElement + '」為判定基準；○為老陽，×為老陰。伏神依本宮純卦對應爻位列出。</p>' +
-      '<button class="save-button" id="saveImageButton" type="button">▣ 儲存卦盤到手機</button>' +
+      '<p class="result-note">' + text('化爻六親以本卦宮五行為準；○為老陽，×為老陰。伏神依本宮純卦對應爻位列出。','Changed-line Six Kin use the original palace element. A circle marks old yang; × marks old yin. Hidden spirits follow the pure palace hexagram.') + '</p>' +
+      '<button class="save-button" id="saveImageButton" type="button">' + ui('save') + '</button>' +
       '</section>';
     lastCast = {result:result, dateValue:dateValue, matter:matter};
     document.getElementById('saveImageButton').addEventListener('click', saveCastImage);
@@ -194,7 +252,7 @@
     context.fillText('I-CHING WAY', 58, 58);
     context.fillStyle = '#20243a';
     context.font = '800 48px "Microsoft JhengHei", sans-serif';
-    context.fillText('京房納甲裝卦', 58, 116);
+    context.fillText(ui('title'), 58, 116);
 
     let contentY = 164;
     if (record.matter) {
@@ -202,46 +260,45 @@
       context.fillRect(48, contentY, 1104, 150);
       context.fillStyle = '#a64e48';
       context.font = '800 25px "Microsoft JhengHei", sans-serif';
-      context.fillText('占事', 70, contentY + 38);
+      context.fillText(ui('matter'), 70, contentY + 38);
       context.fillStyle = '#383528';
       context.font = '500 25px "Microsoft JhengHei", sans-serif';
-      wrapCanvasText(context, record.matter, 142, contentY + 38, 970, 33);
+      wrapCanvasText(context, record.matter, lang === 'en' ? 190 : 142, contentY + 38, lang === 'en' ? 920 : 970, 33);
       contentY += 178;
     }
 
     context.fillStyle = '#20243a';
     context.fillRect(48, contentY, 1104, 72);
     context.fillStyle = '#fff';
-    context.font = '800 31px "Microsoft JhengHei", sans-serif';
-    context.fillText(result.yearGanzhi.stem + result.yearGanzhi.branch + '年', 70, contentY + 47);
-    context.fillText(result.monthGanzhi.stem + result.monthGanzhi.branch + '月', 255, contentY + 47);
-    context.fillText(result.ganzhi.stem + result.ganzhi.branch + '日', 440, contentY + 47);
+    context.font = (lang === 'zh' ? '800 31px' : '800 23px') + ' "Microsoft JhengHei", sans-serif';
+    context.fillText(pillarText(result.yearGanzhi, 'year'), 70, contentY + 47);
+    context.fillText(pillarText(result.monthGanzhi, 'month'), 280, contentY + 47);
+    context.fillText(pillarText(result.ganzhi, 'day'), 500, contentY + 47);
     context.fillStyle = '#ffb2aa';
     context.font = '700 25px "Microsoft JhengHei", sans-serif';
-    context.fillText('旬空 ' + result.voidBranches.join(''), 625, contentY + 46);
+    context.fillText(ui('void') + ' ' + result.voidBranches.map(branchText).join(' '), 710, contentY + 46);
     context.fillStyle = '#ded7c8';
     context.font = '500 23px "Microsoft JhengHei", sans-serif';
-    context.fillText('中原 ' + chinaDateTimeText(result.chinaFields), 850, contentY + 45);
+    context.fillText('UTC+8 ' + chinaDateTimeText(result.chinaFields), 940, contentY + 45);
     contentY += 112;
 
-    const changedName = result.changed ? '　之　' + result.changed.name : '';
+    const changedName = result.changed ? '　' + ui('to') + '　' + hexText(result.changed.name) : '';
     context.fillStyle = '#20243a';
     context.font = '800 42px "Microsoft JhengHei", sans-serif';
-    context.fillText(result.base.name + changedName, 58, contentY);
+    context.fillText(hexText(result.base.name) + changedName, 58, contentY);
     context.fillStyle = '#777061';
     context.font = '600 22px "Microsoft JhengHei", sans-serif';
-    context.fillText(result.base.palace + '宮' + result.base.palaceElement + '・' + result.base.positionName + '卦', 820, contentY);
+    context.fillText(palaceMetaText(result.base), 720, contentY);
     contentY += 54;
 
     context.fillStyle = '#f2eee5';
     context.fillRect(48, contentY, 1104, 46);
     context.fillStyle = '#777061';
     context.font = '700 19px "Microsoft JhengHei", sans-serif';
-    context.fillText('六親／納甲', 68, contentY + 30);
-    context.fillText('本卦', 502, contentY + 30);
-    context.fillText('世應', 714, contentY + 30);
-    context.fillText('化爻', 815, contentY + 30);
-    context.fillText('六獸', 1060, contentY + 30);
+    context.fillText(text('六親／納甲','Six Kin / Najia'), 68, contentY + 30);
+    context.fillText(text('本卦','Original'), 500, contentY + 30);
+    context.fillText(text('化爻','Changed'), 810, contentY + 30);
+    context.fillText(text('六獸','Six Beasts'), 1040, contentY + 30);
     contentY += 62;
 
     for (let index = 5; index >= 0; index -= 1) {
@@ -259,44 +316,47 @@
       context.stroke();
 
       context.fillStyle = '#20243a';
-      context.font = '800 27px "Microsoft JhengHei", sans-serif';
-      context.fillText(line.sixKin, 68, rowY + 36);
-      context.font = '500 23px "Microsoft JhengHei", sans-serif';
-      context.fillText(line.stem + line.branch + '・' + line.element, 180, rowY + 36);
+      context.font = (lang === 'zh' ? '800 27px' : '800 20px') + ' "Microsoft JhengHei", sans-serif';
+      context.fillText(sixKinText(line.sixKin), 68, rowY + 36);
+      context.font = (lang === 'zh' ? '500 23px' : '500 18px') + ' "Microsoft JhengHei", sans-serif';
+      context.fillText(najiaText(line), lang === 'zh' ? 180 : 220, rowY + 36);
       if (hidden) {
         context.fillStyle = '#80652f';
         context.font = '500 18px "Microsoft JhengHei", sans-serif';
-        context.fillText('伏 ' + hidden.sixKin + ' ' + hidden.stem + hidden.branch, 68, rowY + 74);
+        context.fillText(ui('hidden') + ' ' + sixKinText(hidden.sixKin) + ' ' + najiaText(hidden), 68, rowY + 74);
       }
       if (result.voidBranches.includes(line.branch)) {
         context.fillStyle = '#b9413a';
         context.font = '800 20px "Microsoft JhengHei", sans-serif';
-        context.fillText('空', 330, rowY + 36);
+        context.fillText(lang === 'en' ? 'XK' : (lang === 'bi' ? '空/XK' : '空'), 380, rowY + 36);
       }
 
       drawYaoOnCanvas(context, line, moving, 430, rowY + 27);
       if (line.shi || line.ying) {
         context.fillStyle = line.shi ? '#b9413a' : '#315f88';
-        context.font = '900 28px "Microsoft JhengHei", sans-serif';
-        context.fillText(line.shi ? '世' : '應', 718, rowY + 41);
+        context.font = (lang === 'zh' ? '900 24px' : '800 18px') + ' "Microsoft JhengHei", sans-serif';
+        context.textAlign = 'center';
+        context.fillText(relationText(line), 540, rowY + 78);
+        context.textAlign = 'start';
       }
       context.fillStyle = '#20243a';
       context.font = '700 25px "Microsoft JhengHei", sans-serif';
       if (changedLine) {
         context.fillStyle = '#645f54';
         context.font = '700 22px "Microsoft JhengHei", sans-serif';
-        context.fillText(changedLine.sixKin, 810, rowY + 30);
+        context.fillText(sixKinText(changedLine.sixKin), 810, rowY + 30);
         context.font = '500 20px "Microsoft JhengHei", sans-serif';
-        context.fillText(changedLine.stem + changedLine.branch + '・' + changedLine.element, 810, rowY + 65);
+        context.fillText(najiaText(changedLine), 810, rowY + 65);
       }
       context.fillStyle = '#20243a';
       context.font = '700 25px "Microsoft JhengHei", sans-serif';
-      context.fillText(result.beasts[index], 1050, rowY + 40);
+      context.font = (lang === 'zh' ? '700 25px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
+      context.fillText(beastText(result.beasts[index]), 1030, rowY + 40);
     }
 
     context.fillStyle = '#777061';
     context.font = '500 18px "Microsoft JhengHei", sans-serif';
-    context.fillText('化爻六親以本卦宮五行為準；○為老陽，×為老陰。', 58, canvas.height - 42);
+    context.fillText(text('化爻六親以本卦宮五行為準；○為老陽，×為老陰。','Changed-line Six Kin use the original palace element; ○ marks old yang and × marks old yin.'), 58, canvas.height - 42);
     return canvas;
   }
 
@@ -318,9 +378,11 @@
     const overlay = document.createElement('div');
     overlay.className = 'save-overlay';
     overlay.innerHTML = '<div class="save-tip">' +
-      (canShare ? '按「儲存圖片」後，在手機選單選擇「儲存影像」；也可以長按下方圖片儲存。' : '請長按下方圖片儲存到手機；桌面也可按「下載圖片」。') +
-      '</div><img alt="裝卦結果"><div class="save-actions"><button class="download-image">' +
-      (canShare ? '儲存圖片' : '下載圖片') + '</button><button class="close-overlay">關閉</button></div>';
+      (canShare
+        ? text('按「儲存圖片」後，在手機選單選擇「儲存影像」；也可以長按下方圖片儲存。','Tap “Save Image,” then choose “Save Image” on your phone; you can also press and hold the image below.')
+        : text('請長按下方圖片儲存到手機；桌面也可按「下載圖片」。','Press and hold the image below to save it on a phone; on desktop, select “Download Image.”')) +
+      '</div><img alt="' + text('裝卦結果','Casting result') + '"><div class="save-actions"><button class="download-image">' +
+      (canShare ? text('儲存圖片','Save Image') : text('下載圖片','Download Image')) + '</button><button class="close-overlay">' + text('關閉','Close') + '</button></div>';
     overlay.querySelector('img').src = dataUrl;
     overlay.querySelector('.download-image').addEventListener('click', function () {
       if (canShare) navigator.share({files:[file], title:filename}).catch(function () {});
@@ -336,19 +398,20 @@
     const button = document.getElementById('saveImageButton');
     const oldText = button.textContent;
     button.disabled = true;
-    button.textContent = '正在產生圖片…';
+    button.textContent = ui('creating');
     try {
       const canvas = buildCastCanvas(lastCast);
       const blob = await canvasBlob(canvas);
       const dataUrl = canvas.toDataURL('image/png');
-      const filename = '裝卦_' + lastCast.result.base.name + '_' + lastCast.dateValue.slice(0, 10) + '.png';
+      const englishHex = HEX_EN[lastCast.result.base.name] || [lastCast.result.base.name];
+      const filename = (lang === 'en' ? 'Cast_' + englishHex[0] : '裝卦_' + lastCast.result.base.name) + '_' + lastCast.dateValue.slice(0, 10) + '.png';
       let file = null;
       try { if (blob) file = new File([blob], filename, {type:'image/png'}); } catch (error) {}
       const mobile = window.matchMedia('(max-width: 820px)').matches || navigator.maxTouchPoints > 0;
       if (mobile) showSaveOverlay(dataUrl, file, filename);
       else downloadImage(dataUrl, filename);
     } catch (error) {
-      alert('產生圖片失敗：' + error.message);
+      alert(text('產生圖片失敗：','Image creation failed: ') + error.message);
     } finally {
       button.disabled = false;
       button.textContent = oldText;
@@ -358,7 +421,7 @@
   function castFromUI() {
     const dateValue = document.getElementById('castDate').value;
     if (!dateValue) {
-      document.getElementById('result').innerHTML = '<div class="card empty-result">請先選擇起卦日期。</div>';
+      document.getElementById('result').innerHTML = '<div class="card empty-result">' + ui('selectDate') + '</div>';
       return;
     }
     const matter = document.getElementById('castMatter').value.trim();
@@ -367,11 +430,33 @@
     renderResult(result, dateValue, matter);
   }
 
-  createTrigramGrid('lowerGrid', 'lower');
-  createTrigramGrid('upperGrid', 'upper');
-  createMovingOptions();
+  function applyLanguage() {
+    document.documentElement.dataset.lang = lang;
+    document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
+    document.title = ui('title');
+    document.querySelectorAll('[data-i18n]').forEach(function (element) { element.textContent = ui(element.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (element) { element.placeholder = ui(element.dataset.i18nPlaceholder); });
+    document.querySelectorAll('.language-switch button').forEach(function (button) {
+      const active = button.dataset.lang === lang;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    createTrigramGrid('lowerGrid', 'lower');
+    createTrigramGrid('upperGrid', 'upper');
+    createMovingOptions();
+    updateChinaTimePreview();
+    if (lastCast) renderResult(lastCast.result, lastCast.dateValue, lastCast.matter);
+  }
+
+  document.querySelectorAll('.language-switch button').forEach(function (button) {
+    button.addEventListener('click', function () {
+      lang = button.dataset.lang;
+      localStorage.setItem('najia_display_language', lang);
+      applyLanguage();
+    });
+  });
   document.getElementById('castDate').value = localDateTimeValue(new Date());
   document.getElementById('castDate').addEventListener('input', updateChinaTimePreview);
-  updateChinaTimePreview();
+  applyLanguage();
   document.getElementById('castButton').addEventListener('click', castFromUI);
 })();

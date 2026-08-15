@@ -39,6 +39,9 @@ button,input { font:inherit; }
 .eyebrow,.step { margin:0 0 3px; color:var(--red); font-size:12px; font-weight:800; letter-spacing:.18em; }
 h1 { margin:0; font-size:clamp(28px,5vw,44px); line-height:1.2; letter-spacing:.08em; }
 .subtitle { margin:6px 0 0; color:var(--muted); }
+.language-switch { display:flex; gap:5px; padding:4px; background:#e9e3d6; border-radius:9px; }
+.language-switch button { min-height:36px; padding:6px 11px; color:var(--ink); background:transparent; border:0; border-radius:6px; cursor:pointer; font-weight:800; }
+.language-switch button.active { color:#fff; background:var(--ink); }
 .app-tabs { display:flex; gap:8px; margin:0 0 18px; }
 .app-tab { min-width:116px; padding:10px 18px; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:9px; text-align:center; text-decoration:none; font-weight:800; box-shadow:0 2px 8px rgba(36,31,20,.05); }
 .app-tab.active { color:#fff; background:var(--ink); border-color:var(--ink); }
@@ -87,7 +90,7 @@ legend { margin-bottom:8px; font-weight:800; font-size:14px; }
 .china-time-preview { max-width:250px; color:var(--red); font-size:11px; font-weight:700; line-height:1.45; }
 .primary-button { min-height:45px; padding:9px 22px; color:#fff; background:var(--red); border:0; border-radius:9px; cursor:pointer; font-weight:800; letter-spacing:.08em; }
 .primary-button:hover { background:#873e39; }
-.primary-button:focus-visible,.trigram-button:focus-visible,.app-tab:focus-visible,.matter-field input:focus-visible,.date-field input:focus-visible { outline:3px solid rgba(49,95,136,.4); outline-offset:3px; }
+.primary-button:focus-visible,.trigram-button:focus-visible,.app-tab:focus-visible,.matter-field input:focus-visible,.date-field input:focus-visible,.language-switch button:focus-visible { outline:3px solid rgba(49,95,136,.4); outline-offset:3px; }
 
 .result-card { border-top:4px solid var(--gold); }
 .result-banner { display:flex; flex-wrap:wrap; gap:7px 18px; align-items:center; padding:12px 15px; color:#fff; background:var(--ink); border-radius:10px; }
@@ -118,13 +121,17 @@ legend { margin-bottom:8px; font-weight:800; font-size:14px; }
 .hidden { color:#80652f; font-size:12px; }
 .changed-cell { color:#645f54; }
 .compact-lines { display:none; }
-.line-wrap { display:flex; align-items:center; justify-content:center; gap:7px; min-width:118px; }
+.line-wrap { display:flex; align-items:center; justify-content:center; min-width:88px; }
 .yao { position:relative; display:block; width:78px; height:10px; }
 .yao.yang { background:var(--ink); }
 .yao.yin::before,.yao.yin::after { content:""; position:absolute; top:0; width:34px; height:10px; background:var(--ink); }
 .yao.yin::before { left:0; }
 .yao.yin::after { right:0; }
-.move-mark { display:inline-grid; place-items:center; width:20px; height:20px; color:var(--red); font-weight:900; }
+.move-mark { position:absolute; left:50%; top:50%; z-index:2; display:block; transform:translate(-50%,-50%); color:#d11; pointer-events:none; }
+.move-mark.move-yang { width:19px; height:19px; border:3px solid #d11; border-radius:50%; }
+.move-mark.move-yin { font-size:27px; font-weight:900; line-height:1; }
+.yao-display { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:38px; }
+.sy-under { min-height:15px; margin-top:2px; font-size:12px; line-height:15px; font-weight:800; }
 .result-note { margin:14px 2px 0; color:var(--muted); font-size:12px; }
 .save-button { width:100%; margin-top:16px; padding:12px 18px; color:#f4d89d; background:var(--ink); border:0; border-radius:9px; cursor:pointer; font-weight:900; letter-spacing:.08em; }
 .save-button:hover { background:#303650; }
@@ -149,13 +156,12 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .compact-lines { display:block; border-top:1px solid #e5dfd2; }
   .compact-line { display:grid; grid-template-columns:112px minmax(132px,1fr) 82px; align-items:center; min-height:88px; gap:6px; padding:10px 4px; border-bottom:1px solid #e5dfd2; }
   .compact-line.moving-row { background:#fff8e8; }
-  .compact-info { display:flex; flex-direction:column; line-height:1.45; }
+  .compact-info { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:baseline; gap:2px 6px; line-height:1.4; }
   .compact-info b { font-size:16px; }
   .compact-info span { font-size:13px; }
-  .compact-info small { color:#80652f; font-size:11px; }
+  .compact-info small { grid-column:1/-1; color:#80652f; font-size:11px; }
   .compact-info em { color:var(--red); font-style:normal; font-weight:900; }
   .compact-yao { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
-  .compact-main-yao { display:flex; align-items:center; justify-content:center; gap:4px; }
   .compact-yao .line-wrap { min-width:0; }
   .compact-yao .yao { width:68px; }
   .compact-yao .yao.yin::before,.compact-yao .yao.yin::after { width:29px; }
@@ -164,11 +170,23 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .compact-side b { font-size:15px; }
 }
 
+html[data-lang="en"] .compact-info b,html[data-lang="bi"] .compact-info b { font-size:12px; }
+html[data-lang="en"] .compact-info span,html[data-lang="bi"] .compact-info span { font-size:11px; }
+html[data-lang="en"] .compact-side b,html[data-lang="bi"] .compact-side b { font-size:11px; line-height:1.25; }
+html[data-lang="bi"] .language-switch button { padding-inline:8px; }
+
 @media (max-width:480px) {
   .shell { width:min(100% - 20px,1120px); padding-top:20px; }
   .card { padding:17px; border-radius:12px; }
   .trigram-grid { grid-template-columns:repeat(4,1fr); gap:5px; }
   .trigram-button { min-height:70px; padding:4px; }
   .section-heading { align-items:flex-start; flex-direction:column; gap:5px; }
-  .compact-line { grid-template-columns:96px minmax(112px,1fr) 70px; }
+  .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
+  .compact-info { grid-template-columns:minmax(52px,.85fr) minmax(0,1.15fr); gap:2px 4px; }
+  .compact-info b,.compact-info span { overflow-wrap:normal; word-break:normal; }
+  .compact-yao .yao { width:62px; }
+  .compact-yao .yao.yin::before,.compact-yao .yao.yin::after { width:26px; }
+  html[data-lang="en"] .compact-info b,html[data-lang="bi"] .compact-info b,
+  html[data-lang="en"] .compact-info span,html[data-lang="bi"] .compact-info span { font-size:10px; line-height:1.25; }
+  html[data-lang="en"] .compact-side b,html[data-lang="bi"] .compact-side b { font-size:10px; }
 }
