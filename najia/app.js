@@ -242,17 +242,17 @@
     }
     if (!moving) return;
     context.strokeStyle = '#b9413a';
-    context.lineWidth = 5;
+    context.lineWidth = 7;
     if (line.yang) {
       context.beginPath();
-      context.arc(center, y + 7, 18, 0, Math.PI * 2);
+      context.arc(center, y + 7, 24, 0, Math.PI * 2);
       context.stroke();
     } else {
       context.beginPath();
-      context.moveTo(center - 15, y - 10);
-      context.lineTo(center + 15, y + 24);
-      context.moveTo(center + 15, y - 10);
-      context.lineTo(center - 15, y + 24);
+      context.moveTo(center - 21, y - 16);
+      context.lineTo(center + 21, y + 30);
+      context.moveTo(center + 21, y - 16);
+      context.lineTo(center - 21, y + 30);
       context.stroke();
     }
   }
