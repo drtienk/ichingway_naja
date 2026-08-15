@@ -6,7 +6,9 @@
   let lastCast = null;
   let lang = localStorage.getItem('najia_display_language') || 'zh';
   let showTrigramSymbols = localStorage.getItem('najia_show_trigram_symbols') === 'true';
+  let trigramTextSize = localStorage.getItem('najia_trigram_text_size') || 'large';
   if (!['zh','en','bi'].includes(lang)) lang = 'zh';
+  if (!['normal','large'].includes(trigramTextSize)) trigramTextSize = 'large';
 
   const UI = {
     zh:{eyebrow:'I-ChingWay',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',showTrigramSymbols:'顯示卦象',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',headers:['六親','納甲','伏神','旬空','本卦','化爻六親','化爻納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
@@ -432,12 +434,18 @@
 
   function applyLanguage() {
     document.documentElement.dataset.lang = lang;
+    document.documentElement.dataset.trigramSize = trigramTextSize;
     document.documentElement.lang = lang === 'en' ? 'en' : 'zh-Hant';
     document.title = ui('title');
     document.querySelectorAll('[data-i18n]').forEach(function (element) { element.textContent = ui(element.dataset.i18n); });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (element) { element.placeholder = ui(element.dataset.i18nPlaceholder); });
     document.querySelectorAll('.language-switch button').forEach(function (button) {
       const active = button.dataset.lang === lang;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    document.querySelectorAll('.trigram-size-switch button').forEach(function (button) {
+      const active = button.dataset.trigramSize === trigramTextSize;
       button.classList.toggle('active', active);
       button.setAttribute('aria-pressed', String(active));
     });
@@ -458,6 +466,18 @@
   });
   document.getElementById('castDate').value = localDateTimeValue(new Date());
   document.getElementById('castDate').addEventListener('input', updateChinaTimePreview);
+  document.querySelectorAll('.trigram-size-switch button').forEach(function (button) {
+    button.addEventListener('click', function () {
+      trigramTextSize = button.dataset.trigramSize;
+      localStorage.setItem('najia_trigram_text_size', trigramTextSize);
+      document.documentElement.dataset.trigramSize = trigramTextSize;
+      document.querySelectorAll('.trigram-size-switch button').forEach(function (item) {
+        const active = item.dataset.trigramSize === trigramTextSize;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+    });
+  });
   document.getElementById('showTrigramSymbols').addEventListener('change', function (event) {
     showTrigramSymbols = event.target.checked;
     localStorage.setItem('najia_show_trigram_symbols', String(showTrigramSymbols));
