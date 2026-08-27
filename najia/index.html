@@ -8,7 +8,7 @@
   <title>京房納甲裝卦</title>
   <link rel="apple-touch-icon" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
   <link rel="icon" type="image/png" sizes="180x180" href="icon-najia-180.png?v=20260815-1">
-  <link rel="stylesheet" href="styles.css?v=20260815-14">
+  <link rel="stylesheet" href="styles.css?v=20260827-1">
 </head>
 <body>
   <main class="shell">
@@ -81,11 +81,20 @@
 
     <section id="result" aria-live="polite"></section>
 
+    <section class="card history-card" id="historyCard" aria-labelledby="history-heading" hidden>
+      <div class="history-head">
+        <h2 id="history-heading" data-i18n="historyTitle">占卦紀錄</h2>
+        <button class="history-clear" id="historyClear" type="button" data-i18n="historyClear">清除全部</button>
+      </div>
+      <p class="history-note" data-i18n="historyNote">只保存在這台裝置的瀏覽器，最多 20 筆。點一下可重新載入該次卦盤。</p>
+      <ul class="history-list" id="historyList"></ul>
+    </section>
+
     <footer>
       <p data-i18n="footer">干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。</p>
     </footer>
   </main>
   <script src="core.js"></script>
-  <script src="app.js?v=20260815-9"></script>
+  <script src="app.js?v=20260827-1"></script>
 </body>
 </html>

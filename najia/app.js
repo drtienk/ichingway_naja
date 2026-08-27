@@ -12,8 +12,8 @@
   if (!['normal','large'].includes(trigramTextSize)) trigramTextSize = 'large';
 
   const UI = {
-    zh:{eyebrow:'I-ChingWay',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navCompass:'風水羅盤',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',showTrigramSymbols:'顯示卦象',numberMode:'使用 1 到 8 數字選卦',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',headers:['六親','納甲','伏神','旬空','本卦','變卦','變卦六親','變卦納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
-    en:{eyebrow:'I-ChingWay',title:'Jing Fang Najia Casting',subtitle:'Original and changed hexagrams, Najia, Six Kin, Shi/Ying, Six Beasts, Xunkong and hidden spirits',navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navCompass:'Feng Shui Compass',settings:'Cast Settings',lineHint:'Lines are counted upward; the first line is at the bottom.',showTrigramSymbols:'Show Trigram Symbols',numberMode:'Use numbers 1 through 8 to select trigrams',matterLabel:'Question',matterPlaceholder:'For example: career, investment, health, or the outcome of an event',upper:'Upper Trigram・Outer',lower:'Lower Trigram・Inner',moving:'Moving Lines (optional, multi-select)',localDate:'Date & Time (local)',castButton:'CAST HEXAGRAM',footer:'Ganzhi and casting dates use China Standard Time (UTC+8). This tool works offline.',chinaTime:'China Standard Time',year:' Year',month:' Month',day:' Day',void:'Xunkong',matter:'Question',to:'to',palace:' Palace',hexagram:' Hex.',hidden:'Hidden',change:'Changed',save:'▣ Save Cast Image',creating:'Creating image…',selectDate:'Please select a casting date.',headers:['Six Kin','Najia','Hidden Spirit','Xunkong','Original','Changed Hex.','Changed Kin','Changed Najia','Six Beasts'],lineNames:['1st','2nd','3rd','4th','5th','6th']}
+    zh:{eyebrow:'I-ChingWay',title:'京房納甲裝卦',subtitle:'排本卦、變卦、納干支、六親、世應、六獸、旬空與伏神',navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navCompass:'風水羅盤',settings:'設定卦象',lineHint:'由下往上選爻，初爻為第一爻。',showTrigramSymbols:'顯示卦象',numberMode:'使用 1 到 8 數字選卦',matterLabel:'占事（這次要問的事）',matterPlaceholder:'例如：問工作、投資、健康或某件事情的發展',upper:'上卦・外卦',lower:'下卦・內卦',moving:'動爻（可複選，也可不選）',localDate:'日期時間（本地）',castButton:'排出納甲卦盤',footer:'干支與卦盤日期均以中原標準時間（UTC+8）推算；本工具不連線、不抓股價。',chinaTime:'中原標準時間',year:'年',month:'月',day:'日',void:'旬空',matter:'占事',to:'之',palace:'宮',hexagram:'卦',hidden:'伏',change:'化',save:'▣ 儲存卦盤到手機',creating:'正在產生圖片…',selectDate:'請先選擇起卦日期。',historyTitle:'占卦紀錄',historyClear:'清除全部',historyNote:'只保存在這台裝置的瀏覽器，最多 20 筆；點一下可重新載入該次卦盤。',historyMatterEmpty:'（未填占事）',historyOpen:'載入這筆卦盤',historyDelete:'刪除這筆紀錄',historyClearConfirm:'確定要清除全部占卦紀錄嗎？此動作無法復原。',historyMoving:'動爻',historyNoMoving:'無動爻',headers:['六親','納甲','伏神','旬空','本卦','變卦','變卦六親','變卦納甲','六獸'],lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
+    en:{eyebrow:'I-ChingWay',title:'Jing Fang Najia Casting',subtitle:'Original and changed hexagrams, Najia, Six Kin, Shi/Ying, Six Beasts, Xunkong and hidden spirits',navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navCompass:'Feng Shui Compass',settings:'Cast Settings',lineHint:'Lines are counted upward; the first line is at the bottom.',showTrigramSymbols:'Show Trigram Symbols',numberMode:'Use numbers 1 through 8 to select trigrams',matterLabel:'Question',matterPlaceholder:'For example: career, investment, health, or the outcome of an event',upper:'Upper Trigram・Outer',lower:'Lower Trigram・Inner',moving:'Moving Lines (optional, multi-select)',localDate:'Date & Time (local)',castButton:'CAST HEXAGRAM',footer:'Ganzhi and casting dates use China Standard Time (UTC+8). This tool works offline.',chinaTime:'China Standard Time',year:' Year',month:' Month',day:' Day',void:'Xunkong',matter:'Question',to:'to',palace:' Palace',hexagram:' Hex.',hidden:'Hidden',change:'Changed',save:'▣ Save Cast Image',creating:'Creating image…',selectDate:'Please select a casting date.',historyTitle:'Cast History',historyClear:'Clear All',historyNote:'Stored only in this browser on this device, up to 20 records; tap one to reload that cast.',historyMatterEmpty:'(No question)',historyOpen:'Load this cast',historyDelete:'Delete this record',historyClearConfirm:'Clear all cast history? This cannot be undone.',historyMoving:'Moving',historyNoMoving:'No moving lines',headers:['Six Kin','Najia','Hidden Spirit','Xunkong','Original','Changed Hex.','Changed Kin','Changed Najia','Six Beasts'],lineNames:['1st','2nd','3rd','4th','5th','6th']}
   };
   const SIX_KIN_EN = {'父母':'Parents','兄弟':'Brothers','官鬼':'Officer/Ghost','妻財':'Wealth','子孫':'Offspring'};
   const BEAST_EN = {'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
@@ -444,6 +444,131 @@
     }
   }
 
+  const HISTORY_KEY = 'najia_cast_history';
+  const HISTORY_LIMIT = 20;
+
+  function isTrigramName(value) {
+    return core.TRIGS.some(function (trigram) { return trigram.name === value; });
+  }
+
+  function normalizeMoving(value) {
+    if (!Array.isArray(value)) return [];
+    const list = [];
+    value.forEach(function (item) {
+      const index = Number(item);
+      if (Number.isInteger(index) && index >= 0 && index <= 5 && !list.includes(index)) list.push(index);
+    });
+    return list.sort(function (a, b) { return a - b; });
+  }
+
+  function normalizeRecord(item) {
+    if (!item || typeof item !== 'object') return null;
+    if (!isTrigramName(item.upper) || !isTrigramName(item.lower)) return null;
+    if (typeof item.dateValue !== 'string' || Number.isNaN(new Date(item.dateValue).getTime())) return null;
+    return {
+      id: typeof item.id === 'string' && item.id ? item.id : String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8),
+      upper: item.upper,
+      lower: item.lower,
+      moving: normalizeMoving(item.moving),
+      dateValue: item.dateValue,
+      matter: typeof item.matter === 'string' ? item.matter.slice(0, 120) : '',
+      baseName: typeof item.baseName === 'string' ? item.baseName : '',
+      changedName: typeof item.changedName === 'string' ? item.changedName : '',
+      savedAt: typeof item.savedAt === 'string' ? item.savedAt : ''
+    };
+  }
+
+  function loadHistory() {
+    let raw = null;
+    try { raw = localStorage.getItem(HISTORY_KEY); } catch (error) { return []; }
+    if (!raw) return [];
+    let parsed = null;
+    try { parsed = JSON.parse(raw); } catch (error) { return []; }
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(normalizeRecord).filter(Boolean).slice(0, HISTORY_LIMIT);
+  }
+
+  function storeHistory(list) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_LIMIT))); } catch (error) {}
+  }
+
+  function historySignature(record) {
+    return [record.upper, record.lower, record.moving.join(','), record.dateValue, record.matter].join('|');
+  }
+
+  function rememberCast(result, dateValue, matter) {
+    const record = normalizeRecord({
+      upper: state.upper,
+      lower: state.lower,
+      moving: result.movingIndexes,
+      dateValue: dateValue,
+      matter: matter,
+      baseName: result.base.name,
+      changedName: result.changed ? result.changed.name : '',
+      savedAt: new Date().toISOString()
+    });
+    if (!record) return;
+    const signature = historySignature(record);
+    const list = loadHistory().filter(function (item) { return historySignature(item) !== signature; });
+    list.unshift(record);
+    storeHistory(list);
+    renderHistory();
+  }
+
+  function historyDateText(value) {
+    const parts = value.split('T');
+    return parts[0].replace(/-/g, '/') + (parts[1] ? ' ' + parts[1].slice(0, 5) : '');
+  }
+
+  function historyMovingText(moving) {
+    if (!moving.length) return ui('historyNoMoving');
+    const separator = lang === 'zh' ? '、' : ', ';
+    const names = moving.map(function (index) {
+      return lang === 'bi' ? UI.zh.lineNames[index] + '/' + UI.en.lineNames[index] : UI[lang].lineNames[index];
+    });
+    return ui('historyMoving') + ' ' + names.join(separator);
+  }
+
+  function renderHistory() {
+    const card = document.getElementById('historyCard');
+    const list = document.getElementById('historyList');
+    if (!card || !list) return;
+    const records = loadHistory();
+    if (!records.length) {
+      list.innerHTML = '';
+      card.hidden = true;
+      return;
+    }
+    card.hidden = false;
+    list.innerHTML = records.map(function (record) {
+      const baseName = record.baseName || (record.upper + record.lower);
+      const hexLine = escapeHTML(hexText(baseName)) +
+        (record.changedName ? ' <span class="to">' + escapeHTML(ui('to')) + '</span> ' + escapeHTML(hexText(record.changedName)) : '');
+      return '<li class="history-item">' +
+        '<button class="history-open" type="button" data-history-id="' + escapeHTML(record.id) + '" title="' + escapeHTML(ui('historyOpen')) + '">' +
+        '<span class="history-matter' + (record.matter ? '' : ' is-empty') + '">' + escapeHTML(record.matter || ui('historyMatterEmpty')) + '</span>' +
+        '<span class="history-hex">' + hexLine + '</span>' +
+        '<span class="history-meta">' + escapeHTML(historyDateText(record.dateValue)) + ' ・ ' + escapeHTML(historyMovingText(record.moving)) + '</span>' +
+        '</button>' +
+        '<button class="history-delete" type="button" data-history-delete="' + escapeHTML(record.id) + '" aria-label="' + escapeHTML(ui('historyDelete')) + '">✕</button>' +
+        '</li>';
+    }).join('');
+  }
+
+  function applyHistoryRecord(record) {
+    state.upper = record.upper;
+    state.lower = record.lower;
+    document.getElementById('castMatter').value = record.matter;
+    document.getElementById('castDate').value = record.dateValue;
+    createTrigramGrid('lowerGrid', 'lower');
+    createTrigramGrid('upperGrid', 'upper');
+    document.querySelectorAll('#movingGrid input').forEach(function (input) {
+      input.checked = record.moving.includes(Number(input.value));
+    });
+    updateChinaTimePreview();
+    castFromUI();
+  }
+
   function castFromUI() {
     const dateValue = document.getElementById('castDate').value;
     if (!dateValue) {
@@ -454,6 +579,7 @@
     const moving = Array.from(document.querySelectorAll('#movingGrid input:checked')).map(function (input) { return Number(input.value); });
     const result = core.cast(state.upper, state.lower, moving, new Date(dateValue));
     renderResult(result, dateValue, matter);
+    rememberCast(result, dateValue, matter);
   }
 
   function applyLanguage() {
@@ -480,6 +606,7 @@
     createTrigramGrid('upperGrid', 'upper');
     createMovingOptions();
     updateChinaTimePreview();
+    renderHistory();
     if (lastCast) renderResult(lastCast.result, lastCast.dateValue, lastCast.matter);
   }
 
@@ -517,6 +644,24 @@
     event.currentTarget.setAttribute('aria-pressed', String(trigramNumberMode));
     createTrigramGrid('upperGrid', 'upper');
     createTrigramGrid('lowerGrid', 'lower');
+  });
+  document.getElementById('historyList').addEventListener('click', function (event) {
+    const removeButton = event.target.closest('[data-history-delete]');
+    if (removeButton) {
+      const id = removeButton.dataset.historyDelete;
+      storeHistory(loadHistory().filter(function (item) { return item.id !== id; }));
+      renderHistory();
+      return;
+    }
+    const openButton = event.target.closest('[data-history-id]');
+    if (!openButton) return;
+    const record = loadHistory().find(function (item) { return item.id === openButton.dataset.historyId; });
+    if (record) applyHistoryRecord(record);
+  });
+  document.getElementById('historyClear').addEventListener('click', function () {
+    if (!window.confirm(ui('historyClearConfirm'))) return;
+    storeHistory([]);
+    renderHistory();
   });
   applyLanguage();
   document.getElementById('castButton').addEventListener('click', castFromUI);
