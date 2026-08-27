@@ -21,6 +21,7 @@
   .tool-nav a{display:inline-block;padding:8px 13px;color:var(--ink);background:#fff;border:1px solid var(--gold);
     border-radius:6px;text-decoration:none;font-size:13px;font-weight:700;box-shadow:0 1px 4px #0001;}
   .tool-nav a:hover{background:#fff8e8;}
+  .tool-nav a[aria-current="page"]{color:var(--gold);background:var(--ink);border-color:var(--ink);}
   .panel{background:var(--card);border-radius:8px;padding:18px 20px;margin:14px 0;
     box-shadow:0 1px 4px #0001;border-top:3px solid var(--ink);}
   .panel.result-card{border-top-color:var(--gold);}
@@ -116,9 +117,11 @@
 <div class="wrap">
   <h1>京房納甲裝卦 × 台股應證</h1>
   <p class="sub">起卦取財爻・連動每日股價・統計旺相休囚與漲跌的關係</p>
-  <nav class="tool-nav" aria-label="其他工具">
+  <nav class="tool-nav" aria-label="主要功能">
     <a href="najia/index.html">京房納甲裝卦</a>
+    <a href="易經股市應證.html" aria-current="page">股市應證</a>
     <a href="najia/calendar.html">萬年曆</a>
+    <a href="najia/life-hexagram.html">命卦</a>
     <a href="najia/fengshui-compass.html">風水羅盤</a>
   </nav>
 

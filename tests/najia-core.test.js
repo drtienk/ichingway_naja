@@ -52,4 +52,33 @@ assert.strictEqual(lateRatHour.day.stem + lateRatHour.day.branch, '壬戌', '中
 const hiddenCount = allHexes.filter(function (hex) { return Object.keys(core.hiddenSpirits(hex)).length > 0; }).length;
 assert.ok(hiddenCount > 0, '應有需要伏神的卦');
 
-console.log('PASS：64 卦、384 種單爻變化、化爻六親、伏神、六獸、旬空與日干支檢查完成。');
+assert.strictEqual(core.cycleEight(1), 1);
+assert.strictEqual(core.cycleEight(8), 8);
+assert.strictEqual(core.cycleEight(9), 1);
+assert.strictEqual(core.cycleEight(26), 2);
+assert.throws(function () { core.cycleEight(0); });
+
+const lifeExample = core.lifeHexagramFromLunar(9, 26, 23);
+assert.strictEqual(lifeExample.lower.name, '乾', '農曆 9 月除以 8 餘 1，應為下卦乾');
+assert.strictEqual(lifeExample.upper.name, '兌', '農曆 26 日除以 8 餘 2，應為上卦兌');
+assert.strictEqual(lifeExample.hourBranch, '子');
+assert.strictEqual(lifeExample.movingLine, 1, '子時應動初爻');
+assert.deepStrictEqual(lifeExample.movingIndexes, [0]);
+assert.strictEqual(core.buildHex(lifeExample.upper.name, lifeExample.lower.name).name, '澤天夬');
+
+const hourPairs = [
+  [[23,0,11,12],1], [[1,2,13,14],2], [[3,4,15,16],3],
+  [[5,6,17,18],4], [[7,8,19,20],5], [[9,10,21,22],6]
+];
+hourPairs.forEach(function (entry) {
+  entry[0].forEach(function (hour) {
+    assert.strictEqual(core.lifeHexagramFromLunar(1, 1, hour).movingLine, entry[1], hour + ' 時的動爻不正確');
+  });
+});
+const noBirthTime = core.lifeHexagramFromLunar(1, 2, null);
+assert.strictEqual(noBirthTime.hourBranch, null);
+assert.strictEqual(noBirthTime.movingLine, null);
+assert.deepStrictEqual(noBirthTime.movingIndexes, []);
+assert.throws(function () { core.lifeHexagramFromLunar(1, 1, 24); });
+
+console.log('PASS：64 卦、384 種單爻變化、命卦月日八卦、時辰動爻、化爻六親、伏神、六獸、旬空與日干支檢查完成。');

@@ -98,9 +98,10 @@
     .brand .logo { width:158px; height:37px; }
     .brand-zh { font-size:19px; letter-spacing:1px; }
     .brand-sub { font-size:11px; }
-    .site-nav { margin:-2px 0 12px; }
-    .site-nav a { flex:1; justify-content:center; font-size:14px; min-height:40px; padding:6px; }
-    .site-nav .lang-switch { width:100%; margin-left:0; }
+    .site-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; margin:-2px 0 12px; }
+    .site-nav a { min-width:0; justify-content:center; font-size:12px; min-height:40px; padding:5px 1px; text-align:center; }
+    html[data-ui-lang="en"] .site-nav,html[data-ui-lang="bi"] .site-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .site-nav .lang-switch { grid-column:1/-1; width:100%; margin-left:0; }
     .site-nav .lang-btn { flex:1; min-height:40px; }
     .calendar-layout { grid-template-columns:1fr; gap:12px; }
     .calendar-card, .detail-card { padding:12px; }
@@ -250,6 +251,7 @@
   <a href="index.html" data-i18n="navCast">裝卦</a>
   <a href="../易經股市應證.html" data-i18n="navStock">股市應證</a>
   <a class="active" href="calendar.html" data-i18n="navCalendar">萬年曆</a>
+  <a href="life-hexagram.html" data-i18n="navLife">命卦</a>
   <a href="fengshui-compass.html" data-i18n="navCompass">風水羅盤</a>
   <div class="lang-switch" role="group" aria-label="Language">
     <button class="lang-btn" id="langZh" type="button" data-lang="zh">中文</button>
@@ -323,14 +325,14 @@
 <script>
 const I18N = {
   zh: {
-    navCast:'裝卦', navStock:'股市應證', navCalendar:'萬年曆', navCompass:'風水羅盤', brandZh:'萬年曆', brandSub:'國曆・農曆',
+    navCast:'裝卦', navStock:'股市應證', navCalendar:'萬年曆', navLife:'命卦', navCompass:'風水羅盤', brandZh:'萬年曆', brandSub:'國曆・農曆',
     today:'今天', solar:'國曆', lunar:'農曆', solarFull:'國曆日期', lunarFull:'農曆日期', ganzhiFull:'天干地支',
     yearPillar:'年柱', monthPillar:'月柱', dayPillar:'日柱', xunkong:'旬空', fontSize:'字體', jumpDate:'直接選擇國曆日期',
     rangeNote:'可查詢 1901–2100 年；農曆依裝置內建曆法換算。', yearUnit:'年', monthUnit:'月',
     weekdays:['日','一','二','三','四','五','六'], unsupported:'此瀏覽器不支援農曆換算，請改用最新版 Safari、Chrome 或 Edge。'
   },
   en: {
-    navCast:'Cast', navStock:'Stock Study', navCalendar:'Calendar', navCompass:'Feng Shui Compass', brandZh:'Calendar', brandSub:'Gregorian · Lunar',
+    navCast:'Cast', navStock:'Stock Study', navCalendar:'Calendar', navLife:'Life Hexagram', navCompass:'Feng Shui Compass', brandZh:'Calendar', brandSub:'Gregorian · Lunar',
     today:'Today', solar:'Gregorian', lunar:'Lunar', solarFull:'Gregorian date', lunarFull:'Lunar date', ganzhiFull:'Heavenly Stems & Earthly Branches',
     yearPillar:'Year Pillar', monthPillar:'Month Pillar', dayPillar:'Day Pillar', xunkong:'Xunkong (Void)', fontSize:'Text', jumpDate:'Choose a Gregorian date',
     rangeNote:'Available for 1901–2100. Lunar dates use your device’s built-in calendar.', yearUnit:'', monthUnit:'',

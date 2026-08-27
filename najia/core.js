@@ -226,6 +226,38 @@
     };
   }
 
+  function cycleEight(value) {
+    if (!Number.isInteger(value) || value < 1) throw new Error('命卦月日必須是正整數');
+    const remainder = value % 8;
+    return remainder === 0 ? 8 : remainder;
+  }
+
+  function hourBranch(hour) {
+    if (!Number.isInteger(hour) || hour < 0 || hour > 23) throw new Error('命卦時數必須介於 0 至 23');
+    return BRANCHES[Math.floor(((hour + 1) % 24) / 2)];
+  }
+
+  function lifeHexagramFromLunar(lunarMonth, lunarDay, hour) {
+    const lowerNumber = cycleEight(lunarMonth);
+    const upperNumber = cycleEight(lunarDay);
+    const hasHour = hour !== null && hour !== undefined && hour !== '';
+    let branch = null;
+    let movingLine = null;
+    if (hasHour) {
+      branch = hourBranch(hour);
+      movingLine = BRANCHES.indexOf(branch) % 6 + 1;
+    }
+    return {
+      lowerNumber:lowerNumber,
+      upperNumber:upperNumber,
+      lower:TRIGS[lowerNumber - 1],
+      upper:TRIGS[upperNumber - 1],
+      hourBranch:branch,
+      movingLine:movingLine,
+      movingIndexes:movingLine ? [movingLine - 1] : []
+    };
+  }
+
   return {
     STEMS:STEMS,
     BRANCHES:BRANCHES,
@@ -245,6 +277,9 @@
     yearGanzhi:yearGanzhi,
     monthGanzhi:monthGanzhi,
     chinaGanzhi:chinaGanzhi,
-    cast:cast
+    cast:cast,
+    cycleEight:cycleEight,
+    hourBranch:hourBranch,
+    lifeHexagramFromLunar:lifeHexagramFromLunar
   };
 });
