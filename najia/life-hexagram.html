@@ -61,12 +61,20 @@
   .pillar-strip { display:flex; flex-wrap:wrap; gap:6px 13px; margin-bottom:12px; padding:8px 11px; color:#d9cfb9; background:#2a2e44; border-radius:7px; font-size:13px; font-weight:800; }
   .pillar-strip b { color:#fff; }
   .lines { border-top:1px solid #e5dfd2; }
-  .line-row { display:grid; grid-template-columns:48px minmax(0,1fr) 104px 84px; gap:7px; align-items:center; min-height:78px; padding:8px 5px; border-bottom:1px solid #e5dfd2; }
+  .line-heading { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 84px; gap:7px; padding:7px 5px; color:var(--muted); background:#faf8f2; border-bottom:1px solid #e5dfd2; text-align:center; font-size:11px; font-weight:900; }
+  .line-row { display:grid; grid-template-columns:minmax(0,1fr) 104px 84px; gap:7px; align-items:center; min-height:88px; padding:8px 5px; border-bottom:1px solid #e5dfd2; }
+  .line-row.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 84px; min-height:94px; }
+  .line-row:not(.has-change) .original-panel { grid-column:1 / 3; }
+  .line-row.has-change .changed-panel { grid-column:1; }
+  .line-row.has-change .original-panel { grid-column:2; }
+  .line-row .beast { grid-column:3; }
   .line-row.moving { background:#fff8e8; }
-  .line-position { color:var(--muted); text-align:center; font-size:12px; font-weight:800; }
-  .line-info { display:flex; min-width:0; flex-direction:column; align-items:center; text-align:center; line-height:1.3; }
-  .line-info strong { overflow-wrap:anywhere; font-size:15px; }
-  .line-info span { overflow-wrap:anywhere; color:var(--muted); font-size:12px; }
+  .line-panel { display:grid; width:100%; min-width:0; grid-template-columns:minmax(82px,1fr) 104px; align-items:center; justify-items:center; gap:5px; }
+  .changed-panel { padding-right:7px; border-right:1px solid #ded7c8; }
+  .original-panel { padding-left:7px; }
+  .line-info { display:flex; min-width:0; flex-direction:column; align-items:center; text-align:center; line-height:1.25; }
+  .line-info strong { overflow-wrap:anywhere; font-size:21px; line-height:1.2; }
+  .line-info span { overflow-wrap:anywhere; color:var(--muted); font-size:17px; line-height:1.25; }
   .line-info small { margin-top:2px; color:#80652f; font-size:10px; }
   .line-visual { display:flex; flex-direction:column; align-items:center; gap:3px; }
   .yao { position:relative; display:block; width:78px; height:11px; }
@@ -79,7 +87,8 @@
   .move-mark.yin-mark { font-size:31px; font-weight:900; line-height:1; }
   .relation { min-height:16px; color:var(--red); font-size:12px; font-weight:900; }
   .beast { overflow-wrap:anywhere; text-align:center; font-size:13px; font-weight:800; }
-  .change-info { grid-column:2 / 5; padding:5px 8px; color:#655f53; background:#f3efe5; border-radius:5px; text-align:center; font-size:12px; }
+  html[data-lang="en"] .line-info strong,html[data-lang="bi"] .line-info strong { font-size:14px; }
+  html[data-lang="en"] .line-info span,html[data-lang="bi"] .line-info span { font-size:12px; }
   .result-note { margin:12px 0 0; color:var(--muted); font-size:11px; }
   footer { padding:10px 3px; color:var(--muted); text-align:center; font-size:11px; }
   [hidden] { display:none !important; }
@@ -108,13 +117,19 @@
     .lunar-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .rules-grid { grid-template-columns:1fr; }
     .hex-heading h2 { font-size:21px; }
-    .line-row { grid-template-columns:36px minmax(0,1fr) 82px 58px; gap:3px; min-height:82px; padding-inline:2px; }
-    .line-info strong { font-size:12px; }
-    .line-info span { font-size:10px; }
+    .line-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 58px; gap:3px; padding-inline:2px; }
+    .line-row { grid-template-columns:minmax(0,1fr) 82px 58px; gap:3px; min-height:88px; padding-inline:2px; }
+    .line-row.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 58px; min-height:94px; }
+    .line-panel { grid-template-columns:minmax(54px,1fr) 78px; gap:2px; }
+    .changed-panel { padding-right:3px; }
+    .original-panel { padding-left:3px; }
+    .line-info strong { font-size:18px; line-height:1.2; }
+    .line-info span { font-size:15px; line-height:1.25; }
     .beast { font-size:10px; }
     .yao { width:70px; }
     .yao.yin::before,.yao.yin::after { width:29px; }
-    .change-info { grid-column:2 / 5; font-size:10px; }
+    html[data-lang="en"] .line-info strong,html[data-lang="bi"] .line-info strong { font-size:11px; }
+    html[data-lang="en"] .line-info span,html[data-lang="bi"] .line-info span { font-size:10px; }
   }
 </style>
 </head>
@@ -195,8 +210,8 @@
   'use strict';
   const core = window.NaJiaCore;
   const UI = {
-    zh:{navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navLife:'命卦',navCompass:'風水羅盤',brandSub:'命卦・生辰起卦',title:'命卦',intro:'輸入出生國曆日期、選填時間與出生地時區；系統先換成中原標準時間及農曆，再以農曆月為下卦、農曆日為上卦、時辰配動爻。',inputTitle:'出生資料',monthLabel:'月',dayLabel:'日',yearLabel:'西元年',hourLabel:'時（選填）',minuteLabel:'分',timezoneLabel:'出生地時區',timeUnknown:'未提供',taiwanZone:'台灣・中原標準時間（Asia/Taipei）',noTimeInputNote:'未提供時間：日期直接按中原標準時間換算，不計時區跨日，也不設定動爻。',timeInputNote:'輸入時間會先依出生地時區換算成中原標準時間（UTC+8）。',conversionTitle:'中原標準時間與農曆',chinaTime:'中原標準時間',sourceTime:'出生地時間',lunarYearLabel:'農曆年',lunarMonthLabel:'農曆月',lunarDayLabel:'農曆日',lunarHourLabel:'時辰',lowerRuleLabel:'月數定下卦',upperRuleLabel:'日數定上卦',hourRuleLabel:'時辰定動爻',noMoving:'未提供時間，不設定動爻',remainderZero:'餘 0，按 8 計',remainder:'餘',lowerHex:'下卦',upperHex:'上卦',moving:'動',lineUnit:'爻',to:'之',palace:'宮',void:'旬空',hidden:'伏',change:'化',noHour:'未提供',invalidTime:'這個日期時間在所選時區不存在，請檢查夏令時間或重新選擇。',unsupported:'此瀏覽器不支援需要的農曆或時區換算，請使用最新版 Safari、Chrome 或 Edge。',resultNote:'卦盤使用京房納甲規則；化爻六親仍以本卦宮五行為準。閏月按該農曆月份數計算。',footer:'所有換算只在本機瀏覽器進行，不上傳出生資料。',yearUnit:'年',monthUnit:'月',dayUnit:'日',hourUnit:'時',lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
-    en:{navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navLife:'Life Hexagram',navCompass:'Feng Shui Compass',brandSub:'Life Hexagram · Birth Data',title:'Life Hexagram',intro:'Enter a Gregorian birth date, optional time, and birthplace time zone. The date is converted to China Standard Time and the lunar calendar; lunar month sets the lower trigram, lunar day sets the upper trigram, and the double-hour sets the moving line.',inputTitle:'Birth Details',monthLabel:'Month',dayLabel:'Day',yearLabel:'Gregorian Year',hourLabel:'Hour (optional)',minuteLabel:'Minute',timezoneLabel:'Birthplace Time Zone',timeUnknown:'Not provided',taiwanZone:'Taiwan · China Standard Time (Asia/Taipei)',noTimeInputNote:'No time provided: the date is treated directly as a China Standard Time date; no time-zone date shift or moving line is applied.',timeInputNote:'The entered time is converted from the birthplace time zone to China Standard Time (UTC+8).',conversionTitle:'China Standard Time & Lunar Date',chinaTime:'China Standard Time',sourceTime:'Birthplace time',lunarYearLabel:'Lunar Year',lunarMonthLabel:'Lunar Month',lunarDayLabel:'Lunar Day',lunarHourLabel:'Double-hour',lowerRuleLabel:'Month → Lower Trigram',upperRuleLabel:'Day → Upper Trigram',hourRuleLabel:'Double-hour → Moving Line',noMoving:'No time provided; no moving line',remainderZero:'remainder 0, treated as 8',remainder:'remainder',lowerHex:'Lower',upperHex:'Upper',moving:'Moving',lineUnit:'line',to:'to',palace:' Palace',void:'Xunkong',hidden:'Hidden',change:'Changed',noHour:'Not provided',invalidTime:'This local date and time does not exist in the selected time zone. Check daylight saving time or choose another time.',unsupported:'This browser cannot perform the required lunar or time-zone conversion. Please use the latest Safari, Chrome, or Edge.',resultNote:'The chart uses Jing Fang Najia rules. Changed-line Six Kin still uses the original hexagram palace element. Leap months use their numeric lunar month.',footer:'All calculations stay in this browser. Birth details are not uploaded.',yearUnit:' Year',monthUnit:' Month',dayUnit:' Day',hourUnit:' Hour',lineNames:['1st','2nd','3rd','4th','5th','6th']}
+    zh:{navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navLife:'命卦',navCompass:'風水羅盤',brandSub:'命卦・生辰起卦',title:'命卦',intro:'輸入出生國曆日期、選填時間與出生地時區；系統先換成中原標準時間及農曆，再以農曆月為下卦、農曆日為上卦、時辰配動爻。',inputTitle:'出生資料',monthLabel:'月',dayLabel:'日',yearLabel:'西元年',hourLabel:'時（選填）',minuteLabel:'分',timezoneLabel:'出生地時區',timeUnknown:'未提供',taiwanZone:'台灣・中原標準時間（Asia/Taipei）',noTimeInputNote:'未提供時間：日期直接按中原標準時間換算，不計時區跨日，也不設定動爻。',timeInputNote:'輸入時間會先依出生地時區換算成中原標準時間（UTC+8）。',conversionTitle:'中原標準時間與農曆',chinaTime:'中原標準時間',sourceTime:'出生地時間',lunarYearLabel:'農曆年',lunarMonthLabel:'農曆月',lunarDayLabel:'農曆日',lunarHourLabel:'時辰',lowerRuleLabel:'月數定下卦',upperRuleLabel:'日數定上卦',hourRuleLabel:'時辰定動爻',noMoving:'未提供時間，不設定動爻',remainderZero:'餘 0，按 8 計',remainder:'餘',lowerHex:'下卦',upperHex:'上卦',moving:'動',lineUnit:'爻',to:'之',palace:'宮',void:'旬空',hidden:'伏',change:'化',changedHeading:'變卦',originalHeading:'本卦',beastHeading:'六獸',noHour:'未提供',invalidTime:'這個日期時間在所選時區不存在，請檢查夏令時間或重新選擇。',unsupported:'此瀏覽器不支援需要的農曆或時區換算，請使用最新版 Safari、Chrome 或 Edge。',resultNote:'卦盤使用京房納甲規則；化爻六親仍以本卦宮五行為準。閏月按該農曆月份數計算。',footer:'所有換算只在本機瀏覽器進行，不上傳出生資料。',yearUnit:'年',monthUnit:'月',dayUnit:'日',hourUnit:'時',lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
+    en:{navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navLife:'Life Hexagram',navCompass:'Feng Shui Compass',brandSub:'Life Hexagram · Birth Data',title:'Life Hexagram',intro:'Enter a Gregorian birth date, optional time, and birthplace time zone. The date is converted to China Standard Time and the lunar calendar; lunar month sets the lower trigram, lunar day sets the upper trigram, and the double-hour sets the moving line.',inputTitle:'Birth Details',monthLabel:'Month',dayLabel:'Day',yearLabel:'Gregorian Year',hourLabel:'Hour (optional)',minuteLabel:'Minute',timezoneLabel:'Birthplace Time Zone',timeUnknown:'Not provided',taiwanZone:'Taiwan · China Standard Time (Asia/Taipei)',noTimeInputNote:'No time provided: the date is treated directly as a China Standard Time date; no time-zone date shift or moving line is applied.',timeInputNote:'The entered time is converted from the birthplace time zone to China Standard Time (UTC+8).',conversionTitle:'China Standard Time & Lunar Date',chinaTime:'China Standard Time',sourceTime:'Birthplace time',lunarYearLabel:'Lunar Year',lunarMonthLabel:'Lunar Month',lunarDayLabel:'Lunar Day',lunarHourLabel:'Double-hour',lowerRuleLabel:'Month → Lower Trigram',upperRuleLabel:'Day → Upper Trigram',hourRuleLabel:'Double-hour → Moving Line',noMoving:'No time provided; no moving line',remainderZero:'remainder 0, treated as 8',remainder:'remainder',lowerHex:'Lower',upperHex:'Upper',moving:'Moving',lineUnit:'line',to:'to',palace:' Palace',void:'Xunkong',hidden:'Hidden',change:'Changed',changedHeading:'Changed',originalHeading:'Original',beastHeading:'Beasts',noHour:'Not provided',invalidTime:'This local date and time does not exist in the selected time zone. Check daylight saving time or choose another time.',unsupported:'This browser cannot perform the required lunar or time-zone conversion. Please use the latest Safari, Chrome, or Edge.',resultNote:'The chart uses Jing Fang Najia rules. Changed-line Six Kin still uses the original hexagram palace element. Leap months use their numeric lunar month.',footer:'All calculations stay in this browser. Birth details are not uploaded.',yearUnit:' Year',monthUnit:' Month',dayUnit:' Day',hourUnit:' Hour',lineNames:['1st','2nd','3rd','4th','5th','6th']}
   };
   const SIX_KIN_EN={'父母':'Parents','兄弟':'Brothers','官鬼':'Officer/Ghost','妻財':'Wealth','子孫':'Offspring'};
   const BEAST_EN={'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
@@ -303,20 +318,21 @@
   function lineName(index){ return lang==='bi'?UI.zh.lineNames[index]+' / '+UI.en.lineNames[index]:UI[lang].lineNames[index]; }
 
   function renderLines(result){
-    let html='';
+    let html=result.changed?'<div class="line-heading"><span>'+ui('changedHeading')+'</span><span>'+ui('originalHeading')+'</span><span>'+ui('beastHeading')+'</span></div>':'';
     for(let index=5;index>=0;index--){
       const line=result.base.lines[index];
       const moving=result.movingIndexes.includes(index);
       const changedLine=result.changed?result.changed.lines[index]:null;
       const hidden=result.hidden[line.position];
       const voidText=result.voidBranches.includes(line.branch)?ui('void'):'';
-      html+='<div class="line-row'+(moving?' moving':'')+'">'+
-        '<div class="line-position">'+lineName(index)+'</div>'+
+      const changedPanel=moving&&changedLine?'<div class="line-panel changed-panel">'+
+        '<div class="line-info"><strong>'+sixKinText(changedLine.sixKin)+'</strong><span>'+najiaText(changedLine)+'</span></div>'+
+        '<div class="line-visual"><span class="yao '+(changedLine.yang?'yang':'yin')+'"></span><span class="relation"></span></div></div>':'';
+      const originalPanel='<div class="line-panel original-panel">'+
         '<div class="line-info"><strong>'+sixKinText(line.sixKin)+'</strong><span>'+najiaText(line)+(voidText?' · '+voidText:'')+'</span>'+(hidden?'<small>'+ui('hidden')+' '+sixKinText(hidden.sixKin)+' '+najiaText(hidden)+'</small>':'')+'</div>'+
-        '<div class="line-visual"><span class="yao '+(line.yang?'yang':'yin')+'">'+(moving?(line.yang?'<i class="move-mark yang-mark"></i>':'<i class="move-mark yin-mark">×</i>'):'')+'</span><span class="relation">'+relationText(line)+'</span></div>'+
-        '<div class="beast">'+beastText(result.beasts[index])+'</div>'+
-        (moving&&changedLine?'<div class="change-info">'+ui('change')+' → '+sixKinText(changedLine.sixKin)+'　'+najiaText(changedLine)+'</div>':'')+
-        '</div>';
+        '<div class="line-visual"><span class="yao '+(line.yang?'yang':'yin')+'">'+(moving?(line.yang?'<i class="move-mark yang-mark"></i>':'<i class="move-mark yin-mark">×</i>'):'')+'</span><span class="relation">'+relationText(line)+'</span></div></div>';
+      html+='<div class="line-row'+(result.changed?' has-change':'')+(moving?' moving has-changed-line':'')+'">'+
+        changedPanel+originalPanel+'<div class="beast">'+beastText(result.beasts[index])+'</div></div>';
     }
     document.getElementById('hexLines').innerHTML=html;
   }
