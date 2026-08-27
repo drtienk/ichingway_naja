@@ -451,30 +451,53 @@
     return core.TRIGS.some(function (trigram) { return trigram.name === value; });
   }
 
+  function isHistoryDateValue(value) {
+    if (typeof value !== 'string') return false;
+    const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+    if (!match) return false;
+    const parts = match.slice(1).map(Number);
+    const checked = new Date(0);
+    checked.setUTCFullYear(parts[0], parts[1] - 1, parts[2]);
+    checked.setUTCHours(parts[3], parts[4], 0, 0);
+    return checked.getUTCFullYear() === parts[0] &&
+      checked.getUTCMonth() === parts[1] - 1 &&
+      checked.getUTCDate() === parts[2] &&
+      checked.getUTCHours() === parts[3] &&
+      checked.getUTCMinutes() === parts[4];
+  }
+
   function normalizeMoving(value) {
-    if (!Array.isArray(value)) return [];
-    const list = [];
-    value.forEach(function (item) {
-      const index = Number(item);
-      if (Number.isInteger(index) && index >= 0 && index <= 5 && !list.includes(index)) list.push(index);
-    });
+    if (!Array.isArray(value)) return null;
+    if (value.some(function (item) { return !Number.isInteger(item) || item < 0 || item > 5; })) return null;
+    const list = Array.from(new Set(value));
+    if (list.length !== value.length) return null;
     return list.sort(function (a, b) { return a - b; });
   }
 
   function normalizeRecord(item) {
-    if (!item || typeof item !== 'object') return null;
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
     if (!isTrigramName(item.upper) || !isTrigramName(item.lower)) return null;
-    if (typeof item.dateValue !== 'string' || Number.isNaN(new Date(item.dateValue).getTime())) return null;
+    if (!isHistoryDateValue(item.dateValue)) return null;
+    if (typeof item.id !== 'string' || !item.id || item.id.length > 120) return null;
+    if (typeof item.matter !== 'string' || item.matter.length > 120) return null;
+    if (typeof item.savedAt !== 'string' || Number.isNaN(new Date(item.savedAt).getTime())) return null;
+    if (typeof item.baseName !== 'string' || typeof item.changedName !== 'string') return null;
+    const moving = normalizeMoving(item.moving);
+    if (!moving) return null;
+    let expected = null;
+    try { expected = core.cast(item.upper, item.lower, moving, new Date(item.dateValue)); } catch (error) { return null; }
+    const expectedChangedName = expected.changed ? expected.changed.name : '';
+    if (item.baseName !== expected.base.name || item.changedName !== expectedChangedName) return null;
     return {
-      id: typeof item.id === 'string' && item.id ? item.id : String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8),
+      id: item.id,
       upper: item.upper,
       lower: item.lower,
-      moving: normalizeMoving(item.moving),
+      moving: moving,
       dateValue: item.dateValue,
-      matter: typeof item.matter === 'string' ? item.matter.slice(0, 120) : '',
-      baseName: typeof item.baseName === 'string' ? item.baseName : '',
-      changedName: typeof item.changedName === 'string' ? item.changedName : '',
-      savedAt: typeof item.savedAt === 'string' ? item.savedAt : ''
+      matter: item.matter,
+      baseName: item.baseName,
+      changedName: item.changedName,
+      savedAt: item.savedAt
     };
   }
 
@@ -498,6 +521,7 @@
 
   function rememberCast(result, dateValue, matter) {
     const record = normalizeRecord({
+      id: String(Date.now()) + '-' + Math.random().toString(36).slice(2, 8),
       upper: state.upper,
       lower: state.lower,
       moving: result.movingIndexes,

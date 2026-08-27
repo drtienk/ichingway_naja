@@ -270,6 +270,8 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   html[data-lang="en"] .compact-info b,html[data-lang="bi"] .compact-info b,
   html[data-lang="en"] .compact-info span,html[data-lang="bi"] .compact-info span { font-size:10px; line-height:1.25; }
   html[data-lang="en"] .compact-side b,html[data-lang="bi"] .compact-side b { font-size:10px; }
+  html[data-lang="bi"] .compact-info b,html[data-lang="bi"] .compact-info span,
+  html[data-lang="bi"] .compact-side b { white-space:normal; overflow-wrap:anywhere; word-break:normal; }
 }
 
 .history-card { border-top:4px solid var(--ink); }
