@@ -41,6 +41,9 @@
   .name-field input { width:100%; min-height:44px; padding:9px 11px; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:8px; }
   .name-field input::placeholder { color:#aaa396; }
   .timezone-field { grid-column:span 2; }
+  .timezone-search { width:100%; min-height:43px; padding:8px 35px 8px 11px; color:var(--ink); background:#fff; border:1.5px solid #bbb; border-radius:7px; }
+  .timezone-search:focus,.timezone-field select:focus { outline:3px solid #ceb07855; border-color:#9a7b43; }
+  .timezone-help { margin:0; color:var(--muted); font-size:11px; font-weight:500; line-height:1.35; }
   .input-note { margin:12px 0 0; color:var(--muted); font-size:12px; }
   .generate-button { width:100%; min-height:46px; margin-top:14px; padding:9px 22px; color:#fff; background:var(--red); border:0; border-radius:9px; cursor:pointer; font-weight:900; letter-spacing:.08em; }
   .generate-button:hover { background:#873e39; }
@@ -206,7 +209,7 @@
         <label class="field"><span data-i18n="yearLabel">西元年</span><select id="yearSelect"></select></label>
         <label class="field"><span data-i18n="hourLabel">時（選填）</span><select id="hourSelect"></select></label>
         <label class="field"><span data-i18n="minuteLabel">分</span><select id="minuteSelect"></select></label>
-        <label class="field timezone-field"><span data-i18n="timezoneLabel">出生地時區</span><select id="timezoneSelect"></select></label>
+        <label class="field timezone-field"><span data-i18n="timezoneLabel">出生地時區</span><input class="timezone-search" id="timezoneSearch" type="search" autocomplete="off" data-i18n-placeholder="timezoneSearchPlaceholder" placeholder="搜尋國家、州、省或城市"><select id="timezoneSelect"></select><small class="timezone-help" data-i18n="timezoneHelp">可直接選擇，或輸入德州、Texas、城市等地名篩選。</small></label>
       </div>
       <p class="input-note" id="inputNote"></p>
       <button class="generate-button" id="generateButton" type="button" data-i18n="generateButton">產生命卦</button>
@@ -247,8 +250,8 @@
   'use strict';
   const core = window.NaJiaCore;
   const UI = {
-    zh:{navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navLife:'命卦',navCompass:'風水羅盤',brandSub:'命卦・生辰起卦',title:'命卦',intro:'輸入出生國曆日期、選填時間與出生地時區；系統先換成中原標準時間及農曆，再以農曆月為下卦、農曆日為上卦、時辰配動爻。',inputTitle:'出生資料',personNameLabel:'命卦者名稱',personNamePlaceholder:'請輸入姓名或稱呼',monthLabel:'月',dayLabel:'日',yearLabel:'西元年',hourLabel:'時（選填）',minuteLabel:'分',timezoneLabel:'出生地時區',timeUnknown:'未提供',taiwanZone:'台灣・中原標準時間（Asia/Taipei）',noTimeInputNote:'未提供時間：日期直接按中原標準時間換算，不計時區跨日，也不設定動爻。',timeInputNote:'輸入時間會先依出生地時區換算成中原標準時間（UTC+8）。',generateButton:'產生命卦',lunarSummaryLabel:'農曆',conversionTitle:'中原標準時間與農曆',chinaTime:'中原標準時間',sourceTime:'出生地時間',lunarYearLabel:'農曆年',lunarMonthLabel:'農曆月',lunarDayLabel:'農曆日',lunarHourLabel:'時辰',lowerRuleLabel:'月數定下卦',upperRuleLabel:'日數定上卦',hourRuleLabel:'時辰定動爻',noMoving:'未提供時間，不設定動爻',remainderZero:'餘 0，按 8 計',remainder:'餘',lowerHex:'下卦',upperHex:'上卦',moving:'動',lineUnit:'爻',to:'之',palace:'宮',void:'旬空',hidden:'伏',change:'化',changedHeading:'變卦',originalHeading:'本卦',beastHeading:'六獸',noHour:'未提供',invalidTime:'這個日期時間在所選時區不存在，請檢查夏令時間或重新選擇。',unsupported:'此瀏覽器不支援需要的農曆或時區換算，請使用最新版 Safari、Chrome 或 Edge。',resultNote:'卦盤使用京房納甲規則；化爻六親仍以本卦宮五行為準。閏月按該農曆月份數計算。',recordButton:'儲存命卦紀錄',recordSaved:'已儲存命卦紀錄',historyTitle:'命卦紀錄',historyClear:'清除全部',historyNote:'只保存在這台裝置的瀏覽器，最多 20 筆；點一下可重新載入。',historyNameEmpty:'（未填命卦者名稱）',historyOpen:'載入這筆命卦',historyDelete:'刪除這筆紀錄',historyClearConfirm:'確定要清除全部命卦紀錄嗎？此動作無法復原。',footer:'所有換算只在本機瀏覽器進行，不上傳出生資料。',yearUnit:'年',monthUnit:'月',dayUnit:'日',hourUnit:'時',lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
-    en:{navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navLife:'Life Hexagram',navCompass:'Feng Shui Compass',brandSub:'Life Hexagram · Birth Data',title:'Life Hexagram',intro:'Enter a Gregorian birth date, optional time, and birthplace time zone. The date is converted to China Standard Time and the lunar calendar; lunar month sets the lower trigram, lunar day sets the upper trigram, and the double-hour sets the moving line.',inputTitle:'Birth Details',personNameLabel:'Name',personNamePlaceholder:'Enter a name or preferred name',monthLabel:'Month',dayLabel:'Day',yearLabel:'Gregorian Year',hourLabel:'Hour (optional)',minuteLabel:'Minute',timezoneLabel:'Birthplace Time Zone',timeUnknown:'Not provided',taiwanZone:'Taiwan · China Standard Time (Asia/Taipei)',noTimeInputNote:'No time provided: the date is treated directly as a China Standard Time date; no time-zone date shift or moving line is applied.',timeInputNote:'The entered time is converted from the birthplace time zone to China Standard Time (UTC+8).',generateButton:'Generate Life Hexagram',lunarSummaryLabel:'Lunar',conversionTitle:'China Standard Time & Lunar Date',chinaTime:'China Standard Time',sourceTime:'Birthplace time',lunarYearLabel:'Lunar Year',lunarMonthLabel:'Lunar Month',lunarDayLabel:'Lunar Day',lunarHourLabel:'Double-hour',lowerRuleLabel:'Month → Lower Trigram',upperRuleLabel:'Day → Upper Trigram',hourRuleLabel:'Double-hour → Moving Line',noMoving:'No time provided; no moving line',remainderZero:'remainder 0, treated as 8',remainder:'remainder',lowerHex:'Lower',upperHex:'Upper',moving:'Moving',lineUnit:'line',to:'to',palace:' Palace',void:'Xunkong',hidden:'Hidden',change:'Changed',changedHeading:'Changed',originalHeading:'Original',beastHeading:'Beasts',noHour:'Not provided',invalidTime:'This local date and time does not exist in the selected time zone. Check daylight saving time or choose another time.',unsupported:'This browser cannot perform the required lunar or time-zone conversion. Please use the latest Safari, Chrome, or Edge.',resultNote:'The chart uses Jing Fang Najia rules. Changed-line Six Kin still uses the original hexagram palace element. Leap months use their numeric lunar month.',recordButton:'Save Life Hexagram Record',recordSaved:'Life hexagram saved',historyTitle:'Life Hexagram History',historyClear:'Clear All',historyNote:'Stored only in this browser on this device, up to 20 records; tap one to reload it.',historyNameEmpty:'(No name entered)',historyOpen:'Load this life hexagram',historyDelete:'Delete this record',historyClearConfirm:'Clear all life hexagram history? This cannot be undone.',footer:'All calculations stay in this browser. Birth details are not uploaded.',yearUnit:' Year',monthUnit:' Month',dayUnit:' Day',hourUnit:' Hour',lineNames:['1st','2nd','3rd','4th','5th','6th']}
+    zh:{navCast:'裝卦',navStock:'股市應證',navCalendar:'萬年曆',navLife:'命卦',navCompass:'風水羅盤',brandSub:'命卦・生辰起卦',title:'命卦',intro:'輸入出生國曆日期、選填時間與出生地時區；系統先換成中原標準時間及農曆，再以農曆月為下卦、農曆日為上卦、時辰配動爻。',inputTitle:'出生資料',personNameLabel:'命卦者名稱',personNamePlaceholder:'請輸入姓名或稱呼',monthLabel:'月',dayLabel:'日',yearLabel:'西元年',hourLabel:'時（選填）',minuteLabel:'分',timezoneLabel:'出生地時區',timezoneSearchPlaceholder:'搜尋國家、州、省或城市',timezoneHelp:'可直接選擇，或輸入德州、Texas、城市等地名篩選。',timezonePriority:'優先時區',timezoneCommon:'常用地區',timezoneOther:'其他時區',timezoneCurrent:'目前選擇',timezoneResults:'搜尋結果',timezoneNoResults:'找不到符合的時區',timeUnknown:'未提供',taiwanZone:'台灣・中原標準時間（Asia/Taipei）',noTimeInputNote:'未提供時間：日期直接按中原標準時間換算，不計時區跨日，也不設定動爻。',timeInputNote:'輸入時間會先依出生地時區換算成中原標準時間（UTC+8）。',generateButton:'產生命卦',lunarSummaryLabel:'農曆',conversionTitle:'中原標準時間與農曆',chinaTime:'中原標準時間',sourceTime:'出生地時間',lunarYearLabel:'農曆年',lunarMonthLabel:'農曆月',lunarDayLabel:'農曆日',lunarHourLabel:'時辰',lowerRuleLabel:'月數定下卦',upperRuleLabel:'日數定上卦',hourRuleLabel:'時辰定動爻',noMoving:'未提供時間，不設定動爻',remainderZero:'餘 0，按 8 計',remainder:'餘',lowerHex:'下卦',upperHex:'上卦',moving:'動',lineUnit:'爻',to:'之',palace:'宮',void:'旬空',hidden:'伏',change:'化',changedHeading:'變卦',originalHeading:'本卦',beastHeading:'六獸',noHour:'未提供',invalidTime:'這個日期時間在所選時區不存在，請檢查夏令時間或重新選擇。',unsupported:'此瀏覽器不支援需要的農曆或時區換算，請使用最新版 Safari、Chrome 或 Edge。',resultNote:'卦盤使用京房納甲規則；化爻六親仍以本卦宮五行為準。閏月按該農曆月份數計算。',recordButton:'儲存命卦紀錄',recordSaved:'已儲存命卦紀錄',historyTitle:'命卦紀錄',historyClear:'清除全部',historyNote:'只保存在這台裝置的瀏覽器，最多 20 筆；點一下可重新載入。',historyNameEmpty:'（未填命卦者名稱）',historyOpen:'載入這筆命卦',historyDelete:'刪除這筆紀錄',historyClearConfirm:'確定要清除全部命卦紀錄嗎？此動作無法復原。',footer:'所有換算只在本機瀏覽器進行，不上傳出生資料。',yearUnit:'年',monthUnit:'月',dayUnit:'日',hourUnit:'時',lineNames:['初爻','二爻','三爻','四爻','五爻','上爻']},
+    en:{navCast:'Cast',navStock:'Stock Study',navCalendar:'Calendar',navLife:'Life Hexagram',navCompass:'Feng Shui Compass',brandSub:'Life Hexagram · Birth Data',title:'Life Hexagram',intro:'Enter a Gregorian birth date, optional time, and birthplace time zone. The date is converted to China Standard Time and the lunar calendar; lunar month sets the lower trigram, lunar day sets the upper trigram, and the double-hour sets the moving line.',inputTitle:'Birth Details',personNameLabel:'Name',personNamePlaceholder:'Enter a name or preferred name',monthLabel:'Month',dayLabel:'Day',yearLabel:'Gregorian Year',hourLabel:'Hour (optional)',minuteLabel:'Minute',timezoneLabel:'Birthplace Time Zone',timezoneSearchPlaceholder:'Search country, state, province, or city',timezoneHelp:'Choose directly, or filter by a place such as Texas, Dallas, or London.',timezonePriority:'Priority Time Zones',timezoneCommon:'Common Places',timezoneOther:'Other Time Zones',timezoneCurrent:'Current Selection',timezoneResults:'Search Results',timezoneNoResults:'No matching time zone',timeUnknown:'Not provided',taiwanZone:'Taiwan · China Standard Time (Asia/Taipei)',noTimeInputNote:'No time provided: the date is treated directly as a China Standard Time date; no time-zone date shift or moving line is applied.',timeInputNote:'The entered time is converted from the birthplace time zone to China Standard Time (UTC+8).',generateButton:'Generate Life Hexagram',lunarSummaryLabel:'Lunar',conversionTitle:'China Standard Time & Lunar Date',chinaTime:'China Standard Time',sourceTime:'Birthplace time',lunarYearLabel:'Lunar Year',lunarMonthLabel:'Lunar Month',lunarDayLabel:'Lunar Day',lunarHourLabel:'Double-hour',lowerRuleLabel:'Month → Lower Trigram',upperRuleLabel:'Day → Upper Trigram',hourRuleLabel:'Double-hour → Moving Line',noMoving:'No time provided; no moving line',remainderZero:'remainder 0, treated as 8',remainder:'remainder',lowerHex:'Lower',upperHex:'Upper',moving:'Moving',lineUnit:'line',to:'to',palace:' Palace',void:'Xunkong',hidden:'Hidden',change:'Changed',changedHeading:'Changed',originalHeading:'Original',beastHeading:'Beasts',noHour:'Not provided',invalidTime:'This local date and time does not exist in the selected time zone. Check daylight saving time or choose another time.',unsupported:'This browser cannot perform the required lunar or time-zone conversion. Please use the latest Safari, Chrome, or Edge.',resultNote:'The chart uses Jing Fang Najia rules. Changed-line Six Kin still uses the original hexagram palace element. Leap months use their numeric lunar month.',recordButton:'Save Life Hexagram Record',recordSaved:'Life hexagram saved',historyTitle:'Life Hexagram History',historyClear:'Clear All',historyNote:'Stored only in this browser on this device, up to 20 records; tap one to reload it.',historyNameEmpty:'(No name entered)',historyOpen:'Load this life hexagram',historyDelete:'Delete this record',historyClearConfirm:'Clear all life hexagram history? This cannot be undone.',footer:'All calculations stay in this browser. Birth details are not uploaded.',yearUnit:' Year',monthUnit:' Month',dayUnit:' Day',hourUnit:' Hour',lineNames:['1st','2nd','3rd','4th','5th','6th']}
   };
   const SIX_KIN_EN={'父母':'Parents','兄弟':'Brothers','官鬼':'Officer/Ghost','妻財':'Wealth','子孫':'Offspring'};
   const BEAST_EN={'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
@@ -266,12 +269,41 @@
   const yearSelect=document.getElementById('yearSelect');
   const hourSelect=document.getElementById('hourSelect');
   const minuteSelect=document.getElementById('minuteSelect');
+  const timezoneSearch=document.getElementById('timezoneSearch');
   const timezoneSelect=document.getElementById('timezoneSelect');
   const personName=document.getElementById('personName');
   const formatterCache=new Map();
   let lunarFormatter=null;
   let currentReading=null;
   let hasGenerated=false;
+  let selectedTimezone='Asia/Taipei';
+
+  const PRIORITY_ZONES=['Asia/Taipei','America/New_York','America/Los_Angeles','America/Chicago','America/Denver'];
+  const ZONE_DETAILS={
+    'Asia/Taipei':{zh:'台灣・中原標準時間',en:'Taiwan · China Standard Time',aliases:'台灣 台湾 taiwan taipei 台北'},
+    'America/New_York':{zh:'美國・美東時間（紐約）',en:'United States · Eastern Time (New York)',aliases:'美國 美国 usa united states 美東 东部 eastern et new york ny 紐約 纽约 florida 佛羅里達 佛罗里达 washington dc'},
+    'America/Chicago':{zh:'美國・美中時間（芝加哥、德州大部分地區）',en:'United States · Central Time (Chicago, most of Texas)',aliases:'美國 美国 usa united states 美中 中部 central ct chicago 芝加哥 texas 德州 dallas 達拉斯 达拉斯 houston 休士頓 休斯顿 austin 奧斯汀 奥斯汀'},
+    'America/Denver':{zh:'美國・山區時間（丹佛、德州 El Paso）',en:'United States · Mountain Time (Denver, El Paso Texas)',aliases:'美國 美国 usa united states 山區 山区 mountain mt denver 丹佛 texas 德州 el paso 艾爾帕索 埃尔帕索'},
+    'America/Los_Angeles':{zh:'美國・美西時間（洛杉磯）',en:'United States · Pacific Time (Los Angeles)',aliases:'美國 美国 usa united states 美西 西部 pacific pt los angeles la 洛杉磯 洛杉矶 california 加州 seattle 西雅圖 西雅图'},
+    'Asia/Hong_Kong':{zh:'香港',en:'Hong Kong',aliases:'香港 hong kong'},
+    'Asia/Shanghai':{zh:'中國・北京／上海',en:'China · Beijing / Shanghai',aliases:'中國 中国 china beijing 北京 shanghai 上海'},
+    'Asia/Tokyo':{zh:'日本・東京',en:'Japan · Tokyo',aliases:'日本 japan tokyo 東京 东京'},
+    'Asia/Seoul':{zh:'韓國・首爾',en:'South Korea · Seoul',aliases:'韓國 韩国 korea seoul 首爾 首尔'},
+    'Asia/Singapore':{zh:'新加坡',en:'Singapore',aliases:'新加坡 singapore'},
+    'Asia/Kuala_Lumpur':{zh:'馬來西亞・吉隆坡',en:'Malaysia · Kuala Lumpur',aliases:'馬來西亞 马来西亚 malaysia kuala lumpur 吉隆坡'},
+    'Asia/Kolkata':{zh:'印度',en:'India',aliases:'印度 india kolkata delhi 孟買 孟买 mumbai'},
+    'Europe/London':{zh:'英國・倫敦',en:'United Kingdom · London',aliases:'英國 英国 uk united kingdom britain london 倫敦 伦敦 歐洲 欧洲 europe'},
+    'Europe/Paris':{zh:'法國・巴黎',en:'France · Paris',aliases:'法國 法国 france paris 巴黎 歐洲 欧洲 europe'},
+    'Europe/Berlin':{zh:'德國・柏林',en:'Germany · Berlin',aliases:'德國 德国 germany berlin 柏林 歐洲 欧洲 europe'},
+    'Europe/Rome':{zh:'義大利・羅馬',en:'Italy · Rome',aliases:'義大利 意大利 italy rome 羅馬 罗马 歐洲 欧洲 europe'},
+    'Europe/Madrid':{zh:'西班牙・馬德里',en:'Spain · Madrid',aliases:'西班牙 spain madrid 馬德里 马德里 歐洲 欧洲 europe'},
+    'America/Toronto':{zh:'加拿大・多倫多／美東時間',en:'Canada · Toronto / Eastern Time',aliases:'加拿大 canada toronto 多倫多 多伦多 ontario 安大略 eastern 美東'},
+    'America/Vancouver':{zh:'加拿大・溫哥華／太平洋時間',en:'Canada · Vancouver / Pacific Time',aliases:'加拿大 canada vancouver 溫哥華 温哥华 british columbia 卑詩 pacific 美西'},
+    'Australia/Sydney':{zh:'澳洲・雪梨',en:'Australia · Sydney',aliases:'澳洲 澳大利亞 澳大利亚 australia sydney 雪梨 悉尼'},
+    'Pacific/Auckland':{zh:'紐西蘭・奧克蘭',en:'New Zealand · Auckland',aliases:'紐西蘭 新西兰 new zealand auckland 奧克蘭 奥克兰'},
+    'Pacific/Honolulu':{zh:'美國・夏威夷',en:'United States · Hawaii',aliases:'美國 美国 usa hawaii 夏威夷 honolulu 檀香山'}
+  };
+  const COMMON_ZONES=Object.keys(ZONE_DETAILS).filter(zone=>!PRIORITY_ZONES.includes(zone));
 
   function text(zh,en){ return lang==='en'?en:(lang==='bi'?zh+' / '+en:zh); }
   function ui(key){ return lang==='bi'?(UI.zh[key]===UI.en[key]?UI.zh[key]:UI.zh[key]+' / '+UI.en[key]):UI[lang][key]; }
@@ -329,14 +361,46 @@
     for(let hour=0;hour<24;hour++)hourSelect.add(new Option(pad2(hour),hour));
     for(let minute=0;minute<60;minute++)minuteSelect.add(new Option(pad2(minute),minute));
   }
-  function populateTimezones(){
-    const selected=timezoneSelect.value||'Asia/Taipei';
-    const common=['Asia/Taipei','UTC','Asia/Hong_Kong','Asia/Shanghai','Asia/Tokyo','Asia/Seoul','Asia/Singapore','Asia/Kolkata','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Toronto','America/Vancouver','Europe/London','Europe/Paris','Australia/Sydney','Pacific/Auckland','Pacific/Honolulu'];
+  function zoneLabel(zone){
+    const detail=ZONE_DETAILS[zone];
+    if(!detail)return zone.replace(/_/g,' ');
+    return text(detail.zh,detail.en)+' ('+zone+')';
+  }
+  function normalizeSearch(value){ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+  function zoneMatches(zone,query){
+    if(!query)return true;
+    const detail=ZONE_DETAILS[zone];
+    let haystack=zone+' '+zone.replace(/[_/]/g,' ')+(detail?' '+detail.zh+' '+detail.en+' '+detail.aliases:'');
+    if(zone.startsWith('Europe/'))haystack+=' 歐洲 欧洲 europe';
+    if(zone.startsWith('Asia/'))haystack+=' 亞洲 亚洲 asia';
+    if(zone.startsWith('Australia/')||zone.startsWith('Pacific/'))haystack+=' 大洋洲 oceania';
+    return normalizeSearch(haystack).includes(query);
+  }
+  function addZoneGroup(label,zones){
+    if(!zones.length)return;
+    const group=document.createElement('optgroup');
+    group.label=label;
+    zones.forEach(zone=>group.appendChild(new Option(zoneLabel(zone),zone)));
+    timezoneSelect.appendChild(group);
+  }
+  function populateTimezones(queryValue){
+    const common=['UTC'].concat(PRIORITY_ZONES,COMMON_ZONES);
     let zones=common.slice();
     try { if(Intl.supportedValuesOf) zones=Array.from(new Set(common.concat(Intl.supportedValuesOf('timeZone')))); } catch(error){}
+    if(!zones.includes(selectedTimezone))zones.unshift(selectedTimezone);
+    const query=normalizeSearch(queryValue);
+    const matches=zones.filter(zone=>zoneMatches(zone,query));
     timezoneSelect.innerHTML='';
-    zones.forEach(zone=>timezoneSelect.add(new Option(zone==='Asia/Taipei'?ui('taiwanZone'):zone.replace(/_/g,' '),zone)));
-    timezoneSelect.value=zones.includes(selected)?selected:'Asia/Taipei';
+    if(query){
+      if(!matches.includes(selectedTimezone))addZoneGroup(ui('timezoneCurrent'),[selectedTimezone]);
+      addZoneGroup(ui('timezoneResults'),matches);
+      if(!matches.length){ const option=new Option(ui('timezoneNoResults'),'');option.disabled=true;timezoneSelect.add(option); }
+    }else{
+      addZoneGroup(ui('timezonePriority'),PRIORITY_ZONES.filter(zone=>zones.includes(zone)));
+      addZoneGroup(ui('timezoneCommon'),COMMON_ZONES.filter(zone=>zones.includes(zone)));
+      addZoneGroup(ui('timezoneOther'),zones.filter(zone=>!PRIORITY_ZONES.includes(zone)&&!COMMON_ZONES.includes(zone)));
+    }
+    timezoneSelect.value=selectedTimezone;
   }
   function updateDays(){
     const previous=+daySelect.value||1;
@@ -353,7 +417,9 @@
     daySelect.value=now.day;
     hourSelect.value='';
     minuteSelect.value='0';
-    timezoneSelect.value='Asia/Taipei';
+    selectedTimezone='Asia/Taipei';
+    timezoneSearch.value='';
+    populateTimezones('');
   }
   function remainderText(value,number){ return value+' ÷ 8 → '+(value%8===0?ui('remainderZero'):ui('remainder')+' '+number); }
   function lineName(index){ return lang==='bi'?UI.zh.lineNames[index]+' / '+UI.en.lineNames[index]:UI[lang].lineNames[index]; }
@@ -461,7 +527,7 @@
     const record=normalizeHistoryRecord({
       id:String(Date.now())+'-'+Math.random().toString(36).slice(2,8),name:personName.value.trim(),
       year:+yearSelect.value,month:+monthSelect.value,day:+daySelect.value,
-      hour:hourSelect.value===''?null:+hourSelect.value,minute:+minuteSelect.value,timezone:timezoneSelect.value,
+      hour:hourSelect.value===''?null:+hourSelect.value,minute:+minuteSelect.value,timezone:selectedTimezone,
       baseName:currentReading.result.base.name,changedName:currentReading.result.changed?currentReading.result.changed.name:'',savedAt:new Date().toISOString()
     });
     if(!record)return;
@@ -483,7 +549,9 @@
     daySelect.value=String(record.day);
     hourSelect.value=record.hour===null?'':String(record.hour);
     minuteSelect.value=String(record.minute);
-    if(Array.from(timezoneSelect.options).some(option=>option.value===record.timezone))timezoneSelect.value=record.timezone;
+    selectedTimezone=record.timezone;
+    timezoneSearch.value='';
+    populateTimezones('');
     minuteSelect.disabled=record.hour===null;
     render();
     document.getElementById('hexResult').scrollIntoView({behavior:'smooth',block:'start'});
@@ -496,7 +564,7 @@
       const source={year:+yearSelect.value,month:+monthSelect.value,day:+daySelect.value,hour:12,minute:0};
       const hasTime=hourSelect.value!=='';
       if(hasTime){ source.hour=+hourSelect.value; source.minute=+minuteSelect.value; }
-      const sourceZone=hasTime?timezoneSelect.value:'Asia/Taipei';
+      const sourceZone=hasTime?selectedTimezone:'Asia/Taipei';
       const instant=zonedDateTimeToInstant(source,sourceZone);
       const china=zoneParts(instant,'Asia/Taipei');
       const lunar=lunarInfo(instant);
@@ -535,7 +603,7 @@
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element=>element.placeholder=ui(element.dataset.i18nPlaceholder));
     document.querySelectorAll('.language-switch button').forEach(button=>button.classList.toggle('active',button.dataset.lang===lang));
     hourSelect.options[0].textContent=ui('timeUnknown');
-    populateTimezones();
+    populateTimezones(timezoneSearch.value);
     updateInputNote();
     if(shouldRender)render();
     else{
@@ -547,14 +615,22 @@
 
   try { lunarFormatter=new Intl.DateTimeFormat('zh-Hant-u-ca-chinese',{timeZone:'Asia/Taipei',year:'numeric',month:'long',day:'numeric'}); lunarFormatter.format(new Date()); } catch(error) { lunarFormatter=null; }
   populateDateSelects();
-  populateTimezones();
+  populateTimezones('');
   setTaiwanToday();
-  [monthSelect,daySelect,yearSelect,hourSelect,minuteSelect,timezoneSelect].forEach(select=>select.addEventListener('change',()=>{
+  [monthSelect,daySelect,yearSelect,hourSelect,minuteSelect].forEach(select=>select.addEventListener('change',()=>{
     if(select===monthSelect||select===yearSelect)updateDays();
     minuteSelect.disabled=hourSelect.value==='';
     updateInputNote();
     invalidateReading();
   }));
+  timezoneSearch.addEventListener('input',()=>populateTimezones(timezoneSearch.value));
+  timezoneSelect.addEventListener('change',()=>{
+    if(!timezoneSelect.value)return;
+    selectedTimezone=timezoneSelect.value;
+    timezoneSearch.value='';
+    populateTimezones('');
+    invalidateReading();
+  });
   personName.addEventListener('input',()=>{ if(hasGenerated)updatePersonResult(); });
   document.getElementById('generateButton').addEventListener('click',render);
   document.getElementById('recordButton').addEventListener('click',saveCurrentReading);
