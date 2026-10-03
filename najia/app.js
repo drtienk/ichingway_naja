@@ -373,7 +373,7 @@
       context.fillStyle = '#20243a';
       context.font = '700 25px "Microsoft JhengHei", sans-serif';
       if (changedLine && moving) {
-        context.fillStyle = '#645f54';
+        context.fillStyle = '#a64e48';
         context.font = (lang === 'zh' ? '700 24px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
         context.fillText(sixKinText(changedLine.sixKin), 68, rowY + 36);
         context.font = (lang === 'zh' ? '500 21px' : '500 15px') + ' "Microsoft JhengHei", sans-serif';
