@@ -141,6 +141,7 @@ html[data-trigram-size="large"][data-lang="bi"] .trigram-name { font-size:16px; 
 .hidden { color:#80652f; font-size:12px; }
 .changed-cell { color:#645f54; }
 .compact-lines { display:none; }
+.traditional-board { display:none; }
 .line-wrap { display:flex; align-items:center; justify-content:center; min-width:88px; }
 .yao { position:relative; display:block; width:78px; height:10px; }
 .yao.yang { background:var(--ink); }
@@ -173,7 +174,36 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .cast-options { grid-template-columns:1fr; }
   .primary-button { width:100%; }
   .table-scroll { display:none; }
-  .compact-lines { display:block; border-top:1px solid #e5dfd2; }
+  .compact-lines { display:none; }
+  .traditional-board { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 96px; min-height:570px; overflow:hidden; border:1px solid #d8cb8a; background:#f1f0e8; }
+  .traditional-board::before { content:"I-ChingWay\A 易經智慧\A I-ChingWay\A 易經智慧"; position:absolute; inset:28px 85px 20px 10px; z-index:0; color:rgba(206,176,120,.12); font-size:48px; font-weight:900; line-height:2.35; white-space:pre; transform:rotate(-8deg); pointer-events:none; }
+  .traditional-lines,.traditional-meta { position:relative; z-index:1; }
+  .traditional-lines { display:grid; grid-template-rows:repeat(6,minmax(82px,1fr)); padding:18px 4px 14px 10px; }
+  .traditional-line { display:grid; grid-template-columns:minmax(0,1fr) 58px; align-items:center; gap:3px; min-width:0; }
+  .traditional-line.has-changed-yao { grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr) 48px; }
+  .traditional-original,.traditional-change { display:grid; grid-template-columns:minmax(76px,auto) minmax(88px,1fr); align-items:center; min-width:0; }
+  .traditional-change { padding-right:4px; border-right:1px solid rgba(113,109,96,.25); }
+  .traditional-info { position:relative; display:flex; align-items:baseline; justify-content:flex-start; min-width:0; gap:5px; white-space:nowrap; }
+  .traditional-info b { flex:none; font-size:clamp(24px,7vw,34px); line-height:1; }
+  .traditional-najia { display:inline-flex; align-items:baseline; gap:3px; font-size:clamp(22px,6vw,30px); line-height:1; }
+  .traditional-najia small { font-size:.55em; }
+  .traditional-najia em { margin-left:2px; color:var(--red); font-size:.52em; font-style:normal; font-weight:900; }
+  .traditional-hidden { position:absolute; left:0; top:100%; color:#80652f; font-size:10px; line-height:1.1; }
+  .traditional-original .yao-display,.traditional-change .yao-display { min-height:54px; }
+  .traditional-original .line-wrap,.traditional-change .line-wrap { min-width:0; width:100%; }
+  .traditional-original .yao,.traditional-change .yao { width:min(100%,150px); height:13px; }
+  .traditional-original .yao.yin::before,.traditional-original .yao.yin::after,
+  .traditional-change .yao.yin::before,.traditional-change .yao.yin::after { width:42%; height:13px; }
+  .traditional-original .sy-under,.traditional-change .sy-under { min-height:20px; margin-top:5px; font-size:17px; line-height:20px; }
+  .traditional-beast { color:#111; font-size:clamp(23px,6.5vw,31px); font-weight:800; line-height:1; text-align:center; white-space:nowrap; }
+  .traditional-meta { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:18px 5px 14px; border-left:1px solid rgba(113,109,96,.25); color:#111; background:rgba(255,255,255,.22); }
+  .traditional-meta > div { justify-self:center; writing-mode:vertical-rl; text-orientation:upright; font-size:21px; font-weight:700; line-height:1.25; letter-spacing:.08em; }
+  .traditional-meta-hex { font-size:26px !important; font-weight:900 !important; }
+  .traditional-meta-hex small { display:inline-block; margin-top:12px; color:var(--red); font-size:14px; font-weight:700; }
+  .traditional-meta-date span { display:inline-block; margin-top:16px; }
+  .result-card { padding:8px; background:#f1f0e8; }
+  .result-card .result-banner,.result-card .hex-title { display:none; }
+  .matter-result { margin:0 0 8px; }
   .compact-heading { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px; gap:6px; padding:7px 4px; color:var(--muted); background:#faf8f2; border-bottom:1px solid #e5dfd2; text-align:center; font-size:11px; font-weight:900; }
   .compact-line { display:grid; grid-template-columns:112px minmax(132px,1fr) 82px; align-items:center; min-height:88px; gap:6px; padding:10px 4px; border-bottom:1px solid #e5dfd2; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px; align-items:center; min-height:84px; }
@@ -251,6 +281,29 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .matter-field { order:-1; gap:3px; margin:0 0 4px; font-size:12px; }
   .matter-field input { min-height:34px; padding:5px 7px; font-size:12px; }
   .trigram-number-toggle { min-height:31px; padding:2px 7px; border-radius:6px; font-size:11px; }
+  .traditional-board { grid-template-columns:minmax(0,1fr) 82px; min-height:550px; }
+  .traditional-lines { grid-template-rows:repeat(6,minmax(80px,1fr)); padding:14px 2px 12px 7px; }
+  .traditional-line { grid-template-columns:minmax(0,1fr) 45px; gap:2px; }
+  .traditional-original { grid-template-columns:minmax(78px,92px) minmax(82px,1fr); }
+  .traditional-line.has-changed-yao { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px; min-height:88px; }
+  .traditional-line.has-changed-yao .traditional-original,
+  .traditional-line.has-changed-yao .traditional-change { grid-template-columns:minmax(36px,43px) minmax(43px,1fr); gap:1px; }
+  .traditional-line.has-changed-yao .traditional-info { flex-direction:column; align-items:center; justify-content:center; gap:1px; text-align:center; }
+  .traditional-line.has-changed-yao .traditional-info b { font-size:15px; }
+  .traditional-line.has-changed-yao .traditional-najia { font-size:14px; }
+  .traditional-line.has-changed-yao .traditional-original .yao,
+  .traditional-line.has-changed-yao .traditional-change .yao { width:min(100%,58px); height:11px; }
+  .traditional-line.has-changed-yao .traditional-original .yao.yin::before,
+  .traditional-line.has-changed-yao .traditional-original .yao.yin::after,
+  .traditional-line.has-changed-yao .traditional-change .yao.yin::before,
+  .traditional-line.has-changed-yao .traditional-change .yao.yin::after { height:11px; }
+  .traditional-info { gap:3px; }
+  .traditional-info b { font-size:25px; }
+  .traditional-najia { font-size:23px; }
+  .traditional-beast { font-size:22px; }
+  .traditional-meta { padding:14px 3px 12px; }
+  .traditional-meta > div { font-size:18px; }
+  .traditional-meta-hex { font-size:23px !important; }
   .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
   .compact-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 52px; gap:2px; padding:5px 2px; }

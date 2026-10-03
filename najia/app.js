@@ -147,7 +147,7 @@
 
   function renderTable(result) {
     let rows = '';
-    let compactRows = '';
+    let traditionalRows = '';
     for (let index = 5; index >= 0; index -= 1) {
       const line = result.base.lines[index];
       const changedLine = result.changed ? result.changed.lines[index] : null;
@@ -165,29 +165,28 @@
         '<td class="void">' + voidText + '</td>' +
         '<td>' + yaoDisplay(line, moving) + '</td>' +
         '<td class="beast">' + beastText(result.beasts[index]) + '</td></tr>';
-      if (changedLine) {
-        compactRows += '<div class="compact-line has-change ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
-          (moving ? '<div class="compact-hex compact-changed"><div class="compact-info"><b>' + sixKinText(changedLine.sixKin) + '</b><span>' + najiaText(changedLine) +
-          '</span></div>' + yaoOnlyDisplay(changedLine) + '</div>' : '') +
-          '<div class="compact-hex compact-original"><div class="compact-info"><b>' + sixKinText(line.sixKin) + '</b><span>' + najiaText(line) +
-          (voidText ? ' <em>' + voidText + '</em>' : '') + '</span>' +
-          (hidden ? '<small>' + hiddenText + '</small>' : '') + '</div>' + yaoDisplay(line, moving) + '</div>' +
-          '<div class="compact-side"><b>' + beastText(result.beasts[index]) + '</b></div></div>';
-      } else {
-        compactRows += '<div class="compact-line ' + (moving ? 'moving-row' : '') + '">' +
-          '<div class="compact-info"><b>' + sixKinText(line.sixKin) + '</b><span>' + najiaText(line) +
-          (voidText ? ' <em>' + voidText + '</em>' : '') + '</span>' +
-          (hidden ? '<small>' + hiddenText + '</small>' : '') + '</div>' +
-          '<div class="compact-yao">' + yaoDisplay(line, moving) + '</div>' +
-          '<div class="compact-side"><b>' + beastText(result.beasts[index]) + '</b></div></div>';
-      }
+      const originalInfo = '<div class="traditional-info"><b>' + sixKinText(line.sixKin) + '</b>' +
+        '<span class="traditional-najia"><small>' + stemText(line.stem) + '</small>' + branchText(line.branch) +
+        (voidText ? '<em>' + voidText + '</em>' : '') + '</span>' +
+        (hidden ? '<span class="traditional-hidden">' + hiddenText + '</span>' : '') + '</div>';
+      const changedInfo = changedLine && moving ? '<div class="traditional-change"><div class="traditional-info"><b>' + sixKinText(changedLine.sixKin) + '</b>' +
+        '<span class="traditional-najia"><small>' + stemText(changedLine.stem) + '</small>' + branchText(changedLine.branch) + '</span></div>' +
+        yaoOnlyDisplay(changedLine) + '</div>' : '';
+      traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
+        changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
+        '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div>';
     }
     const headers = result.changed ? [text('變卦六親','Changed Kin'),text('變卦納甲','Changed Najia'),text('變卦','Changed'),text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')] : [text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')];
     return '<div class="table-scroll"><table class="hex-table">' +
       '<thead><tr>' + headers.map(function (header) { return '<th>' + header + '</th>'; }).join('') + '</tr></thead>' +
-      '<tbody>' + rows + '</tbody></table></div><div class="compact-lines">' +
-      (result.changed ? '<div class="compact-heading"><span>' + text('變卦','Changed') + '</span><span>' + text('本卦','Original') + '</span><span>' + text('六獸','Beasts') + '</span></div>' : '') +
-      compactRows + '</div>';
+      '<tbody>' + rows + '</tbody></table></div>' +
+      '<div class="traditional-board"><div class="traditional-lines">' + traditionalRows + '</div>' +
+      '<aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
+      '<div class="traditional-meta-hex">' + hexText(result.base.name) + text('卦',' Hexagram') +
+      (result.changed ? '<small>' + ui('to') + hexText(result.changed.name) + '</small>' : '') + '</div>' +
+      '<div class="traditional-meta-palace">' + text(result.base.palace + '宮屬' + result.base.palaceElement, TRIGRAM_EN[result.base.palace][1] + ' Palace · ' + ELEMENT_EN[result.base.palaceElement]) + '</div>' +
+      '<div class="traditional-meta-date">' + pillarText(result.yearGanzhi, 'year') + pillarText(result.monthGanzhi, 'month') + pillarText(result.ganzhi, 'day') +
+      '<span>' + result.voidBranches.map(branchText).join('') + text('空亡',' Xunkong') + '</span></div></aside></div>';
   }
 
   function renderResult(result, dateValue, matter) {
