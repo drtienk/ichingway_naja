@@ -289,23 +289,24 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .matter-field { order:-1; gap:3px; margin:0 0 4px; font-size:12px; }
   .matter-field input { min-height:34px; padding:5px 7px; font-size:12px; }
   .trigram-number-toggle { min-height:31px; padding:2px 7px; border-radius:6px; font-size:11px; }
-  .traditional-board { grid-template-columns:64px minmax(0,1fr); min-height:550px; }
-  .traditional-board.has-change { grid-template-columns:54px minmax(0,1fr); }
+  .result-card { margin-left:-6px; margin-right:-6px; padding:5px; }
+  .traditional-board { grid-template-columns:66px minmax(0,1fr); min-height:550px; }
+  .traditional-board.has-change { grid-template-columns:70px minmax(0,1fr); }
   .traditional-lines { grid-template-rows:repeat(6,minmax(80px,1fr)); padding:14px 2px 12px 6px; }
-  .traditional-board.has-change .traditional-lines { padding-left:3px; }
+  .traditional-board.has-change .traditional-lines { padding-left:2px; }
   .traditional-line { grid-template-columns:minmax(0,1fr) 45px; gap:2px; }
   .traditional-original { grid-template-columns:minmax(78px,92px) minmax(82px,1fr); }
-  .traditional-board.has-change .traditional-line { grid-template-columns:74px minmax(0,1fr) 39px; gap:1px; }
-  .traditional-board.has-change .traditional-original { grid-template-columns:67px minmax(58px,1fr); gap:1px; }
+  .traditional-board.has-change .traditional-line { grid-template-columns:96px minmax(0,1fr) 39px; gap:1px; }
+  .traditional-board.has-change .traditional-original { grid-template-columns:65px minmax(60px,1fr); gap:1px; }
   .traditional-board.has-change .traditional-info { gap:2px; }
   .traditional-board.has-change .traditional-info b { font-size:20px; }
   .traditional-board.has-change .traditional-info .traditional-najia { font-size:18px; }
-  .traditional-board.has-change .traditional-beast { font-size:19px; }
+  .traditional-board.has-change .traditional-beast { font-size:20px; }
   .traditional-board.has-change .traditional-change-slot { gap:1px; padding-right:2px; }
   .traditional-board.has-change .traditional-change-info { gap:1px; }
-  .traditional-board.has-change .traditional-change-info b { font-size:14px; }
-  .traditional-board.has-change .traditional-change-info .traditional-najia { font-size:13px; }
-  .traditional-board.has-change .traditional-change-arrow { font-size:18px; }
+  .traditional-board.has-change .traditional-change-info b { font-size:19px; }
+  .traditional-board.has-change .traditional-change-info .traditional-najia { font-size:18px; font-weight:700; }
+  .traditional-board.has-change .traditional-change-arrow { font-size:23px; }
   .traditional-board.has-change .traditional-original .yao { width:min(100%,76px); height:11px; }
   .traditional-board.has-change .traditional-original .yao.yin::before,
   .traditional-board.has-change .traditional-original .yao.yin::after { height:11px; }
@@ -314,10 +315,11 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-najia { font-size:23px; }
   .traditional-beast { font-size:22px; }
   .traditional-meta { gap:5px; padding:12px 2px 10px; }
-  .traditional-meta-date { font-size:16px; }
+  .traditional-meta-date { font-size:19px; }
   .traditional-meta-lower { padding-top:5px; }
-  .traditional-meta-hex { font-size:20px; }
-  .traditional-meta-palace { font-size:13px; }
+  .traditional-meta-hex { font-size:25px; }
+  .traditional-meta-hex small { font-size:14px; }
+  .traditional-meta-palace { font-size:17px; }
   .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
   .compact-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 52px; gap:2px; padding:5px 2px; }
