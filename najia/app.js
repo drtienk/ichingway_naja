@@ -221,7 +221,6 @@
       '<div class="hex-title"><h2>' + hexText(result.base.name) + '</h2>' + changedTitle +
       '<span class="hex-meta">' + palaceMeta + '</span></div>' +
       renderTable(result) +
-      '<p class="result-note">' + text('化爻六親以本卦宮五行為準；○為老陽，×為老陰。伏神依本宮純卦對應爻位列出。','Changed-line Six Kin use the original palace element. A circle marks old yang; × marks old yin. Hidden spirits follow the pure palace hexagram.') + '</p>' +
       '<button class="save-button" id="saveImageButton" type="button">' + ui('save') + '</button>' +
       '</section>';
     lastCast = {result:result, dateValue:dateValue, matter:matter};
@@ -399,9 +398,6 @@
       context.textAlign = 'start';
     }
 
-    context.fillStyle = '#777061';
-    context.font = '500 18px "Microsoft JhengHei", sans-serif';
-    context.fillText(text('化爻六親以本卦宮五行為準；○為老陽，×為老陰。','Changed-line Six Kin use the original palace element; ○ marks old yang and × marks old yin.'), 58, canvas.height - 42);
     return canvas;
   }
 
