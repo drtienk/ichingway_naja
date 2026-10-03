@@ -193,7 +193,13 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-najia { display:inline-flex; align-items:baseline; gap:3px; font-size:clamp(22px,6vw,30px); line-height:1; }
   .traditional-najia small { font-size:.55em; }
   .traditional-najia em { margin-left:2px; color:var(--red); font-size:.52em; font-style:normal; font-weight:900; }
-  .traditional-hidden { position:absolute; left:0; top:100%; color:#80652f; font-size:10px; line-height:1.1; }
+  .traditional-side { display:flex; min-width:0; height:100%; flex-direction:column; align-items:center; justify-content:center; gap:5px; }
+  .traditional-hidden { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; color:#80652f; font-size:11px; font-weight:800; line-height:1.02; white-space:nowrap; }
+  .traditional-hidden-kind { display:flex; align-items:baseline; justify-content:center; gap:1px; }
+  .traditional-hidden-kind small { font-size:9px; }
+  .traditional-hidden-kind b { font-size:13px; }
+  .traditional-hidden-najia { display:inline-flex; align-items:baseline; font-size:14px; font-weight:900; }
+  .traditional-hidden-najia small { margin-right:1px; font-size:8px; font-weight:700; }
   .traditional-original .yao-display { min-height:54px; }
   .traditional-original .line-wrap { min-width:0; width:100%; }
   .traditional-original .yao { width:min(100%,150px); height:13px; }
@@ -321,7 +327,10 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-board .move-mark.move-yang { width:24px; height:24px; border-width:4px; }
   .traditional-board .move-mark.move-yin { font-size:32px; }
   .traditional-beast { font-size:25px; }
-  .traditional-hidden { left:50%; top:98%; transform:translateX(-50%); font-size:10px; }
+  .traditional-hidden { font-size:11px; }
+  .traditional-hidden-kind small { font-size:10px; }
+  .traditional-hidden-kind b { font-size:15px; }
+  .traditional-hidden-najia { font-size:16px; }
   .traditional-meta-date { font-size:22px; }
   .traditional-meta-lower { grid-column:1 / -1; grid-row:1; display:flex; align-items:center; justify-content:center; gap:10px; padding:8px 6px 7px; border-top:0; border-bottom:1px solid rgba(113,109,96,.22); background:rgba(255,255,255,.22); white-space:nowrap; }
   .traditional-meta-hex { display:flex; align-items:baseline; justify-content:center; gap:8px; writing-mode:horizontal-tb; font-size:24px; line-height:1.25; }

@@ -51,6 +51,10 @@ assert.strictEqual(lateRatHour.day.stem + lateRatHour.day.branch, '壬戌', '中
 
 const hiddenCount = allHexes.filter(function (hex) { return Object.keys(core.hiddenSpirits(hex)).length > 0; }).length;
 assert.ok(hiddenCount > 0, '應有需要伏神的卦');
+const luHidden = core.hiddenSpirits(core.buildHex('乾', '兌'));
+assert.deepStrictEqual(Object.keys(luHidden), ['5'], '天澤履只應在五爻列出伏神');
+assert.strictEqual(luHidden[5].sixKin, '妻財', '伏神六親應以本宮純卦缺少的六親判定');
+assert.strictEqual(luHidden[5].stem + luHidden[5].branch, '丙子', '伏神納甲應沿用本宮純卦對應爻位');
 
 assert.strictEqual(core.cycleEight(1), 1);
 assert.strictEqual(core.cycleEight(8), 8);

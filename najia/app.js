@@ -176,13 +176,15 @@
         '<td class="beast">' + beastText(result.beasts[index]) + '</td></tr>';
       const originalInfo = '<div class="traditional-info"><b aria-label="' + sixKinText(line.sixKin) + '" title="' + sixKinText(line.sixKin) + '">' + sixKinCompactText(line.sixKin) + '</b>' +
         '<span class="traditional-najia"><small>' + stemText(line.stem) + '</small>' + branchText(line.branch) +
-        (voidText ? '<em>' + voidText + '</em>' : '') + '</span>' +
-        (hidden ? '<span class="traditional-hidden">' + hiddenText + '</span>' : '') + '</div>';
+        (voidText ? '<em>' + voidText + '</em>' : '') + '</span></div>';
+      const traditionalHidden = hidden ? '<span class="traditional-hidden" aria-label="' + hiddenText + '" title="' + hiddenText + '">' +
+        '<span class="traditional-hidden-kind"><small>' + text('伏','H') + '</small><b>' + sixKinCompactText(hidden.sixKin) + '</b></span>' +
+        '<span class="traditional-hidden-najia"><small>' + stemText(hidden.stem) + '</small>' + branchText(hidden.branch) + '</span></span>' : '';
       const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b aria-label="' + sixKinText(changedLine.sixKin) + '" title="' + sixKinText(changedLine.sixKin) + '">' + sixKinCompactText(changedLine.sixKin) + '</b>' +
         '<span class="traditional-najia">' + branchText(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
-        '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div>';
+        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div></div>';
     }
     const headers = result.changed ? [text('變卦六親','Changed Kin'),text('變卦納甲','Changed Najia'),text('變卦','Changed'),text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')] : [text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')];
     return '<div class="table-scroll"><table class="hex-table">' +
@@ -328,7 +330,7 @@
     context.font = '700 19px "Microsoft JhengHei", sans-serif';
     context.fillText(result.changed ? text('變卦・僅顯示動爻','Changed · Moving Lines Only') : text('本卦・六親／納甲','Original · Six Kin / Najia'), 68, contentY + 30);
     if (result.changed) context.fillText(text('本卦・六親／納甲','Original · Six Kin / Najia'), 590, contentY + 30);
-    context.fillText(text('六獸','Six Beasts'), 1040, contentY + 30);
+    context.fillText(text('伏神／六獸','Hidden / Beasts'), 1010, contentY + 30);
     contentY += 62;
 
     for (let index = 5; index >= 0; index -= 1) {
@@ -354,11 +356,6 @@
       context.fillText(sixKinText(line.sixKin), originalInfoX, rowY + 36);
       context.font = (lang === 'zh' ? '500 23px' : '500 18px') + ' "Microsoft JhengHei", sans-serif';
       context.fillText(najiaText(line), originalNajiaX, rowY + 36);
-      if (hidden) {
-        context.fillStyle = '#80652f';
-        context.font = '500 18px "Microsoft JhengHei", sans-serif';
-        context.fillText(ui('hidden') + ' ' + sixKinText(hidden.sixKin) + ' ' + najiaText(hidden), originalInfoX, rowY + 74);
-      }
       if (result.voidBranches.includes(line.branch)) {
         context.fillStyle = '#b9413a';
         context.font = '800 20px "Microsoft JhengHei", sans-serif';
@@ -383,10 +380,16 @@
         context.fillText(branchText(changedLine.branch), lang === 'zh' ? 165 : 185, rowY + 36);
         drawYaoOnCanvas(context, changedLine, false, 340, rowY + 27, 190);
       }
+      context.textAlign = 'center';
+      if (hidden) {
+        context.fillStyle = '#80652f';
+        context.font = (lang === 'zh' ? '700 17px' : '700 13px') + ' "Microsoft JhengHei", sans-serif';
+        context.fillText(text('伏 ','H ') + sixKinCompactText(hidden.sixKin) + ' ' + stemText(hidden.stem) + branchText(hidden.branch), 1070, rowY + 25);
+      }
       context.fillStyle = '#20243a';
-      context.font = '700 25px "Microsoft JhengHei", sans-serif';
       context.font = (lang === 'zh' ? '700 25px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
-      context.fillText(beastText(result.beasts[index]), 1030, rowY + 40);
+      context.fillText(beastText(result.beasts[index]), 1070, rowY + (hidden ? 62 : 42));
+      context.textAlign = 'start';
     }
 
     context.fillStyle = '#777061';
