@@ -169,9 +169,9 @@
         '<span class="traditional-najia"><small>' + stemText(line.stem) + '</small>' + branchText(line.branch) +
         (voidText ? '<em>' + voidText + '</em>' : '') + '</span>' +
         (hidden ? '<span class="traditional-hidden">' + hiddenText + '</span>' : '') + '</div>';
-      const changedInfo = changedLine && moving ? '<div class="traditional-change"><div class="traditional-info"><b>' + sixKinText(changedLine.sixKin) + '</b>' +
+      const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b>' + sixKinText(changedLine.sixKin) + '</b>' +
         '<span class="traditional-najia"><small>' + stemText(changedLine.stem) + '</small>' + branchText(changedLine.branch) + '</span></div>' +
-        yaoOnlyDisplay(changedLine) + '</div>' : '';
+        '<span class="traditional-change-arrow" aria-hidden="true">←</span></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
         '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div>';
@@ -180,7 +180,7 @@
     return '<div class="table-scroll"><table class="hex-table">' +
       '<thead><tr>' + headers.map(function (header) { return '<th>' + header + '</th>'; }).join('') + '</tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>' +
-      '<div class="traditional-board"><aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
+      '<div class="traditional-board ' + (result.changed ? 'has-change' : '') + '"><aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
       '<div class="traditional-meta-date">' + pillarText(result.yearGanzhi, 'year') + pillarText(result.monthGanzhi, 'month') + pillarText(result.ganzhi, 'day') +
       '<span>' + result.voidBranches.map(branchText).join('') + text('空亡',' Xunkong') + '</span></div>' +
       '<div class="traditional-meta-lower"><div class="traditional-meta-hex">' + hexText(result.base.name) + text('卦',' Hexagram') +
