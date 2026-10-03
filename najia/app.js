@@ -19,6 +19,8 @@
   const SIX_KIN_SHORT = {'父母':'父','兄弟':'兄','官鬼':'官','妻財':'財','子孫':'孫'};
   const SIX_KIN_EN_SHORT = {'父母':'P','兄弟':'B','官鬼':'O','妻財':'W','子孫':'C'};
   const BEAST_EN = {'青龍':'Azure Dragon','朱雀':'Vermilion Bird','勾陳':'Curved Array','呈蛇':'Soaring Serpent','白虎':'White Tiger','玄武':'Black Tortoise'};
+  const BEAST_SHORT = {'青龍':'青','朱雀':'朱','勾陳':'勾','呈蛇':'呈','白虎':'白','玄武':'玄'};
+  const BEAST_EN_SHORT = {'青龍':'AD','朱雀':'VB','勾陳':'CA','呈蛇':'SS','白虎':'WT','玄武':'BT'};
   const ELEMENT_EN = {'金':'Metal','木':'Wood','水':'Water','火':'Fire','土':'Earth'};
   const STEM_EN = {'甲':'Jia','乙':'Yi','丙':'Bing','丁':'Ding','戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui'};
   const BRANCH_EN = {'子':'Zi','丑':'Chou','寅':'Yin','卯':'Mao','辰':'Chen','巳':'Si','午':'Wu','未':'Wei','申':'Shen','酉':'You','戌':'Xu','亥':'Hai'};
@@ -52,6 +54,11 @@
     return lang === 'en' ? en : (lang === 'bi' ? zh + '/' + en : zh);
   }
   function beastText(value) { return text(value, BEAST_EN[value] || value); }
+  function beastCompactText(value) {
+    const zh = BEAST_SHORT[value] || value;
+    const en = BEAST_EN_SHORT[value] || value;
+    return lang === 'en' ? en : (lang === 'bi' ? zh + '/' + en : zh);
+  }
   function elementText(value) { return text(value, ELEMENT_EN[value] || value); }
   function stemText(value) { return text(value, STEM_EN[value] || value); }
   function branchText(value) { return text(value, BRANCH_EN[value] || value); }
@@ -184,7 +191,7 @@
         '<span class="traditional-najia">' + branchText(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
-        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div></div>';
+        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast" aria-label="' + beastText(result.beasts[index]) + '" title="' + beastText(result.beasts[index]) + '">' + beastCompactText(result.beasts[index]) + '</div></div></div>';
     }
     const headers = result.changed ? [text('變卦六親','Changed Kin'),text('變卦納甲','Changed Najia'),text('變卦','Changed'),text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')] : [text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')];
     return '<div class="table-scroll"><table class="hex-table">' +
@@ -388,7 +395,7 @@
       }
       context.fillStyle = '#20243a';
       context.font = (lang === 'zh' ? '700 25px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
-      context.fillText(beastText(result.beasts[index]), 1070, rowY + (hidden ? 62 : 42));
+      context.fillText(beastCompactText(result.beasts[index]), 1070, rowY + (hidden ? 62 : 42));
       context.textAlign = 'start';
     }
 
