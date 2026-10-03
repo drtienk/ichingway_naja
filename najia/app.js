@@ -185,8 +185,8 @@
         '<span class="traditional-najia"><small>' + stemText(line.stem) + '</small>' + branchText(line.branch) +
         (voidText ? '<em>' + voidText + '</em>' : '') + '</span></div>';
       const traditionalHidden = hidden ? '<span class="traditional-hidden" aria-label="' + hiddenText + '" title="' + hiddenText + '">' +
-        '<span class="traditional-hidden-kind"><small>' + text('伏','H') + '</small><b>' + sixKinCompactText(hidden.sixKin) + '</b></span>' +
-        '<span class="traditional-hidden-najia"><small>' + stemText(hidden.stem) + '</small>' + branchText(hidden.branch) + '</span></span>' : '';
+        '<small>' + text('伏','H') + '</small><b>' + sixKinCompactText(hidden.sixKin) + '</b>' +
+        '<span class="traditional-hidden-najia">' + branchText(hidden.branch) + '</span></span>' : '';
       const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b aria-label="' + sixKinText(changedLine.sixKin) + '" title="' + sixKinText(changedLine.sixKin) + '">' + sixKinCompactText(changedLine.sixKin) + '</b>' +
         '<span class="traditional-najia">' + branchText(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
@@ -391,7 +391,7 @@
       if (hidden) {
         context.fillStyle = '#80652f';
         context.font = (lang === 'zh' ? '700 17px' : '700 13px') + ' "Microsoft JhengHei", sans-serif';
-        context.fillText(text('伏 ','H ') + sixKinCompactText(hidden.sixKin) + ' ' + stemText(hidden.stem) + branchText(hidden.branch), 1070, rowY + 25);
+        context.fillText(text('伏 ','H ') + sixKinCompactText(hidden.sixKin) + ' ' + branchText(hidden.branch), 1070, rowY + 25);
       }
       context.fillStyle = '#20243a';
       context.font = (lang === 'zh' ? '700 25px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
