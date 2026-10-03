@@ -206,7 +206,7 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-beast { color:#111; font-size:clamp(23px,6.5vw,31px); font-weight:800; line-height:1; text-align:center; white-space:nowrap; }
   .traditional-meta { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:8px; padding:14px 3px 12px; border-right:1px solid rgba(113,109,96,.25); color:#111; background:rgba(255,255,255,.22); }
   .traditional-meta-date,.traditional-meta-hex,.traditional-meta-palace { justify-self:center; writing-mode:vertical-rl; text-orientation:upright; font-weight:700; line-height:1.18; letter-spacing:.04em; }
-  .traditional-meta-date { align-self:start; font-size:18px; }
+  .traditional-meta-date { align-self:start; font-size:20px; }
   .traditional-meta-date > span { display:inline; margin:0; }
   .traditional-meta-date .traditional-date-year { color:#716d60; font-size:.78em; font-weight:700; }
   .traditional-meta-date .traditional-date-month,
@@ -333,7 +333,7 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-hidden > small { font-size:9px; }
   .traditional-hidden > b { font-size:14px; }
   .traditional-hidden-najia { font-size:15px; }
-  .traditional-meta-date { font-size:22px; }
+  .traditional-meta-date { font-size:24px; }
   .traditional-meta-lower { grid-column:1 / -1; grid-row:1; display:flex; align-items:center; justify-content:center; gap:10px; padding:8px 6px 7px; border-top:0; border-bottom:1px solid rgba(113,109,96,.22); background:rgba(255,255,255,.22); white-space:nowrap; }
   .traditional-meta-hex { display:flex; align-items:baseline; justify-content:center; gap:8px; writing-mode:horizontal-tb; font-size:24px; line-height:1.25; }
   .traditional-meta-base-name,.traditional-meta-hex small { display:block; margin:0; writing-mode:horizontal-tb; text-orientation:mixed; }
