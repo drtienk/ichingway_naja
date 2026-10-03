@@ -119,8 +119,8 @@ html[data-trigram-size="large"][data-lang="bi"] .trigram-name { font-size:16px; 
 .result-banner span { color:#d9cfb9; }
 .result-banner b { color:#ffb2aa; }
 .result-banner .china-date { flex-basis:100%; color:#d9cfb9; font-size:12px; }
-.matter-result { margin:14px 0 0; padding:10px 13px; color:#4f493d; background:#f5f1e7; border-left:4px solid var(--red); border-radius:5px; }
-.matter-result strong { margin-right:8px; color:var(--red); }
+.matter-result { margin:14px 0 0; padding:10px 13px; color:#4f493d; background:#f5f1e7; border-left:4px solid var(--red); border-radius:5px; font-size:18px; font-weight:600; line-height:1.45; overflow-wrap:anywhere; }
+.matter-result strong { margin-right:8px; color:var(--red); font-size:20px; font-weight:900; }
 .hex-title { display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin:20px 0 14px; }
 .hex-title h2 { margin:0; font-size:24px; }
 .hex-title .to { color:var(--muted); }
@@ -220,7 +220,8 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-meta-palace { font-size:15px; }
   .result-card { padding:8px; background:#f1f0e8; }
   .result-card .result-banner,.result-card .hex-title { display:none; }
-  .matter-result { margin:0 0 8px; }
+  .matter-result { margin:0 0 8px; font-size:20px; line-height:1.5; }
+  .matter-result strong { font-size:22px; }
   .compact-heading { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px; gap:6px; padding:7px 4px; color:var(--muted); background:#faf8f2; border-bottom:1px solid #e5dfd2; text-align:center; font-size:11px; font-weight:900; }
   .compact-line { display:grid; grid-template-columns:112px minmax(132px,1fr) 82px; align-items:center; min-height:88px; gap:6px; padding:10px 4px; border-bottom:1px solid #e5dfd2; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 72px; align-items:center; min-height:84px; }
