@@ -58,6 +58,8 @@
   function najiaText(line) { return text(line.stem + line.branch + '・' + line.element, (STEM_EN[line.stem] || line.stem) + ' ' + (BRANCH_EN[line.branch] || line.branch) + ' · ' + (ELEMENT_EN[line.element] || line.element)); }
   function relationText(line) { return line.shi ? text('世','Shi Yao') : (line.ying ? text('應','Ying Yao') : ''); }
   function hexText(value) { const item=HEX_EN[value] || [value,value]; return text(value,item[0] + ' — ' + item[1]); }
+  function pillarGanzhiText(pillar) { return text(pillar.stem + pillar.branch, (STEM_EN[pillar.stem] || pillar.stem) + ' ' + (BRANCH_EN[pillar.branch] || pillar.branch)); }
+  function pillarSuffixText(suffixKey) { return text(UI.zh[suffixKey], UI.en[suffixKey]); }
   function pillarText(pillar, suffixKey) { return text(pillar.stem + pillar.branch + UI.zh[suffixKey], (STEM_EN[pillar.stem] || pillar.stem) + ' ' + (BRANCH_EN[pillar.branch] || pillar.branch) + UI.en[suffixKey]); }
   function palaceMetaText(base) { return text(base.palace + '宮' + base.palaceElement + '・' + base.positionName + '卦', TRIGRAM_EN[base.palace][1] + UI.en.palace + ' · ' + ELEMENT_EN[base.palaceElement] + ' · ' + (POSITION_EN[base.positionName] || base.positionName) + UI.en.hexagram); }
 
@@ -189,8 +191,8 @@
       '<tbody>' + rows + '</tbody></table></div>' +
       '<div class="traditional-board ' + (result.changed ? 'has-change' : '') + '"><aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
       '<div class="traditional-meta-date"><span class="traditional-date-year">' + pillarText(result.yearGanzhi, 'year') + '</span>' +
-      '<span class="traditional-date-month">' + pillarText(result.monthGanzhi, 'month') + '</span>' +
-      '<span class="traditional-date-day">' + pillarText(result.ganzhi, 'day') + '</span>' +
+      '<span class="traditional-date-month"><span class="traditional-date-ganzhi">' + pillarGanzhiText(result.monthGanzhi) + '</span><span class="traditional-date-suffix">' + pillarSuffixText('month') + '</span></span>' +
+      '<span class="traditional-date-day"><span class="traditional-date-ganzhi">' + pillarGanzhiText(result.ganzhi) + '</span><span class="traditional-date-suffix">' + pillarSuffixText('day') + '</span></span>' +
       '<span class="traditional-date-void">' + result.voidBranches.map(branchText).join('') + text('空亡',' Xunkong') + '</span></div>' +
       '<div class="traditional-meta-lower"><div class="traditional-meta-hex"><span class="traditional-meta-base-name">' + hexText(result.base.name) + text('卦',' Hexagram') + '</span>' +
       (result.changed ? '<small>' + ui('to') + hexText(result.changed.name) + '</small>' : '') + '</div>' +

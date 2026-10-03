@@ -209,6 +209,8 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-meta-date .traditional-date-month,
   .traditional-meta-date .traditional-date-day,
   .traditional-meta-date .traditional-date-void { color:#111; font-weight:900; }
+  .traditional-meta-date .traditional-date-ganzhi { color:var(--red); }
+  .traditional-meta-date .traditional-date-suffix { color:#111; }
   .traditional-meta-date .traditional-date-void { display:inline-block; margin-inline-start:1em; }
   .traditional-meta-lower { display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:1px; padding-top:8px; border-top:1px solid rgba(113,109,96,.2); }
   .traditional-meta-hex { font-size:23px; font-weight:900; }
