@@ -298,16 +298,16 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-original { grid-template-columns:72px minmax(82px,1fr); gap:1px; }
   .traditional-board.has-change .traditional-line { grid-template-columns:96px minmax(0,1fr) 50px; gap:2px; }
   .traditional-board.has-change .traditional-original { grid-template-columns:70px minmax(62px,1fr); gap:2px; }
-  .traditional-info { flex-direction:column; align-items:center; justify-content:center; gap:0; text-align:center; }
-  .traditional-info b { font-size:26px; line-height:1.05; }
-  .traditional-info .traditional-najia { font-size:22px; line-height:1.05; }
-  .traditional-board.has-change .traditional-info b { font-size:24px; }
-  .traditional-board.has-change .traditional-info .traditional-najia { font-size:21px; }
+  .traditional-info { flex-direction:row; align-items:baseline; justify-content:center; gap:3px; text-align:left; }
+  .traditional-info b { font-size:28px; line-height:1; }
+  .traditional-info .traditional-najia { font-size:24px; line-height:1; }
+  .traditional-board.has-change .traditional-info b { font-size:27px; }
+  .traditional-board.has-change .traditional-info .traditional-najia { font-size:23px; }
   .traditional-board.has-change .traditional-beast { font-size:24px; }
   .traditional-board.has-change .traditional-change-slot { display:grid; grid-template-columns:minmax(0,1fr) 24px; align-items:center; gap:1px; padding:0 1px 0 0; }
-  .traditional-board.has-change .traditional-change-info { flex-direction:column; align-items:flex-end; gap:0; line-height:1.05; }
-  .traditional-board.has-change .traditional-change-info b { font-size:22px; }
-  .traditional-board.has-change .traditional-change-info .traditional-najia { font-size:21px; font-weight:700; }
+  .traditional-board.has-change .traditional-change-info { flex-direction:row; align-items:baseline; justify-content:flex-end; gap:3px; line-height:1; }
+  .traditional-board.has-change .traditional-change-info b { font-size:25px; }
+  .traditional-board.has-change .traditional-change-info .traditional-najia { font-size:23px; font-weight:700; }
   .traditional-board.has-change .traditional-change-arrow { font-size:25px; }
   .traditional-board.has-change .traditional-original .yao { width:min(100%,76px); height:12px; }
   .traditional-board.has-change .traditional-original .yao.yin::before,
