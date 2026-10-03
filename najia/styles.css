@@ -314,15 +314,17 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-info .traditional-najia small { margin-right:1px; color:#716d60; font-size:10px; font-weight:700; }
   .traditional-board.has-change .traditional-info b { font-size:27px; }
   .traditional-board.has-change .traditional-info .traditional-najia { font-size:27px; }
+  .traditional-board.has-change .traditional-info { transform:translateX(-14px); }
   .traditional-board.has-change .traditional-beast { font-size:24px; }
   .traditional-board.has-change .traditional-change-slot { display:flex; align-items:center; justify-content:flex-end; padding:0 14px 0 0; }
   .traditional-board.has-change .traditional-line.has-changed-yao .traditional-change-slot { border-right:1px solid rgba(166,78,72,.32); }
-  .traditional-board.has-change .traditional-change-info { flex-direction:row; align-items:baseline; justify-content:flex-end; gap:3px; line-height:1; }
+  .traditional-board.has-change .traditional-change-info { flex-direction:row; align-items:baseline; justify-content:flex-end; gap:3px; line-height:1; transform:translateX(-14px); }
   .traditional-board.has-change .traditional-change-info b { font-size:25px; }
   .traditional-board.has-change .traditional-change-info .traditional-najia { font-size:26px; font-weight:900; }
   .traditional-board.has-change .traditional-original .yao { width:min(100%,76px); height:12px; }
   .traditional-board.has-change .traditional-original .yao.yin::before,
   .traditional-board.has-change .traditional-original .yao.yin::after { height:12px; }
+  .traditional-board:not(.has-change) .traditional-original .line-wrap { transform:translate(7px,4px); }
   .traditional-board .move-mark.move-yang { width:24px; height:24px; border-width:4px; }
   .traditional-board .move-mark.move-yin { font-size:32px; }
   .traditional-beast { font-size:25px; }
