@@ -409,6 +409,82 @@
     return new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
   }
 
+  function captureStyleText() {
+    const chunks = [];
+    Array.from(document.styleSheets).forEach(function (sheet) {
+      try {
+        Array.from(sheet.cssRules || []).forEach(function (rule) { chunks.push(rule.cssText); });
+      } catch (error) {}
+    });
+    return chunks.join('\n')
+      .replace(/:root/g, '.capture-root')
+      .replace(/html(?=\[data-)/g, '.capture-root');
+  }
+
+  function loadCaptureImage(svg) {
+    return new Promise(function (resolve, reject) {
+      const image = new Image();
+      image.onload = function () { resolve(image); };
+      image.onerror = function () { reject(new Error(text('無法讀取目前卦盤畫面。','The current casting view could not be read.'))); };
+      image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  }
+
+  async function captureVisibleResultCanvas() {
+    const source = document.querySelector('.result-card');
+    if (!source) throw new Error(text('找不到目前卦盤。','The current casting board was not found.'));
+
+    const sourceRect = source.getBoundingClientRect();
+    const clone = source.cloneNode(true);
+    const saveButton = clone.querySelector('.save-button');
+    if (saveButton) saveButton.remove();
+    clone.querySelectorAll('[id]').forEach(function (element) { element.removeAttribute('id'); });
+    clone.style.setProperty('width', sourceRect.width + 'px', 'important');
+    clone.style.setProperty('margin', '0', 'important');
+    clone.style.setProperty('box-sizing', 'border-box');
+
+    const measureStage = document.createElement('div');
+    measureStage.style.cssText = 'position:fixed;left:-10000px;top:0;width:' + sourceRect.width + 'px;visibility:hidden;pointer-events:none;z-index:-1;';
+    measureStage.appendChild(clone);
+    document.body.appendChild(measureStage);
+    await new Promise(function (resolve) { requestAnimationFrame(function () { requestAnimationFrame(resolve); }); });
+    const measuredRect = clone.getBoundingClientRect();
+    const width = Math.max(1, Math.ceil(measuredRect.width));
+    const height = Math.max(1, Math.ceil(measuredRect.height));
+    measureStage.remove();
+
+    clone.style.setProperty('width', width + 'px', 'important');
+    clone.style.setProperty('height', height + 'px', 'important');
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+    wrapper.className = 'capture-root';
+    wrapper.dataset.lang = document.documentElement.dataset.lang || lang;
+    wrapper.dataset.trigramSize = document.documentElement.dataset.trigramSize || 'normal';
+    wrapper.style.cssText = 'width:' + width + 'px;height:' + height + 'px;overflow:hidden;' +
+      'box-sizing:border-box;background:#f1f0e8;color:#20243a;' +
+      'font-family:"Noto Serif TC","Songti TC","Microsoft JhengHei",sans-serif;' +
+      '--paper:#f3f0e7;--card:#fffdf8;--ink:#20243a;--muted:#716d60;--line:#d8d0bc;' +
+      '--gold:#b99350;--red:#a64e48;--blue:#315f88;';
+    const style = document.createElement('style');
+    style.textContent = captureStyleText();
+    wrapper.appendChild(style);
+    wrapper.appendChild(clone);
+
+    const markup = new XMLSerializer().serializeToString(wrapper);
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '">' +
+      '<foreignObject x="0" y="0" width="100%" height="100%">' + markup + '</foreignObject></svg>';
+    const image = await loadCaptureImage(svg);
+    const scale = Math.min(3, Math.max(2, window.devicePixelRatio || 2));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error(text('手機無法建立圖片畫布。','The device could not create an image canvas.'));
+    context.scale(scale, scale);
+    context.drawImage(image, 0, 0, width, height);
+    return canvas;
+  }
+
   function downloadImage(dataUrl, filename) {
     const anchor = document.createElement('a');
     anchor.href = dataUrl;
@@ -445,7 +521,13 @@
     button.disabled = true;
     button.textContent = ui('creating');
     try {
-      const canvas = buildCastCanvas(lastCast);
+      let canvas;
+      try {
+        canvas = await captureVisibleResultCanvas();
+      } catch (captureError) {
+        console.warn('Visible casting capture failed; using the compatible canvas fallback.', captureError);
+        canvas = buildCastCanvas(lastCast);
+      }
       const blob = await canvasBlob(canvas);
       const dataUrl = canvas.toDataURL('image/png');
       const englishHex = HEX_EN[lastCast.result.base.name] || [lastCast.result.base.name];
