@@ -166,7 +166,7 @@
       const voidText = result.voidBranches.includes(line.branch) ? (lang === 'en' ? 'XK' : (lang === 'bi' ? '空 / XK' : '空')) : '';
       rows += '<tr class="' + (moving ? 'moving-row' : '') + '">' +
         (result.changed ? '<td class="changed-cell kin">' + (moving ? sixKinText(changedLine.sixKin) : '') + '</td>' +
-          '<td class="changed-cell">' + (moving ? najiaText(changedLine) : '') + '</td>' +
+          '<td class="changed-cell">' + (moving ? branchText(changedLine.branch) : '') + '</td>' +
           '<td class="changed-cell">' + (moving ? yaoOnlyDisplay(changedLine) : '') + '</td>' : '') +
         '<td class="kin">' + sixKinText(line.sixKin) + '</td>' +
         '<td>' + najiaText(line) + '</td>' +
@@ -179,8 +179,7 @@
         (voidText ? '<em>' + voidText + '</em>' : '') + '</span>' +
         (hidden ? '<span class="traditional-hidden">' + hiddenText + '</span>' : '') + '</div>';
       const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b aria-label="' + sixKinText(changedLine.sixKin) + '" title="' + sixKinText(changedLine.sixKin) + '">' + sixKinCompactText(changedLine.sixKin) + '</b>' +
-        '<span class="traditional-najia"><small>' + stemText(changedLine.stem) + '</small>' + branchText(changedLine.branch) + '</span></div>' +
-        '<span class="traditional-change-arrow" aria-hidden="true">←</span></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
+        '<span class="traditional-najia">' + branchText(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
         '<div class="traditional-beast">' + beastText(result.beasts[index]) + '</div></div>';
@@ -381,7 +380,7 @@
         context.font = (lang === 'zh' ? '700 24px' : '700 17px') + ' "Microsoft JhengHei", sans-serif';
         context.fillText(sixKinText(changedLine.sixKin), 68, rowY + 36);
         context.font = (lang === 'zh' ? '500 21px' : '500 15px') + ' "Microsoft JhengHei", sans-serif';
-        context.fillText(najiaText(changedLine), lang === 'zh' ? 165 : 185, rowY + 36);
+        context.fillText(branchText(changedLine.branch), lang === 'zh' ? 165 : 185, rowY + 36);
         drawYaoOnCanvas(context, changedLine, false, 340, rowY + 27, 190);
       }
       context.fillStyle = '#20243a';
