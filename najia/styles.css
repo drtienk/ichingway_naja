@@ -175,8 +175,8 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .primary-button { width:100%; }
   .table-scroll { display:none; }
   .compact-lines { display:none; }
-  .traditional-board { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 96px; min-height:570px; overflow:hidden; border:1px solid #d8cb8a; background:#f1f0e8; }
-  .traditional-board::before { content:"I-ChingWay\A 易經智慧\A I-ChingWay\A 易經智慧"; position:absolute; inset:28px 85px 20px 10px; z-index:0; color:rgba(206,176,120,.12); font-size:48px; font-weight:900; line-height:2.35; white-space:pre; transform:rotate(-8deg); pointer-events:none; }
+  .traditional-board { position:relative; display:grid; grid-template-columns:74px minmax(0,1fr); min-height:570px; overflow:hidden; border:1px solid #d8cb8a; background:#f1f0e8; }
+  .traditional-board::before { content:"I-ChingWay\A 易經智慧\A I-ChingWay\A 易經智慧"; position:absolute; inset:28px 10px 20px 64px; z-index:0; color:rgba(206,176,120,.12); font-size:48px; font-weight:900; line-height:2.35; white-space:pre; transform:rotate(-8deg); pointer-events:none; }
   .traditional-lines,.traditional-meta { position:relative; z-index:1; }
   .traditional-lines { display:grid; grid-template-rows:repeat(6,minmax(82px,1fr)); padding:18px 4px 14px 10px; }
   .traditional-line { display:grid; grid-template-columns:minmax(0,1fr) 58px; align-items:center; gap:3px; min-width:0; }
@@ -196,11 +196,14 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-change .yao.yin::before,.traditional-change .yao.yin::after { width:42%; height:13px; }
   .traditional-original .sy-under,.traditional-change .sy-under { min-height:20px; margin-top:5px; font-size:17px; line-height:20px; }
   .traditional-beast { color:#111; font-size:clamp(23px,6.5vw,31px); font-weight:800; line-height:1; text-align:center; white-space:nowrap; }
-  .traditional-meta { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:18px 5px 14px; border-left:1px solid rgba(113,109,96,.25); color:#111; background:rgba(255,255,255,.22); }
-  .traditional-meta > div { justify-self:center; writing-mode:vertical-rl; text-orientation:upright; font-size:21px; font-weight:700; line-height:1.25; letter-spacing:.08em; }
-  .traditional-meta-hex { font-size:26px !important; font-weight:900 !important; }
-  .traditional-meta-hex small { display:inline-block; margin-top:12px; color:var(--red); font-size:14px; font-weight:700; }
-  .traditional-meta-date span { display:inline-block; margin-top:16px; }
+  .traditional-meta { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:8px; padding:14px 3px 12px; border-right:1px solid rgba(113,109,96,.25); color:#111; background:rgba(255,255,255,.22); }
+  .traditional-meta-date,.traditional-meta-hex,.traditional-meta-palace { justify-self:center; writing-mode:vertical-rl; text-orientation:upright; font-weight:700; line-height:1.18; letter-spacing:.04em; }
+  .traditional-meta-date { align-self:start; font-size:18px; }
+  .traditional-meta-date span { display:inline-block; margin-top:10px; }
+  .traditional-meta-lower { display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:1px; padding-top:8px; border-top:1px solid rgba(113,109,96,.2); }
+  .traditional-meta-hex { font-size:23px; font-weight:900; }
+  .traditional-meta-hex small { display:inline-block; margin-top:8px; color:var(--red); font-size:12px; font-weight:700; }
+  .traditional-meta-palace { font-size:15px; }
   .result-card { padding:8px; background:#f1f0e8; }
   .result-card .result-banner,.result-card .hex-title { display:none; }
   .matter-result { margin:0 0 8px; }
@@ -281,8 +284,8 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .matter-field { order:-1; gap:3px; margin:0 0 4px; font-size:12px; }
   .matter-field input { min-height:34px; padding:5px 7px; font-size:12px; }
   .trigram-number-toggle { min-height:31px; padding:2px 7px; border-radius:6px; font-size:11px; }
-  .traditional-board { grid-template-columns:minmax(0,1fr) 82px; min-height:550px; }
-  .traditional-lines { grid-template-rows:repeat(6,minmax(80px,1fr)); padding:14px 2px 12px 7px; }
+  .traditional-board { grid-template-columns:64px minmax(0,1fr); min-height:550px; }
+  .traditional-lines { grid-template-rows:repeat(6,minmax(80px,1fr)); padding:14px 2px 12px 6px; }
   .traditional-line { grid-template-columns:minmax(0,1fr) 45px; gap:2px; }
   .traditional-original { grid-template-columns:minmax(78px,92px) minmax(82px,1fr); }
   .traditional-line.has-changed-yao { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 40px; min-height:88px; }
@@ -301,9 +304,11 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-info b { font-size:25px; }
   .traditional-najia { font-size:23px; }
   .traditional-beast { font-size:22px; }
-  .traditional-meta { padding:14px 3px 12px; }
-  .traditional-meta > div { font-size:18px; }
-  .traditional-meta-hex { font-size:23px !important; }
+  .traditional-meta { gap:5px; padding:12px 2px 10px; }
+  .traditional-meta-date { font-size:16px; }
+  .traditional-meta-lower { padding-top:5px; }
+  .traditional-meta-hex { font-size:20px; }
+  .traditional-meta-palace { font-size:13px; }
   .compact-line { grid-template-columns:minmax(0,154px) 76px 68px; gap:2px; }
   .compact-heading { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 50px; gap:3px; }
   .compact-line.has-change { grid-template-columns:minmax(0,1fr) minmax(0,1fr) 52px; gap:2px; padding:5px 2px; }

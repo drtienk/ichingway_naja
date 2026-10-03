@@ -180,13 +180,13 @@
     return '<div class="table-scroll"><table class="hex-table">' +
       '<thead><tr>' + headers.map(function (header) { return '<th>' + header + '</th>'; }).join('') + '</tr></thead>' +
       '<tbody>' + rows + '</tbody></table></div>' +
-      '<div class="traditional-board"><div class="traditional-lines">' + traditionalRows + '</div>' +
-      '<aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
-      '<div class="traditional-meta-hex">' + hexText(result.base.name) + text('卦',' Hexagram') +
-      (result.changed ? '<small>' + ui('to') + hexText(result.changed.name) + '</small>' : '') + '</div>' +
-      '<div class="traditional-meta-palace">' + text(result.base.palace + '宮屬' + result.base.palaceElement, TRIGRAM_EN[result.base.palace][1] + ' Palace · ' + ELEMENT_EN[result.base.palaceElement]) + '</div>' +
+      '<div class="traditional-board"><aside class="traditional-meta" aria-label="' + text('卦象資訊','Hexagram information') + '">' +
       '<div class="traditional-meta-date">' + pillarText(result.yearGanzhi, 'year') + pillarText(result.monthGanzhi, 'month') + pillarText(result.ganzhi, 'day') +
-      '<span>' + result.voidBranches.map(branchText).join('') + text('空亡',' Xunkong') + '</span></div></aside></div>';
+      '<span>' + result.voidBranches.map(branchText).join('') + text('空亡',' Xunkong') + '</span></div>' +
+      '<div class="traditional-meta-lower"><div class="traditional-meta-hex">' + hexText(result.base.name) + text('卦',' Hexagram') +
+      (result.changed ? '<small>' + ui('to') + hexText(result.changed.name) + '</small>' : '') + '</div>' +
+      '<div class="traditional-meta-palace">' + text(result.base.palace + '宮屬' + result.base.palaceElement, TRIGRAM_EN[result.base.palace][1] + ' Palace · ' + ELEMENT_EN[result.base.palaceElement]) + '</div></div></aside>' +
+      '<div class="traditional-lines">' + traditionalRows + '</div></div>';
   }
 
   function renderResult(result, dateValue, matter) {
