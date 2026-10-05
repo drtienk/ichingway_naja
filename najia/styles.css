@@ -197,11 +197,11 @@ footer { padding:10px 2px; color:var(--muted); text-align:center; font-size:12px
   .traditional-hidden > small { font-size:8px; }
   .traditional-hidden > b { font-size:13px; }
   .traditional-hidden-najia { display:inline-flex; align-items:baseline; font-size:14px; font-weight:900; }
-  .traditional-original .yao-display { position:relative; min-height:54px; }
-  .traditional-original .line-wrap { min-width:0; width:100%; transform:translate(-5px,4px); }
+  .traditional-original .yao-display { --yao-shift-x:-5px; position:relative; min-height:54px; }
+  .traditional-original .line-wrap { min-width:0; width:100%; transform:translate(var(--yao-shift-x),4px); }
   .traditional-original .yao { width:min(100%,150px); height:13px; }
   .traditional-original .yao.yin::before,.traditional-original .yao.yin::after { width:42%; height:13px; }
-  .traditional-original .sy-under { position:absolute; left:0; right:0; top:calc(50% + 14px); min-height:20px; margin:0; font-size:17px; line-height:20px; text-align:center; }
+  .traditional-original .sy-under { position:absolute; left:0; right:0; top:calc(50% + 14px); min-height:20px; margin:0; transform:translateX(var(--yao-shift-x)); font-size:17px; line-height:20px; text-align:center; }
   .traditional-beast { color:#111; font-size:clamp(23px,6.5vw,31px); font-weight:800; line-height:1; text-align:center; white-space:nowrap; }
   .traditional-meta { display:grid; grid-template-rows:minmax(0,1fr) auto; gap:8px; padding:14px 3px 12px; border-right:1px solid rgba(113,109,96,.25); color:#111; background:rgba(255,255,255,.22); }
   .traditional-meta-date,.traditional-meta-hex,.traditional-meta-palace { justify-self:center; writing-mode:vertical-rl; text-orientation:upright; font-weight:700; line-height:1.18; letter-spacing:.04em; }
@@ -324,7 +324,7 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-board.has-change .traditional-original .yao { width:min(100%,76px); height:12px; }
   .traditional-board.has-change .traditional-original .yao.yin::before,
   .traditional-board.has-change .traditional-original .yao.yin::after { height:12px; }
-  .traditional-board:not(.has-change) .traditional-original .line-wrap { transform:translate(7px,4px); }
+  .traditional-board:not(.has-change) .traditional-original .yao-display { --yao-shift-x:7px; }
   .traditional-board:not(.has-change) .traditional-original .yao { width:min(100%,130px); }
   .traditional-board .move-mark.move-yang { width:24px; height:24px; border-width:4px; }
   .traditional-board .move-mark.move-yin { font-size:32px; }
