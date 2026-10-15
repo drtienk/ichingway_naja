@@ -325,7 +325,11 @@ html[data-lang="bi"] .language-switch button { padding-inline:8px; }
   .traditional-board.has-change .traditional-original .yao.yin::before,
   .traditional-board.has-change .traditional-original .yao.yin::after { height:12px; }
   .traditional-board:not(.has-change) .traditional-original .yao-display { --yao-shift-x:7px; }
-  .traditional-board:not(.has-change) .traditional-original .yao { width:min(100%,130px); }
+  .traditional-board:not(.has-change) .traditional-lines { padding-left:12px; }
+  .traditional-board:not(.has-change) .traditional-line { grid-template-columns:minmax(0,1fr) 44px; }
+  .traditional-board:not(.has-change) .traditional-original { grid-template-columns:80px minmax(82px,1fr); }
+  .traditional-board:not(.has-change) .traditional-info .traditional-najia em { margin-left:-10px; transform:translateY(17px); }
+  .traditional-board:not(.has-change) .traditional-original .yao { width:min(100%,100px); }
   .traditional-board .move-mark.move-yang { width:24px; height:24px; border-width:4px; }
   .traditional-board .move-mark.move-yin { font-size:32px; }
   .traditional-beast { font-size:25px; }
