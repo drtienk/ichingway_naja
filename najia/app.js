@@ -66,8 +66,7 @@
   function boardBeast(value) { return boardLabel(BEAST_SHORT[value] || value, BEAST_EN_SHORT[value] || value); }
   function boardStem(value) { return boardLabel(value, STEM_EN[value] || value); }
   function boardBranch(value) { return boardLabel(value, BRANCH_EN[value] || value); }
-
-   { return text(value, ELEMENT_EN[value] || value); }
+  function elementText(value) { return text(value, ELEMENT_EN[value] || value); }
   function stemText(value) { return text(value, STEM_EN[value] || value); }
   function branchText(value) { return text(value, BRANCH_EN[value] || value); }
   function najiaText(line) { return text(line.stem + line.branch + '・' + line.element, (STEM_EN[line.stem] || line.stem) + ' ' + (BRANCH_EN[line.branch] || line.branch) + ' · ' + (ELEMENT_EN[line.element] || line.element)); }
@@ -199,7 +198,7 @@
         '<span class="traditional-najia traditional-branch">' + boardBranch(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
-        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast" aria-label="' + beastText(result.beasts[index]) + '" title="' + beastText(result.beasts[index]) + '">' + boardBeast(result.beasts[index]) + '</div></div></div';
+        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast" aria-label="' + beastText(result.beasts[index]) + '" title="' + beastText(result.beasts[index]) + '">' + boardBeast(result.beasts[index]) + '</div></div></div>';
     }
     const headers = result.changed ? [text('變卦六親','Changed Kin'),text('變卦納甲','Changed Najia'),text('變卦','Changed'),text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')] : [text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')];
     return '<div class="table-scroll"><table class="hex-table">' +
