@@ -131,6 +131,14 @@
 - GitHub Pages：`https://drtienk.github.io/ichingway_naja/`
 - 推送到 `main` 後，由 `.github/workflows/pages.yml` 自動發布靜態檔案；不在 OneDrive 本機產生 build 或 dist。
 
+## 目前現況（2026-10-16）
+
+- 京房納甲頁已部署於 `https://drtienk.github.io/ichingway_naja/najia/index.html`；`najia/index.html` 目前載入 `styles.css?v=20261015-31`。本次只調整 `najia/styles.css` 與樣式快取版本，未修改納甲計算規則或股市頁。
+- 中文、English、中英三種卦盤在手機版皆維持「上方卦名與宮屬、左側年／月／日干支及旬空、右側六爻」的共同結構；英文和中英模式不可再把日期改成卦盤上方的橫列。
+- 英文與中英的左側日期欄使用 `writing-mode:vertical-rl` 搭配 `text-orientation:mixed`，讓拉丁文字以完整詞組側轉，不逐字母堆疊。年、月、日、空亡的 `span` 必須保持 `display:inline`，沿同一縱軸接續排列；若改成 `display:block`，四段會變成橫向四欄，導致最左段被裁切。
+- 窄螢幕（≤480px）中英日期欄為 60px，平板寬度（481–800px）為 76px；對應的六爻區仍在日期右方。中英模式在這兩個斷點使用較小日期字級，以確保雙語年、月、日與空亡完整留在左欄。改字級或間距後必須重新檢查最後的空亡是否超出日期欄底部。
+- 已以瀏覽器直向 viewport 驗證 iPhone 13 mini（375×812）的 English、iPhone 8（375×667）的中英含一個動爻、iPad mini（768×1024）的中英卦盤：日期與六爻為相鄰欄、日期末段在欄內、頁面無水平溢出。這是瀏覽器響應式驗證，非實機 Safari 驗證。
+
 ## 驗收標準
 
 - `node tests/najia-core.test.js` 全部通過。
