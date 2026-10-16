@@ -59,7 +59,15 @@
     const en = BEAST_EN_SHORT[value] || value;
     return lang === 'en' ? en : (lang === 'bi' ? zh + '/' + en : zh);
   }
-  function elementText(value) { return text(value, ELEMENT_EN[value] || value); }
+  function boardLabel(zh, en) {
+    return lang === 'bi' ? '<span class="bi-primary">' + zh + '</span><small class="bi-english">' + en + '</small>' : (lang === 'en' ? en : zh);
+  }
+  function boardKin(value) { return boardLabel(SIX_KIN_SHORT[value] || value, SIX_KIN_EN_SHORT[value] || value); }
+  function boardBeast(value) { return boardLabel(BEAST_SHORT[value] || value, BEAST_EN_SHORT[value] || value); }
+  function boardStem(value) { return boardLabel(value, STEM_EN[value] || value); }
+  function boardBranch(value) { return boardLabel(value, BRANCH_EN[value] || value); }
+
+   { return text(value, ELEMENT_EN[value] || value); }
   function stemText(value) { return text(value, STEM_EN[value] || value); }
   function branchText(value) { return text(value, BRANCH_EN[value] || value); }
   function najiaText(line) { return text(line.stem + line.branch + '・' + line.element, (STEM_EN[line.stem] || line.stem) + ' ' + (BRANCH_EN[line.branch] || line.branch) + ' · ' + (ELEMENT_EN[line.element] || line.element)); }
@@ -181,17 +189,17 @@
         '<td class="void">' + voidText + '</td>' +
         '<td>' + yaoDisplay(line, moving) + '</td>' +
         '<td class="beast">' + beastText(result.beasts[index]) + '</td></tr>';
-      const originalInfo = '<div class="traditional-info"><b aria-label="' + sixKinText(line.sixKin) + '" title="' + sixKinText(line.sixKin) + '">' + sixKinCompactText(line.sixKin) + '</b>' +
-        '<span class="traditional-najia"><small>' + stemText(line.stem) + '</small>' + branchText(line.branch) +
+      const originalInfo = '<div class="traditional-info"><b aria-label="' + sixKinText(line.sixKin) + '" title="' + sixKinText(line.sixKin) + '">' + boardKin(line.sixKin) + '</b>' +
+        '<span class="traditional-najia"><small class="traditional-stem">' + boardStem(line.stem) + '</small><span class="traditional-branch">' + boardBranch(line.branch) + '</span>' +
         (voidText ? '<em>' + voidText + '</em>' : '') + '</span></div>';
       const traditionalHidden = hidden ? '<span class="traditional-hidden" aria-label="' + hiddenText + '" title="' + hiddenText + '">' +
         '<small>' + text('伏','H') + '</small><b>' + sixKinCompactText(hidden.sixKin) + '</b>' +
         '<span class="traditional-hidden-najia">' + branchText(hidden.branch) + '</span></span>' : '';
-      const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b aria-label="' + sixKinText(changedLine.sixKin) + '" title="' + sixKinText(changedLine.sixKin) + '">' + sixKinCompactText(changedLine.sixKin) + '</b>' +
-        '<span class="traditional-najia">' + branchText(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
+      const changedInfo = changedLine && moving ? '<div class="traditional-change-slot"><div class="traditional-change-info"><b aria-label="' + sixKinText(changedLine.sixKin) + '" title="' + sixKinText(changedLine.sixKin) + '">' + boardKin(changedLine.sixKin) + '</b>' +
+        '<span class="traditional-najia traditional-branch">' + boardBranch(changedLine.branch) + '</span></div></div>' : '<div class="traditional-change-slot" aria-hidden="true"></div>';
       traditionalRows += '<div class="traditional-line ' + (moving ? 'moving-row has-changed-yao' : '') + '">' +
         changedInfo + '<div class="traditional-original">' + originalInfo + yaoDisplay(line, moving) + '</div>' +
-        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast" aria-label="' + beastText(result.beasts[index]) + '" title="' + beastText(result.beasts[index]) + '">' + beastCompactText(result.beasts[index]) + '</div></div></div>';
+        '<div class="traditional-side">' + traditionalHidden + '<div class="traditional-beast" aria-label="' + beastText(result.beasts[index]) + '" title="' + beastText(result.beasts[index]) + '">' + boardBeast(result.beasts[index]) + '</div></div></div';
     }
     const headers = result.changed ? [text('變卦六親','Changed Kin'),text('變卦納甲','Changed Najia'),text('變卦','Changed'),text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')] : [text('六親','Six Kin'),text('納甲','Najia'),text('伏神','Hidden Spirit'),text('旬空','Xunkong'),text('本卦','Original'),text('六獸','Six Beasts')];
     return '<div class="table-scroll"><table class="hex-table">' +
